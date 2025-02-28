@@ -1,0 +1,23 @@
+services:
+  
+  
+  # The Eureka Server microservice container
+  eureka_server:
+  # Building properties
+    build:
+    # It will build from the local eureka-server project directory
+      context: ./eureka-server
+      dockerfile: Dockerfile
+    # The container will always be restarted
+    restart: always
+    # The port 8761 of the container is mapped into the port 8761 of the machine
+    ports:
+      - 8761:8761
+    # The container uses the network "shared-net"
+    networks:
+      - shared-net
+
+# The common network for the containers
+networks:
+  shared-net:
+    driver: bridge
