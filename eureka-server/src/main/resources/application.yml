@@ -3,7 +3,7 @@ spring:
       name: eureka-server
 
 server:
-# The conventional port for Eureka Server
+# The Eureka Server will run on the port 8761, conventional for Eureka
   port: 8761
   
 eureka:

@@ -1,4 +1,4 @@
-# Fetches the image for Eclipse Temurin JDK 21 (OpenJDK images are deprecated)
+# Fetches the image for Eclipse Temurin JDK 21
 FROM eclipse-temurin:21-jdk
 # Sets the working directory
 WORKDIR /app

@@ -17,6 +17,25 @@ services:
     networks:
       - shared-net
 
+  # The gateway microservice container
+  gateway:
+  # Building properties
+    build:
+    # It will build from the local eureka-server project directory
+      context: ./gateway
+      dockerfile: Dockerfile
+    # The container will always be restarted
+    restart: always
+    # The port 8080 of the container is mapped into the port 8080 of the machine
+    ports:
+      - 8080:8080
+    # Depends on the Eureka Server microservice
+    depends_on:
+      - eureka_server
+    # The container uses the network "shared-net"
+    networks:
+      - shared-net
+
 # The common network for the containers
 networks:
   shared-net:
