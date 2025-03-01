@@ -18,6 +18,9 @@ jobs:
       - name: Set up Docker Compose
         uses: docker/setup-compose-action@v1.2.0
 
+      - name: Create target directory
+        run: mkdir -p target
+
       - name: Deploy Docker Compose Prod
         run: |
           docker compose -f docker-compose.prod.yml up --build -d
