@@ -1,9 +1,10 @@
 server:
-# The gateway will run on the port 8080
+  # The gateway will run on the port 8080
   port: 8080
 
 spring:
   application:
+    # The name of the Spring Boot application
     name: gateway
 # An example routing (real routing instances are to be added as the project progresses)
   #cloud:
@@ -15,7 +16,14 @@ spring:
             #- Path=/payment/**
 
 eureka:
+  instance:
+    # The Eureka client exposes itself with its IP address for easier discovery
+    preferIpAddress: true
   client:
+    # Eureka client can register itself to the Eureka server
+    register-with-eureka: true
+    # Eureka client can fetch service registry from Eureka server
+    fetch-registry: true
     service-url:
-    # URL of the Eureka Server (can be changed in the future)
-      defaultZone: http://localhost:8761/eureka/  
+      # URL of the Eureka Server (specifically points to the Docker container)
+      defaultZone: http://eureka-server:8761/eureka

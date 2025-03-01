@@ -1,19 +1,22 @@
+server:
+  # The Eureka Server will run on the port 8761, conventional for Eureka
+  port: 8761
+
 spring:
     application:
+      # The name of the Spring Boot application
       name: eureka-server
-
-server:
-# The Eureka Server will run on the port 8761, conventional for Eureka
-  port: 8761
   
 eureka:
     instance:
-      hostname: localhost
+      # Eureka server exposes itself with its hostname
+      hostname: ${spring.application.name}
+      prefer-ip-address: false
     client:
-    # Eureka client does not register itself to the Eureka server
+      # Eureka server does not register itself to the Eureka server
       register-with-eureka: false
-    # Eureka lient does not fetch service registry from Eureka server
+      # Eureka server does not fetch service registry from Eureka server
       fetch-registry: false
       service-url:
-      # The address of the Eureka server
+        # The address of the Eureka server
         defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka
