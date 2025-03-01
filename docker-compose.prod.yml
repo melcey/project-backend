@@ -16,6 +16,9 @@ services:
     # The container uses the network "shared-net"
     networks:
       - shared-net
+    # The container will be run in the prod environment
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
     # The health check performed for the container
     healthcheck:
       # Checks whether the status is UP
@@ -48,6 +51,9 @@ services:
     # The container uses the network "shared-net"
     networks:
       - shared-net
+    # The container will be run in the prod environment
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
 
 # The common network for the containers
 networks:

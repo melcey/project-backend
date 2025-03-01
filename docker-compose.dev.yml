@@ -1,0 +1,61 @@
+services:
+  # The Eureka Server microservice container
+  eureka-server:
+    # Building properties
+    build:
+      # It will build from the local eureka-server project directory
+      context: ./eureka-server
+      dockerfile: Dockerfile
+    # Name of the container
+    container_name: eureka-server
+    # The container will always be restarted
+    restart: always
+    # The port 8761 of the container is mapped into the port 8761 of the machine
+    ports:
+      - 8761:8761
+    # The container uses the network "shared-net"
+    networks:
+      - shared-net
+    # The container will be run in the dev environment
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    # The health check performed for the container
+    healthcheck:
+      # Checks whether the status is UP
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      # The health check will be performed every 10 seconds
+      interval: 10s
+      # The command must be completed in 5 seconds
+      timeout: 5s
+      # After 2 retries, the container will be marked as unhealthy
+      retries: 2
+
+  # The gateway microservice container
+  gateway:
+  # Building properties
+    build:
+    # It will build from the local gateway project directory
+      context: ./gateway
+      dockerfile: Dockerfile
+    # Name of the container
+    container_name: gateway
+    # The container will always be restarted
+    restart: always
+    # The port 8080 of the container is mapped into the port 8080 of the machine
+    ports:
+      - 8080:8080
+    depends_on:
+      # Depends on the Eureka Server microservice working healthily
+      eureka-server:
+        condition: service_healthy
+    # The container uses the network "shared-net"
+    networks:
+      - shared-net
+    # The container will be run in the dev environment
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+
+# The common network for the containers
+networks:
+  shared-net:
+    driver: bridge

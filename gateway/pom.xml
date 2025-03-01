@@ -32,7 +32,8 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<!-- Always use this dependency for gateway; not -gateway-mvc -->
+			<!-- Always use Reactive Gateway; not Gateway -->
+			<!-- Always use spring-cloud-starter-gateway, not spring-cloud-starter-gateway-mvc -->
 			<!-- Otherwise, the microservice will not register itself as a Eureka client -->
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-gateway</artifactId>
