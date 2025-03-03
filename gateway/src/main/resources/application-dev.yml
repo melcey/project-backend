@@ -1,16 +1,16 @@
 # Enable logging for the dev environment
 logging:
     level:
-        # All logs have a minimum level of INFO
-        root: INFO
-        # The logs related to our codes have a level of DEBUG
-        '[com.cs308.gateway]': DEBUG
-        # The logs related to Eureka have a level of DEBUG
-        '[org.springframework.cloud.netflix.eureka]': DEBUG
-        # The logs related to Spring Reactive Gateway have a level of DEBUG
-        '[org.springframework.cloud.gateway]': DEBUG
+        # All logs have a minimum level of DEBUG
+        root: DEBUG
+        # The logs related to our codes have a level of TRACE (the most verbose one)
+        '[com.cs308.gateway]': TRACE
+        # The logs related to Eureka have a level of TRACE
+        '[org.springframework.cloud.netflix.eureka]': TRACE
+        # The logs related to Spring Reactive Gateway have a level of TRACE
+        '[org.springframework.cloud.gateway]': TRACE
     file:
         # Path for the Docker container's file system
-        path: /app/log
+        path: /app/log/dev
         name: gateway.log
     
