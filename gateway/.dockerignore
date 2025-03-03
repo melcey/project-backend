@@ -1,6 +1,3 @@
-# Ignore Maven build outputs
-target/
-
 # Ignore git files
 .git
 .gitignore
