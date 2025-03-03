@@ -9,3 +9,6 @@
 # Ignore local configuration and OS files
 *.log
 .DS_Store
+
+# Ignore Markdown files
+*.md
