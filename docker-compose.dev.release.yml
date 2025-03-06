@@ -57,6 +57,65 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=dev
 
+# The container for the actual dev database
+  postgres-dev:
+    # Name of the container
+    container_name: postgres-dev
+    image: postgres:17.4
+    # The container will always be restarted
+    restart: always
+    # Volumes to be used by the container
+    volumes:
+      # The initialization script's directory on the container
+      - postgres-dev_data:/var/lib/postgresql/data
+    # The container uses the network "shared-net-dev"
+    networks:
+      - shared-net-dev
+    ports:
+      # The port 5432 of the machine is mapped into the port 5432 of the container
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+
+  # Database initialization container
+  db-init-dev:
+    # Name of the container
+    container_name: db-init-dev
+    image: postgres:17.4
+    # Does not restart when it is run once (either when the DB is run for the first time, or there is an update in db_nit.sql)
+    restart: "no"
+    # Retrieves the username and password data for admin from the .env file (a template is provided in the repo)
+    env_file:
+      - .env
+    # Depends on the actual database container
+    depends_on:
+      - postgres-dev
+    # Runs the below command to initialize the database
+      # POSTGRES_USER, POSTGRES_PASSWORD, and POSTGRES_DB are environment variables retrieved above from the .env file
+      # Waits until the database container is ready to run
+      # Then, connects to the database to run the initialization script
+    entrypoint: >
+      bash -c "
+      echo 'Waiting for PostgreSQL to be ready...';
+      until pg_isready -h postgres-dev -p 5432 -U ${POSTGRES_USER}; do sleep 2; done;
+      echo 'PostgreSQL is ready! Running initialization script...';
+      export PGPASSWORD=${POSTGRES_PASSWORD};
+      psql -h postgres-dev -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f /docker-entrypoint-initdb.d/db_init.sql;
+      echo 'Database is initialized successfully.'"
+    # Volumes to be used by the container
+    volumes:
+      # The actual database
+      - postgres-dev_data:/var/lib/postgresql/data
+      # The initialization script is copied into the path specified after colon on the container
+      - ./db_init.sql:/docker-entrypoint-initdb.d/db_init.sql
+    # The container uses the network "shared-net"
+    networks:
+      - shared-net-dev
+
+# Declaration of the volume for the database
+volumes:
+  postgres-dev_data:
+
 # The common network for the containers
 networks:
   shared-net-dev:
