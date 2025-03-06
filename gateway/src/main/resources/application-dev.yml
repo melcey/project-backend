@@ -13,4 +13,9 @@ logging:
         # Path for the Docker container's file system
         path: /app/log/dev
         name: gateway.log
-    
+
+eureka:
+    client:
+        service-url:
+            # URL of the Eureka Server (specifically points to the Docker container)
+            defaultZone: http://eureka-server-dev:8761/eureka

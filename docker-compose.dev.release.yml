@@ -9,15 +9,15 @@ services:
       context: ./eureka-server
       dockerfile: release.Dockerfile
     # Name of the container
-    container_name: eureka-server
+    container_name: eureka-server-dev
     # The container will always be restarted
     restart: always
     ports:
       # The port 8761 of the machine is mapped into the port 8761 of the container
       - "8761:8761"
-    # The container uses the network "shared-net"
+    # The container uses the network "shared-net-dev"
     networks:
-      - shared-net
+      - shared-net-dev
     # The container will be run in the dev environment
     environment:
       - SPRING_PROFILES_ACTIVE=dev
@@ -40,7 +40,7 @@ services:
       context: ./gateway
       dockerfile: release.Dockerfile
     # Name of the container
-    container_name: gateway
+    container_name: gateway-dev
     # The container will always be restarted
     restart: always
     ports:
@@ -50,14 +50,14 @@ services:
       # Depends on the Eureka Server microservice working healthily
       eureka-server:
         condition: service_healthy
-    # The container uses the network "shared-net"
+    # The container uses the network "shared-net-dev"
     networks:
-      - shared-net
+      - shared-net-dev
     # The container will be run in the dev environment
     environment:
       - SPRING_PROFILES_ACTIVE=dev
 
 # The common network for the containers
 networks:
-  shared-net:
+  shared-net-dev:
     driver: bridge

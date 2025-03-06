@@ -24,6 +24,4 @@ eureka:
     register-with-eureka: true
     # Eureka client can fetch service registry from Eureka server
     fetch-registry: true
-    service-url:
-      # URL of the Eureka Server (specifically points to the Docker container)
-      defaultZone: http://eureka-server:8761/eureka
+    # Service URL is set in application-dev.yml and application-prod.yml

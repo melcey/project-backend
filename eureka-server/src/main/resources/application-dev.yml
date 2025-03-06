@@ -11,4 +11,12 @@ logging:
         # Path for the Docker container's file system
         path: /app/log/dev
         name: eureka-server.log
-    
+
+eureka:
+    instance:
+        # Eureka server exposes itself with its hostname
+        hostname: ${spring.application.name}-dev
+    client:
+        service-url:
+            # The address of the Eureka server
+            defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka
