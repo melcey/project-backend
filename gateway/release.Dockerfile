@@ -1,3 +1,5 @@
+# Dockerfile for the gateway in Release configuration
+
 # Fetches the image for Eclipse Temurin JDK 21
 FROM eclipse-temurin:21-jdk
 # Sets the working directory

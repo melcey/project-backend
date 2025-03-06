@@ -28,5 +28,4 @@ jobs:
         uses: docker/setup-compose-action@v1.2.0
       
       - name: Deploy Docker Compose Prod
-        run: |
-          docker compose -f docker-compose.dev.yml up --build -d
+        run: docker compose -f docker-compose.dev.release.yml up --build -d
