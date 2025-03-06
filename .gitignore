@@ -28,6 +28,3 @@ replay_pid*
 
 # IntelliJ files
 .idea/
-
-# .env file
-.env

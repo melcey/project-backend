@@ -1,0 +1,40 @@
+# Enable logging for the dev environment
+logging:
+    level:
+        # All logs have a minimum level of DEBUG
+        root: DEBUG
+        # The logs related to our codes have a level of TRACE (the most verbose one)
+        '[com.cs308.user_service]': TRACE
+        # The logs related to Eureka have a level of TRACE
+        '[org.springframework.cloud.netflix.eureka]': TRACE
+    file:
+        # Path for the Docker container's file system
+        path: /app/log/dev
+        name: user_service.log
+
+eureka:
+    client:
+        service-url:
+            # URL of the Eureka Server (specifically points to the Docker container)
+            defaultZone: http://eureka-server-dev:8761/eureka
+
+spring:
+    datasource:
+        url: jdbc:postgresql://postgres-dev:5432/project_db
+        username: user_service
+        password: user_db_pwd
+        driver-class-name: org.postgresql.Driver
+        hikari:
+            maximum-pool-size: 10
+            minimum-idle: 5
+    flyway:
+        enabled: true
+        locations: classpath:db/migration  # default folder for migration scripts
+        baseline-on-migrate: true
+    jpa:
+        hibernate:
+            ddl-auto: update   # or 'create', 'none', depending on your needs
+        show-sql: true
+        properties:
+            hibernate:
+                format_sql: true
