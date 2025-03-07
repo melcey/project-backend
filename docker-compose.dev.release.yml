@@ -61,7 +61,7 @@ services:
   user-service:
     # Building properties
     build:
-    # It will build from the local gateway project directory
+    # It will build from the local user-service project directory
       context: ./user-service
       dockerfile: release.Dockerfile
     # Name of the container
