@@ -8,9 +8,9 @@ logging:
         # The logs related to Eureka have a level of DEBUG
         '[org.springframework.cloud.netflix.eureka]': DEBUG
         # The logs related to Flyway have a level of DEBUG
-        org.flywaydb: DEBUG
+        '[org.flywaydb]': DEBUG
         # The logs related to Spring Web have a level of DEBUG
-        org.springframework.web: DEBUG
+        '[org.springframework.web]': DEBUG
     file:
         # Path for the Docker container's file system
         path: /app/log/prod

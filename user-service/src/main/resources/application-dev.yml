@@ -8,9 +8,9 @@ logging:
         # The logs related to Eureka have a level of TRACE
         '[org.springframework.cloud.netflix.eureka]': TRACE
         # The logs related to Flyway have a level of TRACE
-        org.flywaydb: TRACE
+        '[org.flywaydb]': TRACE
         # The logs related to Spring Web have a level of TRACE
-        org.springframework.web: TRACE
+        '[org.springframework.web]': TRACE
     file:
         # Path for the Docker container's file system
         path: /app/log/dev
