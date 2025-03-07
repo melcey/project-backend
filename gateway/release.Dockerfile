@@ -1,7 +1,7 @@
 # Dockerfile for the gateway in Release configuration
 
 # Build stage: use Maven image and Maven wrapper to build the JAR
-FROM maven:3.9.1-eclipse-temurin-21 AS build-stage
+FROM maven:3.9.9-eclipse-temurin-21 AS build-stage
 WORKDIR /app
 # Copy the Maven wrapper, Maven wrapper directory, pom file, and source code
 COPY mvnw .
