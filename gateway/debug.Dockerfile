@@ -15,8 +15,8 @@ RUN chmod +x mvnw && ./mvnw clean install
 FROM eclipse-temurin:21-jdk
 # Sets the working directory
 WORKDIR /app
-# Adds the compiled jar file into the working directory for the image
-ADD target/*.jar gateway.jar
+# Copy the built JAR from the build stage
+COPY --from=build-stage /app/target/*.jar gateway.jar
 # Exposes the port 8080 for the containers which will run on top of this image,
 # and the port 5005 for remote debugging
 EXPOSE 8080 5005

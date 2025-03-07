@@ -15,8 +15,8 @@ RUN chmod +x mvnw && ./mvnw clean install
 FROM eclipse-temurin:21-jdk
 # Sets the working directory
 WORKDIR /app
-# Adds the compiled jar file into the working directory for the image
-ADD target/*.jar user_service.jar
+# Copy the built JAR from the build stage
+COPY --from=build-stage /app/target/*.jar user_service.jar
 # Exposes the port 8080 for the containers which will run on top of this image
 EXPOSE 8080
 # Runs the command "java -jar user_service.jar" when starting the image
