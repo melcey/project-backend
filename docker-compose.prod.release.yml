@@ -34,7 +34,7 @@ services:
 
   # The gateway microservice container
   gateway:
-  # Building properties
+    # Building properties
     build:
     # It will build from the local gateway project directory
       context: ./gateway
@@ -57,7 +57,32 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
 
-# The container for the actual dev database
+  # The user microservice container
+  user-service:
+    # Building properties
+    build:
+    # It will build from the local gateway project directory
+      context: ./user-service
+      dockerfile: release.Dockerfile
+    # Name of the container
+    container_name: user-service
+    # The container will always be restarted
+    restart: always
+    ports:
+      # The port 8080 of the machine is mapped into the port 8080 of the container
+      - "8081:8080"
+    depends_on:
+      # Depends on the Eureka Server microservice working healthily
+      eureka-server:
+        condition: service_healthy
+    # The container uses the network "shared-net"
+    networks:
+      - shared-net
+    environment:
+      # The container will be run in the prod environment
+      - SPRING_PROFILES_ACTIVE=prod
+
+  # The container for the actual dev database
   postgres:
     # Name of the container
     container_name: postgres

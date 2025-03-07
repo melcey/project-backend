@@ -6,15 +6,14 @@ spring:
   application:
     # The name of the Spring Boot application
     name: gateway
-# An example routing (real routing instances are to be added as the project progresses)
-  #cloud:
-    #gateway:
-      #routes:
-        #- id: payment-service-route
-        #  uri: lb://payment-service  # Eureka load-balanced URI for payment-service
-        #  predicates:
-            #- Path=/payment/**
-
+  cloud:
+    gateway:
+      routes:
+        # Routing for the user microservice
+        - id: user-service-route # The ID of the route
+          uri: lb://user-service # Eureka load-balanced URI for the user microservice
+          predicates:
+            - Path=/v1/user/** # The HTTP request path for the user microservice
 eureka:
   instance:
     # The Eureka client exposes itself with its IP address for easier discovery
