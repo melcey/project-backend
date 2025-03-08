@@ -25,12 +25,12 @@ services:
     healthcheck:
       # Checks whether the status is UP
       test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
-      # The health check will be performed every 10 seconds
-      interval: 10s
+      # The health check will be performed every 5 seconds
+      interval: 5s
       # The command must be completed in 5 seconds
       timeout: 5s
-      # After 2 retries, the container will be marked as unhealthy
-      retries: 2
+      # After 5 retries, the container will be marked as unhealthy
+      retries: 5
 
   # The gateway microservice container
   gateway:
@@ -69,18 +69,24 @@ services:
     # The container will always be restarted
     restart: always
     ports:
-      # The port 8080 of the machine is mapped into the port 8080 of the container
+      # The port 8081 of the machine is mapped into the port 8080 of the container
       - "8081:8080"
     depends_on:
       # Depends on the Eureka Server microservice working healthily
       eureka-server:
         condition: service_healthy
+      # Depends on the PostgreSQL microservice working healthily
+      postgres-dev:
+        condition: service_healthy
     # The container uses the network "shared-net-dev"
     networks:
       - shared-net-dev
     environment:
-      # The container will be run in the prod environment
+      # The container will be run in the dev environment
       - SPRING_PROFILES_ACTIVE=dev
+    # Retrieves environment variables from the .env file
+    env_file:
+      - .env
 
   # The container for the actual dev database
   postgres-dev:
@@ -127,6 +133,7 @@ services:
       # Depends on the PostgreSQL microservice working healthily
       postgres-dev:
         condition: service_healthy
+    # Copies the migrations to the appropriate directory on the container
     volumes:
       - ./db/migration:/flyway/sql
      # The container uses the network "shared-net-dev"
@@ -140,7 +147,7 @@ services:
     image: postgres:17.4
     # Does not restart when it is run once (either when the DB is run for the first time, or there is an update in db_init.sql)
     restart: "no"
-    # Retrieves the username and password data for admin from the .env file (a template is provided in the repo)
+    # Retrieves environment variables from the .env file
     env_file:
       - .env
     # Depends on the actual database container
@@ -153,10 +160,10 @@ services:
     entrypoint: >
       bash -c "
       echo 'Waiting for PostgreSQL to be ready...';
-      until pg_isready -h postgres -p 5432 -U ${POSTGRES_ADMIN_USER}; do sleep 2; done;
+      until pg_isready -h postgres-dev -p 5432 -U ${POSTGRES_ADMIN_USER}; do sleep 2; done;
       echo 'PostgreSQL is ready! Running initialization script...';
       export PGPASSWORD=${POSTGRES_PASSWORD};
-      psql -h postgres -U ${POSTGRES_ADMIN_USER} -d ${POSTGRES_INIT_DB} -f /docker-entrypoint-initdb.d/db_init.sql;
+      psql -h postgres-dev -U ${POSTGRES_ADMIN_USER} -d ${POSTGRES_INIT_DB} -f /docker-entrypoint-initdb.d/db_init.sql;
       echo 'Database is initialized successfully.'"
     # Volumes to be used by the container
     volumes:

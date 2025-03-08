@@ -69,21 +69,24 @@ services:
     # The container will always be restarted
     restart: always
     ports:
-      # The port 8080 of the machine is mapped into the port 8080 of the container
+      # The port 8081 of the machine is mapped into the port 8080 of the container
       - "8081:8080"
     depends_on:
       # Depends on the Eureka Server microservice working healthily
       eureka-server:
         condition: service_healthy
-      # Depends on the PostgreSQL microservice started
+      # Depends on the PostgreSQL microservice working healthily
       postgres:
-        condition: service_started
+        condition: service_healthy
     # The container uses the network "shared-net"
     networks:
       - shared-net
     environment:
       # The container will be run in the prod environment
       - SPRING_PROFILES_ACTIVE=prod
+    # Retrieves environment variables from the .env file
+    env_file:
+      - .env
 
   # The container for the actual dev database
   postgres:
@@ -130,9 +133,10 @@ services:
       # Depends on the PostgreSQL microservice working healthily
       postgres:
         condition: service_healthy
+    # Copies the migrations to the appropriate directory on the container
     volumes:
       - ./db/migration:/flyway/sql
-     # The container uses the network "shared-net"
+    # The container uses the network "shared-net"
     networks:
       - shared-net
 
@@ -143,7 +147,7 @@ services:
     image: postgres:17.4
     # Does not restart when it is run once (either when the DB is run for the first time, or there is an update in db_init.sql)
     restart: "no"
-    # Retrieves the username and password data for admin from the .env file
+    # Retrieves environment variables from the .env file
     env_file:
       - .env
     # Depends on the actual database container
