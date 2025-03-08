@@ -139,8 +139,8 @@ services:
     env_file:
       - .env
     command: -url=jdbc:postgresql://postgres:5432/${POSTGRES_DB} -user=${POSTGRES_ADMIN_USER} -password=${POSTGRES_PASSWORD} migrate
-    # The container will always be restarted
-    restart: always
+    # Does not restart when it is run once
+    restart: "no"
     depends_on:
       # Depends on the PostgreSQL microservice working healthily
       postgres:
@@ -182,7 +182,7 @@ services:
       # The actual database
       - postgres_data:/var/lib/postgresql/data
       # The initialization script is copied into the path specified after colon on the container
-      - ./db_init.sql:/docker-entrypoint-initdb.d/db_init.sql
+      - ./db/db_init.sql:/docker-entrypoint-initdb.d/db_init.sql
     # The container uses the network "shared-net"
     networks:
       - shared-net
