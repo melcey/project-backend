@@ -1,3 +1,4 @@
+-- V10__Create_refunds_table.sql
 CREATE TABLE refunds (
     refund_id SERIAL PRIMARY KEY,
     order_id INT REFERENCES orders(order_id),
@@ -7,7 +8,3 @@ CREATE TABLE refunds (
     request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     approval_date TIMESTAMP
 );
-
-ALTER TABLE refunds OWNER TO user_service_role;
-GRANT ALL PRIVILEGES ON TABLE refunds TO user_service_role;
-GRANT USAGE, SELECT ON SEQUENCE refunds_refund_id_seq TO user_service_role;

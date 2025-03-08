@@ -7,3 +7,7 @@ CREATE TABLE orders (
     total_price DECIMAL(10, 2) NOT NULL,
     delivery_address TEXT
 );
+
+ALTER TABLE orders OWNER TO user_service_role;
+GRANT ALL PRIVILEGES ON TABLE orders TO user_service_role;
+GRANT USAGE, SELECT ON SEQUENCE orders_order_id_seq TO user_service_role;

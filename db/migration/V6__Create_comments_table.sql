@@ -8,3 +8,7 @@ CREATE TABLE comments (
     approved BOOLEAN DEFAULT FALSE,
     comment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE comments OWNER TO user_service_role;
+GRANT ALL PRIVILEGES ON TABLE comments TO user_service_role;
+GRANT USAGE, SELECT ON SEQUENCE comments_comment_id_seq TO user_service_role;

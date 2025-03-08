@@ -12,3 +12,7 @@ CREATE TABLE products (
     category_id INT REFERENCES categories(category_id),
     is_active BOOLEAN DEFAULT TRUE
 );
+
+ALTER TABLE products OWNER TO user_service_role;
+GRANT ALL PRIVILEGES ON TABLE products TO user_service_role;
+GRANT USAGE, SELECT ON SEQUENCE products_product_id_seq TO user_service_role;
