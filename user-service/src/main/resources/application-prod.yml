@@ -7,8 +7,6 @@ logging:
         '[com.cs308.user_service]': DEBUG
         # The logs related to Eureka have a level of DEBUG
         '[org.springframework.cloud.netflix.eureka]': DEBUG
-        # The logs related to Flyway have a level of DEBUG
-        '[org.flywaydb]': DEBUG
         # The logs related to Spring Web have a level of DEBUG
         '[org.springframework.web]': DEBUG
     file:
@@ -25,9 +23,9 @@ eureka:
 spring:
     datasource:
         # Connection info for the prod database
-        url: jdbc:postgresql://postgres-dev:5432/project_db
-        username: user_service
-        password: user_db_pwd
+        url: jdbc:postgresql://postgres:5432/${POSTGRES_DB}?currentSchema=${POSTGRES_SCHEMA}
+        username: ${POSTGRES_USERSERVICE_USER}
+        password: ${POSTGRES_USERSERVICE_PASSWORD}
         driver-class-name: org.postgresql.Driver
         # The connection pooling library used by Spring Boot as default
         # Opens and keeps of a pool of database connections that are available

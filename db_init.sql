@@ -29,10 +29,10 @@ BEGIN
 END $$;
 
 -- Grants the following privileges to `user_service_role`:
-    -- user_service_role is able to connect to the database project_db
+-- user_service_role is able to connect to the database project_db
 GRANT CONNECT ON DATABASE project_db TO user_service_role;
-    -- user_service_role is able to access the database objects (tables, procedures, etc.) in the public schema of project_db
-        -- Note: The individual privilege settings for the database objects will override this setting; this is just a global setting
+-- user_service_role is able to access the database objects (tables, procedures, etc.) in the public schema of project_db
+    -- Note: The individual privilege settings for the database objects will override this setting; this is just a global setting
     -- user_service_role is also able to create new database objects in the public schema of project_db
 GRANT USAGE, CREATE ON SCHEMA public TO user_service_role;
 
