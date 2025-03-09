@@ -30,7 +30,7 @@ public class User {
     
     // The address of the user
     @Column(name = "home_address")
-    private String homeAddress;
+    private String address;
 
     // The encrypted password of the user
     @Column(name = "password_hash")
@@ -49,7 +49,7 @@ public class User {
         this.id = id;
         this.name = name;
         this.encryptedEmail = encrpytedEmail;
-        this.homeAddress = homeAddress;
+        this.address = homeAddress;
         this.passwordHashed = passwordHashed;
         this.role = role;
     }
@@ -79,12 +79,12 @@ public class User {
         this.encryptedEmail = encrpytedEmail;
     }
 
-    public String getHomeAddress() {
-        return homeAddress;
+    public String getAddress() {
+        return address;
     }
 
-    public void setHomeAddress(String homeAddress) {
-        this.homeAddress = homeAddress;
+    public void setAddress(String homeAddress) {
+        this.address = homeAddress;
     }
 
     public byte[] getPasswordHashed() {
@@ -106,9 +106,9 @@ public class User {
     // toString() method overridden for User
     @Override
     public String toString() {
-        return "User [id=" + id + ", name=" + name + ", homeAddress=" + homeAddress + ", role=" + role + "]";
+        return "User [id=" + id + ", name=" + name + ", address=" + address + ", role=" + role + "]";
     }
-
+    
     // hashCode() method overridden for User
     @Override
     public int hashCode() {
