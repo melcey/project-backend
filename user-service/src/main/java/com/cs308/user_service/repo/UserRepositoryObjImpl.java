@@ -53,4 +53,84 @@ public class UserRepositoryObjImpl implements UserRepositoryObj {
         // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
         entityManager.clear();
     }
+
+    @Override
+    public User updateUserName(User user, String newName) {
+        // Creates the query command to update the name of the given user
+        String sqlQuery = "UPDATE users SET name = :new_name WHERE user_id = :id";
+        
+        // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
+        User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
+            .setParameter("new_name", newName)
+            .setParameter("id", user.getId())
+            .getSingleResult();
+
+        // Pending changes are written to the database
+        entityManager.flush();
+        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
+        entityManager.clear();
+        
+        // Returns the retrieved result
+        return updatedUser;
+    }
+
+    @Override
+    public User updateUserEmail(User user, String newEmail) {
+        // Creates the query command to update the email of the given user
+        String sqlQuery = "UPDATE users SET email = crypt(:new_email, gen_salt('bf')) WHERE user_id = :id";
+        
+        // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
+        User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
+            .setParameter("new_email", newEmail)
+            .setParameter("id", user.getId())
+            .getSingleResult();
+
+        // Pending changes are written to the database
+        entityManager.flush();
+        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
+        entityManager.clear();
+        
+        // Returns the retrieved result
+        return updatedUser;
+    }
+
+    @Override
+    public User updateUserAddress(User user, String newAddress) {
+        // Creates the query command to update the address of the given user
+        String sqlQuery = "UPDATE users SET home_address = :new_address WHERE user_id = :id";
+        
+        // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
+        User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
+            .setParameter("new_address", newAddress)
+            .setParameter("id", user.getId())
+            .getSingleResult();
+
+        // Pending changes are written to the database
+        entityManager.flush();
+        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
+        entityManager.clear();
+        
+        // Returns the retrieved result
+        return updatedUser;
+    }
+
+    @Override
+    public User updateUserPassword(User user, String newPassword) {
+        // Creates the query command to update the password of the given user
+        String sqlQuery = "UPDATE users SET password_hash = crypt(:new_password, gen_salt('bf')) WHERE user_id = :id";
+        
+        // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
+        User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
+            .setParameter("new_password", newPassword)
+            .setParameter("id", user.getId())
+            .getSingleResult();
+
+        // Pending changes are written to the database
+        entityManager.flush();
+        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
+        entityManager.clear();
+        
+        // Returns the retrieved result
+        return updatedUser;
+    }
 }

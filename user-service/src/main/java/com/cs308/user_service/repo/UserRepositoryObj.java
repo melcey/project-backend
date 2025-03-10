@@ -11,4 +11,18 @@ public interface UserRepositoryObj {
 
     // The method to delete a user from the `users` table given their ID
     void deleteUserById(User user);
+
+    // The method to update a user's name
+    User updateUserName(User user, String newName);
+
+    // The method to update a user's email
+    User updateUserEmail(User user, String newEmail);
+
+    // The method to update a user's address
+    User updateUserAddress(User user, String newAddress);
+
+    // The method to update a user's password
+    User updateUserPassword(User user, String newPassword);
+
+    // A user will not be able to update their role (at least for now)
 }
