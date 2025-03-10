@@ -44,13 +44,24 @@ public class User {
     // The default constructor
     public User() {}
 
-    // The actual constructor which will be used
-    public User(Long id, String name, byte[] encrpytedEmail, String homeAddress, byte[] passwordHashed, Role role) {
+    // The constructor with all fields filled
+    public User(Long id, String name, byte[] encrpytedEmail, String address, byte[] passwordHashed, Role role) {
         this.id = id;
         this.name = name;
         this.encryptedEmail = encrpytedEmail;
-        this.address = homeAddress;
+        this.address = address;
         this.passwordHashed = passwordHashed;
+        this.role = role;
+    }
+
+    // The constructor to be used
+    // Email and password will be given separately while constructing a User object in later stages of the project
+    public User(String name, String address, Role role) {
+        this.id = null;
+        this.name = name;
+        this.encryptedEmail = null;
+        this.address = address;
+        this.passwordHashed = null;
         this.role = role;
     }
 

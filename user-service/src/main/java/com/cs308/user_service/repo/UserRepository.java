@@ -8,8 +8,11 @@ import com.cs308.user_service.model.Role;
 import com.cs308.user_service.model.User;
 import java.util.List;
 
+// Extending both JpaRepository<User, Long> for findBy... queries
+// and UserRepositoryObj to be able to deal with User objects passed as paramters
+public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryObj {
+    // SELECT queries:
 
-public interface UserRepository extends JpaRepository<User, Long> {
     // Executes a native SQL query on the database (specified with the nativeQuery parameter)
     // :email is the query parameter given in Java
     // `email` is the hashed email in the database
