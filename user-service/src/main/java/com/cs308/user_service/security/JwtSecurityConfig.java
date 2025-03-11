@@ -56,12 +56,13 @@ public class JwtSecurityConfig {
                 // Set permissions on endpoints
                 .authorizeHttpRequests(auth -> auth
                         // Our public endpoints
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/public/**").permitAll()
+                        // Includes gateway routing
+                        .requestMatchers("/v1/user/auth/**").permitAll()
+                        .requestMatchers("/public/**").permitAll()
                         // Our private endpoints
-                        .requestMatchers("/api/user/**").hasRole("CUSTOMER")
-                        .requestMatchers("/api/sales/**").hasRole("SALES_MANAGER")
-                        .requestMatchers("/api/product/**").hasRole("PRODUCT_MANAGER")
+                        .requestMatchers("/user/**").hasRole("CUSTOMER")
+                        .requestMatchers("/sales/**").hasRole("SALES_MANAGER")
+                        .requestMatchers("/product/**").hasRole("PRODUCT_MANAGER")
                         .anyRequest().authenticated())
 
                 .authenticationProvider(authenticationProvider);

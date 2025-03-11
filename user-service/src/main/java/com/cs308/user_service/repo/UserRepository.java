@@ -13,10 +13,12 @@ import java.util.Optional;
 // and UserRepositoryObj to be able to deal with User objects passed as paramters
 public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryObj {
     // SELECT queries:
-    // The actual query to log in
+    // The actual SQL query to log in
     // An Optional<User> object may or may not contain a User object
-    @Query(value = "SELECT * FROM users WHERE email = crypt(:email, email) AND password_hash = crypt(:password, password_hash) AND role  = :role", nativeQuery = true)
-    Optional<User> findByEmailAndPasswordAndRole(@Param("email") String email, @Param("password") String password, @Param("role") Role role);
+    // Results from crypt() are casted into the type BYTEA
+    // String value of the Role is passed here in order not to lose PostgreSQL's functionality for crypt()
+    @Query(value = "SELECT * FROM users WHERE email = crypt(:email, convert_from(email, 'UTF8'))::bytea AND password_hash = crypt(:password, convert_from(password_hash, 'UTF8'))::bytea AND role = :role", nativeQuery = true)
+    Optional<User> findByEmailAndPasswordAndRole(@Param("email") String email, @Param("password") String password, @Param("role") String role);
 
     // Executes a native SQL query on the database (specified with the nativeQuery parameter)
     // :email is the query parameter given in Java
@@ -24,14 +26,18 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
     // PostgreSQL rehashes :email using the same salt as `email` to check
     // We are considering `email` unique
     // An Optional<User> object may or may not contain a User object
-    @Query(value = "SELECT * FROM users WHERE email = crypt(:email, email)", nativeQuery = true)
+    @Query(value = "SELECT * FROM users WHERE email = crypt(:email, convert_from(email, 'UTF8'))::bytea", nativeQuery = true)
     Optional<User> findByEmail(@Param("email") String email);
     
     List<User> findByName(String name);
 
-    List<User> findByRole(Role role);
+    // Here, a JPQL query is used in order to leverage the Role enum in Java
+    @Query(value = "SELECT u FROM User u WHERE u.role = :#{#role.getValue()}")
+    List<User> findByRole(@Param("role") Role role);
 
     List<User> findByAddress(String address);
+
+    Optional<User> findById(Long id);
 
     // What to do for multiple attribute search in API (if we need ever):
     // Run each query for the filters => Return the intersection

@@ -117,7 +117,12 @@ public class User {
     // toString() method overridden for User
     @Override
     public String toString() {
-        return "User [id=" + id + ", name=" + name + ", address=" + address + ", role=" + role + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("User [id=").append(id)
+            .append(", name=").append(name)
+            .append( ", address=").append(address)
+            .append(", role=").append(role.toString()).append( "]");
+        return builder.toString();
     }
     
     // hashCode() method overridden for User

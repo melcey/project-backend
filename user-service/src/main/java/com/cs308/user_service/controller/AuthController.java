@@ -14,7 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+// Maps the requests as provided in the gateway routing
+@RequestMapping("/v1/user/auth")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;

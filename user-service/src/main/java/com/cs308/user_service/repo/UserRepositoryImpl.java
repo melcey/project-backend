@@ -1,5 +1,8 @@
 package com.cs308.user_service.repo;
 
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.cs308.user_service.model.User;
 
 import jakarta.persistence.EntityManager;
@@ -9,7 +12,9 @@ import jakarta.persistence.PersistenceContext;
 // which deals with queries where User objects are going to be passed
 // Follows the naming convention; therefore, Spring Data is going to wire this up into the UserRepositoryObj interface automatically
 // Since the UserRepository also extends the UserRepositoryObj interface, these functions will be the ones running when a UserRepository instance invokes them
-public class UserRepositoryObjImpl implements UserRepositoryObj {
+@Repository
+@Transactional
+public class UserRepositoryImpl implements UserRepositoryObj {
     // EntityManager will execute the generated native SQL query on the database
     @PersistenceContext
     private EntityManager entityManager;
@@ -18,7 +23,8 @@ public class UserRepositoryObjImpl implements UserRepositoryObj {
     public User insertNewUser(User user, String email, String password) {
         
         // Creates the query command in SQL to insert the new record to the table and return the inserted data
-        String sqlQuery = "INSERT INTO users (name, email, home_address, password_hash, role) VALUES (:name, crypt(:email, gen_salt('bf')), :address, crypt(:password, gen_salt('bf')), :role) RETURNING *";
+        // Casts the result from crypt() into BYTEA
+        String sqlQuery = "INSERT INTO users (name, email, home_address, password_hash, role) VALUES (:name, crypt(:email, gen_salt('bf'))::bytea, :address, crypt(:password, gen_salt('bf'))::bytea, :role) RETURNING *";
         
         // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
         User newUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
@@ -26,7 +32,7 @@ public class UserRepositoryObjImpl implements UserRepositoryObj {
             .setParameter("email", email)
             .setParameter("address", user.getAddress())
             .setParameter("password", password)
-            .setParameter("role", user.getRole())
+            .setParameter("role", user.getRole().getValue())
             .getSingleResult();
 
         // Pending changes are written to the database
@@ -77,7 +83,7 @@ public class UserRepositoryObjImpl implements UserRepositoryObj {
     @Override
     public User updateUserEmail(User user, String newEmail) {
         // Creates the query command to update the email of the given user
-        String sqlQuery = "UPDATE users SET email = crypt(:new_email, gen_salt('bf')) WHERE user_id = :id";
+        String sqlQuery = "UPDATE users SET email = crypt(:new_email, gen_salt('bf'))::bytea WHERE user_id = :id";
         
         // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
         User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
@@ -117,7 +123,7 @@ public class UserRepositoryObjImpl implements UserRepositoryObj {
     @Override
     public User updateUserPassword(User user, String newPassword) {
         // Creates the query command to update the password of the given user
-        String sqlQuery = "UPDATE users SET password_hash = crypt(:new_password, gen_salt('bf')) WHERE user_id = :id";
+        String sqlQuery = "UPDATE users SET password_hash = crypt(:new_password, gen_salt('bf'))::bytea WHERE user_id = :id";
         
         // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
         User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)

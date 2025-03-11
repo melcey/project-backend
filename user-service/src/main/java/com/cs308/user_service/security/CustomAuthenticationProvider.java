@@ -26,7 +26,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         Role role = extractRoleFromAuthentication(authentication);
 
         // Find user with provided credentials
-        User user = userRepository.findByEmailAndPasswordAndRole(email, password, role)
+        User user = userRepository.findByEmailAndPasswordAndRole(email, password, role.getValue())
                 .orElseThrow(() -> new BadCredentialsException("Invalid email/password combination or role"));
 
         // Create UserPrincipal from the found user

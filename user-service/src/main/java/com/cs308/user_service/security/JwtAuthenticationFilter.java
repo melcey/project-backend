@@ -33,6 +33,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String jwt = getJwtFromRequest(request);
 
+            // Skip JWT processing for /v1/user/auth/** (gateway routing)
+            if (request.getRequestURI().startsWith("/v1/user/auth/")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
                 Long userId = tokenProvider.getUserIdFromToken(jwt);
 
