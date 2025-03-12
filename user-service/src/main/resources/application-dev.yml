@@ -7,8 +7,6 @@ logging:
         '[com.cs308.user_service]': TRACE
         # The logs related to Eureka have a level of TRACE
         '[org.springframework.cloud.netflix.eureka]': TRACE
-        # The logs related to Flyway have a level of TRACE
-        '[org.flywaydb]': TRACE
         # The logs related to Spring Web have a level of TRACE
         '[org.springframework.web]': TRACE
     file:
@@ -25,9 +23,9 @@ eureka:
 spring:
     datasource:
         # Connection info for the dev database
-        url: jdbc:postgresql://postgres-dev:5432/project_db
-        username: user_service
-        password: user_db_pwd
+        url: jdbc:postgresql://postgres-dev:5432/${POSTGRES_DB}?currentSchema=${POSTGRES_SCHEMA}
+        username: ${POSTGRES_USERSERVICE_USER}
+        password: ${POSTGRES_USERSERVICE_PASSWORD}
         driver-class-name: org.postgresql.Driver
         # The connection pooling library used by Spring Boot as default
         # Opens and keeps of a pool of database connections that are available

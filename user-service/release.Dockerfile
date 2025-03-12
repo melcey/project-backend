@@ -9,7 +9,8 @@ COPY .mvn .mvn
 COPY pom.xml .
 COPY src ./src
 # Ensure mvnw is executable and run the Maven build
-RUN chmod +x mvnw && ./mvnw clean install
+# Need to skip tests; otherwise, it will try to connect to the database; due to which the build would fail
+RUN chmod +x mvnw && ./mvnw clean install -D skipTests
 
 # Fetches the image for Eclipse Temurin JDK 21
 FROM eclipse-temurin:21-jdk
