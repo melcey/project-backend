@@ -64,5 +64,6 @@ Backend code for the course project of the CS 308 course in Sabancı University.
   "port": 5005,
   "projectName": "backend"
 }
+```
 
 - After setting the configuration, go to the Run & Debug menu on the left sidebar, select your configuration from the dropdown menu, and run the configuration.
