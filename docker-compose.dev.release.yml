@@ -44,9 +44,9 @@ services:
       - "5433:5432"
     # Environment variables for the connection
     environment:
-      - POSTGRES_USER:postgres
-      - POSTGRES_PASSWORD:pg_admin_pwd
-      - POSTGRES_DB:project_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=pg_admin_pwd
+      - POSTGRES_DB=project_db
     # The health check performed for the container
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -54,30 +54,8 @@ services:
       interval: 5s
       # The command must be completed in 5 seconds
       timeout: 5s
-      # After 5 retries, the container will be marked as unhealthy
+      # After 10 retries, the container will be marked as unhealthy
       retries: 10
-
-  # Flyway container for running migrations
-  #flyway:
-    # Name of the container
-  #  container_name: flyway-dev
-  #  image: flyway/flyway:latest
-    # Retrieves the username and password data for admin from the .env file
-  #  env_file:
-  #    - .env
-  #  command: -url=jdbc:postgresql://postgres-dev:5432/${POSTGRES_DB} -user=${POSTGRES_USER} -password=${POSTGRES_PASSWORD} migrate
-    # Does not restart when it is run once
-  #  restart: "no"
-  #  depends_on:
-      # Depends on the PostgreSQL microservice working healthily
-  #    postgres-dev:
-  #      condition: service_healthy
-    # Copies the migrations to the appropriate directory on the container
-  #  volumes:
-  #    - ./db/migration:/flyway/sql
-     # The container uses the network "shared-net-dev"
-  #  networks:
-  #    - shared-net-dev
 
 # Declaration of the volume for the database
 volumes:

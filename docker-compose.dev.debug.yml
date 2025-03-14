@@ -25,8 +25,6 @@ services:
     environment:
       # The container will be run in the dev environment
       - SPRING_PROFILES_ACTIVE=dev
-      # Remote debugging will be enabled on the container
-      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
 
   # The container for the dev database
   postgres-dev:
@@ -48,9 +46,9 @@ services:
       - "5433:5432"
     # Environment variables for the connection
     environment:
-      - POSTGRES_USER:postgres
-      - POSTGRES_PASSWORD:pg_admin_pwd
-      - POSTGRES_DB:project_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=pg_admin_pwd
+      - POSTGRES_DB=project_db
     # The health check performed for the container
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -58,30 +56,8 @@ services:
       interval: 5s
       # The command must be completed in 5 seconds
       timeout: 5s
-      # After 5 retries, the container will be marked as unhealthy
-      retries: 5
-
-  # Flyway container for running migrations
-  #flyway:
-    # Name of the container
-  #  container_name: flyway-dev
-  #  image: flyway/flyway:latest
-    # Retrieves the username and password data for admin from the .env file
-  #  env_file:
-  #    - .env
-  #  command: -url=jdbc:postgresql://postgres-dev:5432/project_db -user=postgres -password=pg_admin_pwd migrate
-    # Does not restart when it is run once
-  #  restart: "no"
-  #  depends_on:
-      # Depends on the PostgreSQL microservice working healthily
-  #    postgres-dev:
-  #      condition: service_healthy
-    # Copies the migrations to the appropriate directory on the container
-  #  volumes:
-  #    - ./db/migration:/flyway/sql
-     # The container uses the network "shared-net-dev"
-  #  networks:
-  #    - shared-net-dev
+      # After 10 retries, the container will be marked as unhealthy
+      retries: 10
 
 # Declaration of the volume for the database
 volumes:
