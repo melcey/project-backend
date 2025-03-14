@@ -1,91 +1,22 @@
 # Docker Compose file for Production deployment of the backend in Debug configuration
 
 services:
-  # The Eureka Server microservice container
-  eureka-server:
-    # Building properties
+  # The container for the monolithic backend
+  backend:
     build:
-      # It will build from the local eureka-server project directory
-      context: ./eureka-server
+      context: ./backend
       dockerfile: debug.Dockerfile
     # Name of the container
-    container_name: eureka-server
-    # The container will always be restarted
-    restart: always
-    ports:
-      # The port 8761 of the machine is mapped into the port 8761 of the container
-      - "8761:8761"
-      # The port 5005 of the machine is mapped into the port 5005 of the container
-      - "5005:5005"
-    # The container uses the network "shared-net"
-    networks:
-      - shared-net
-    environment:
-      # The container will be run in the prod environment
-      - SPRING_PROFILES_ACTIVE=prod
-      # Remote debugging will be enabled on the container
-      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-    # The health check performed for the container
-    healthcheck:
-      # Checks whether the status is UP
-      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
-      # The health check will be performed every 5 seconds
-      interval: 5s
-      # The command must be completed in 5 seconds
-      timeout: 5s
-      # After 5 retries, the container will be marked as unhealthy
-      retries: 5
-
-  # The gateway microservice container
-  gateway:
-    # Building properties
-    build:
-      # It will build from the local gateway project directory
-      context: ./gateway
-      dockerfile: debug.Dockerfile
-    # Name of the container
-    container_name: gateway
+    container_name: backend
     # The container will always be restarted
     restart: always
     ports:
       # The port 8080 of the machine is mapped into the port 8080 of the container
       - "8080:8080"
-      # The port 5006 of the machine is mapped into the port 5005 of the container
-      - "5006:5005"
+      # The port 5005 of the machine is mapped into the port 5005 of the container
+      - "5005:5005"
     depends_on:
-      # Depends on the Eureka Server microservice working healthily
-      eureka-server:
-        condition: service_healthy
-    # The container uses the network "shared-net"
-    networks:
-      - shared-net
-    environment:
-      # The container will be run in the prod environment
-      - SPRING_PROFILES_ACTIVE=prod
-      # Remote debugging will be enabled on the container
-      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-
-  # The user microservice container
-  user-service:
-    # Building properties
-    build:
-    # It will build from the local gateway project directory
-      context: ./user-service
-      dockerfile: debug.Dockerfile
-    # Name of the container
-    container_name: user-service
-    # The container will always be restarted
-    restart: always
-    ports:
-      # The port 8081 of the machine is mapped into the port 8080 of the container
-      - "8081:8080"
-      # The port 5007 of the machine is mapped into the port 5005 of the container
-      - "5007:5005"
-    depends_on:
-      # Depends on the Eureka Server microservice working healthily
-      eureka-server:
-        condition: service_healthy
-      # Depends on the PostgreSQL microservice working healthily
+      # Depends on the PostgreSQL container working healthily
       postgres:
         condition: service_healthy
     # The container uses the network "shared-net"
@@ -94,13 +25,8 @@ services:
     environment:
       # The container will be run in the prod environment
       - SPRING_PROFILES_ACTIVE=prod
-      # Remote debugging will be enabled on the container
-      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-    # Retrieves environment variables from the .env file
-    env_file:
-      - .env
 
-  # The container for the actual dev database
+  # The container for the prod database
   postgres:
     # Name of the container
     container_name: postgres
@@ -109,7 +35,7 @@ services:
     restart: always
     # Volumes to be used by the container
     volumes:
-      # The initialization script's directory on the container
+      # The volume for the database
       - postgres_data:/var/lib/postgresql/data
     # The container uses the network "shared-net-dev"
     networks:
@@ -117,76 +43,20 @@ services:
     ports:
       # The port 5432 of the machine is mapped into the port 5432 of the container
       - "5432:5432"
-    # Retrieves the username and password data for admin from the .env file
-    env_file:
-      - .env
+    # Environment variables for the connection
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=pg_admin_pwd
+      - POSTGRES_DB=project_db
     # The health check performed for the container
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       # The health check will be performed every 5 seconds
       interval: 5s
       # The command must be completed in 5 seconds
       timeout: 5s
-      # After 5 retries, the container will be marked as unhealthy
-      retries: 5
-
-  # Flyway container for running migrations
-  flyway:
-    # Name of the container
-    container_name: flyway
-    image: flyway/flyway:latest
-    # Retrieves the username and password data for admin from the .env file
-    env_file:
-      - .env
-    command: -url=jdbc:postgresql://postgres:5432/${POSTGRES_DB} -user=${POSTGRES_USER} -password=${POSTGRES_PASSWORD} migrate
-    # Does not restart when it is run once
-    restart: "no"
-    depends_on:
-      # Depends on the PostgreSQL microservice working healthily
-      postgres:
-        condition: service_healthy
-    # Copies the migrations to the appropriate directory on the container
-    volumes:
-      - ./db/migration:/flyway/sql
-    # The container uses the network "shared-net"
-    networks:
-      - shared-net
-
-  # Database initialization container
-  db-init:
-    # Name of the container
-    container_name: db-init
-    image: postgres:17.4
-    # Does not restart when it is run once (either when the DB is run for the first time, or there is an update in db_init.sql)
-    restart: "no"
-    # Retrieves environment variables from the .env file
-    env_file:
-      - .env
-    # Depends on the actual database container
-    depends_on:
-      postgres:
-        condition: service_healthy
-    # Runs the below command to initialize the database
-      # POSTGRES_USER, POSTGRES_PASSWORD, and POSTGRES_INIT_DB are environment variables retrieved above from the .env file
-      # Waits until the database container is ready to run
-      # Then, connects to the database to run the initialization script
-    entrypoint: >
-      bash -c "
-      echo 'Waiting for PostgreSQL to be ready...';
-      until pg_isready -h postgres -p 5432 -U ${POSTGRES_USER}; do sleep 2; done;
-      echo 'PostgreSQL is ready! Running initialization script...';
-      export PGPASSWORD=${POSTGRES_PASSWORD};
-      psql -h postgres -U ${POSTGRES_USER} -d ${POSTGRES_INIT_DB} -f /docker-entrypoint-initdb.d/db_init.sql;
-      echo 'Database is initialized successfully.'"
-    # Volumes to be used by the container
-    volumes:
-      # The actual database
-      - postgres_data:/var/lib/postgresql/data
-      # The initialization script is copied into the path specified after colon on the container
-      - ./db/db_init.sql:/docker-entrypoint-initdb.d/db_init.sql
-    # The container uses the network "shared-net"
-    networks:
-      - shared-net
+      # After 10 retries, the container will be marked as unhealthy
+      retries: 10
 
 # Declaration of the volume for the database
 volumes:
