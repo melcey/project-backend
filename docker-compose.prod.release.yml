@@ -1,81 +1,20 @@
 # Docker Compose file for Production deployment of the backend in Release configuration
 
 services:
-  # The Eureka Server microservice container
-  eureka-server:
-    # Building properties
+  # The container for the monolithic backend
+  backend:
     build:
-      # It will build from the local eureka-server project directory
-      context: ./eureka-server
+      context: ./backend
       dockerfile: release.Dockerfile
     # Name of the container
-    container_name: eureka-server
-    # The container will always be restarted
-    restart: always
-    ports:
-      # The port 8761 of the machine is mapped into the port 8761 of the container
-      - "8761:8761"
-    # The container uses the network "shared-net"
-    networks:
-      - shared-net
-    # The container will be run in the prod environment
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-    # The health check performed for the container
-    healthcheck:
-      # Checks whether the status is UP
-      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
-      # The health check will be performed every 5 seconds
-      interval: 5s
-      # The command must be completed in 5 seconds
-      timeout: 5s
-      # After 5 retries, the container will be marked as unhealthy
-      retries: 5
-
-  # The gateway microservice container
-  gateway:
-    # Building properties
-    build:
-    # It will build from the local gateway project directory
-      context: ./gateway
-      dockerfile: release.Dockerfile
-    # Name of the container
-    container_name: gateway
+    container_name: backend
     # The container will always be restarted
     restart: always
     ports:
       # The port 8080 of the machine is mapped into the port 8080 of the container
       - "8080:8080"
     depends_on:
-      # Depends on the Eureka Server microservice working healthily
-      eureka-server:
-        condition: service_healthy
-    # The container uses the network "shared-net"
-    networks:
-      - shared-net
-    # The container will be run in the prod environment
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-
-  # The user microservice container
-  user-service:
-    # Building properties
-    build:
-    # It will build from the local gateway project directory
-      context: ./user-service
-      dockerfile: release.Dockerfile
-    # Name of the container
-    container_name: user-service
-    # The container will always be restarted
-    restart: always
-    ports:
-      # The port 8081 of the machine is mapped into the port 8080 of the container
-      - "8081:8080"
-    depends_on:
-      # Depends on the Eureka Server microservice working healthily
-      eureka-server:
-        condition: service_healthy
-      # Depends on the PostgreSQL microservice working healthily
+      # Depends on the PostgreSQL container working healthily
       postgres:
         condition: service_healthy
     # The container uses the network "shared-net"
@@ -84,11 +23,8 @@ services:
     environment:
       # The container will be run in the prod environment
       - SPRING_PROFILES_ACTIVE=prod
-    # Retrieves environment variables from the .env file
-    env_file:
-      - .env
 
-  # The container for the actual dev database
+  # The container for the prod database
   postgres:
     # Name of the container
     container_name: postgres
@@ -118,7 +54,7 @@ services:
       # The command must be completed in 5 seconds
       timeout: 5s
       # After 5 retries, the container will be marked as unhealthy
-      retries: 5
+      retries: 10
 
   # Flyway container for running migrations
   #flyway:
