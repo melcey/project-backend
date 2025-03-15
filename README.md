@@ -30,7 +30,10 @@ Backend code for the course project of the CS 308 course in Sabancı University.
 ## How to run the frontend and backend together?
 
 - Please, run the following command on your terminal while running Docker:
-  - ```docker network create --driver bridge website-net```
+  
+  - ```docker network create --driver bridge website-net``` for the prod network
+
+  - ```docker network create --driver bridge website-net-dev``` for the dev network
 
 - This command will create an externally shared network between the frontend and backend application containers.
 
