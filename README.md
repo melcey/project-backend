@@ -27,6 +27,15 @@ Backend code for the course project of the CS 308 course in Sabancı University.
 
   - **Location of the migrations**: The new location for the migrations is `/backend/src/main/resources/db/migration`.
 
+## How to run the frontend and backend together?
+
+- Please, run the following command on your terminal while running Docker:
+  - ```docker network create --driver bridge website-net```
+
+- This command will create an externally shared network between the frontend and backend application containers.
+
+- Afterwards, you will be able to send requests from the frontend container to the backend container.
+
 ## Important Notes on Database Connections
 
 - The dev database, which we are going to use as a playground, is mapped to the port `5433` on the machine, and can be used with the dev environment, i.e., the Docker Compose files `docker-compose.dev.*.yml`.
