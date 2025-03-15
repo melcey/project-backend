@@ -17,9 +17,11 @@ services:
       # Depends on the PostgreSQL container working healthily
       postgres-dev:
         condition: service_healthy
-    # The container uses the network "shared-net-dev"
     networks:
-      - shared-net-dev
+      # The container uses the internal network "backend-net-dev" to communicate with the database
+      - backend-net-dev
+      # The container uses the external network "website-net-dev" to communicate with the frontend container
+      - website-net-dev
     environment:
       # The container will be run in the dev environment
       - SPRING_PROFILES_ACTIVE=dev
@@ -35,9 +37,9 @@ services:
     volumes:
       # The volume for the database
       - postgres-dev_data:/var/lib/postgresql/data
-    # The container uses the network "shared-net-dev"
     networks:
-      - shared-net-dev
+      # The container uses the internal network "backend-net-dev"
+      - backend-net-dev
     ports:
       # The port 5433 of the machine is mapped into the port 5432 of the container
       # In order to distinguish from the connections for the production database
@@ -61,7 +63,11 @@ services:
 volumes:
   postgres-dev_data:
 
-# The common network for the containers
+# The common networks for the containers
 networks:
-  shared-net-dev:
+  # backend-net-dev is the internal network
+  backend-net-dev:
     driver: bridge
+  # website-net-dev is the external network
+  website-net-dev:
+    external: true
