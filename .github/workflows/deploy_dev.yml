@@ -24,5 +24,8 @@ jobs:
       - name: Set up Docker Compose
         uses: docker/setup-compose-action@v1.2.0
       
+      - name: Create external Docker network
+        run: docker network create --driver bridge website-net-dev
+
       - name: Deploy Docker Compose Dev
         run: docker compose -f docker-compose.dev.release.yml up --build -d
