@@ -13,6 +13,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+/*
+ * How to retrieve the user details in a controller or service (later use)?
+ * Include the token as a header:
+ *      Authorization: Bearer <your-token>
+ * JwtAuthenticationFilter will handle the filtering
+ * Include the following lines in the controller or service:
+ *      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+ *      UserPrincipal userPrincipal = (UserPrincipal) auth.getPrincipal();
+ */
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -72,19 +82,9 @@ public class AuthController {
                 signUpRequest.getEmail(),
                 signUpRequest.getPassword());
 
-        // Create authentication token
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                signUpRequest.getEmail(),
-                signUpRequest.getPassword());
-        authToken.setDetails(signUpRequest.getRole());
+        // No authentication will be performed while registering a user; they will need to explicitly log in
 
-        // Authenticate the new user
-        Authentication authentication = authenticationManager.authenticate(authToken);
-
-        // Generate JWT token
-        String jwt = tokenProvider.generateToken(authentication);
-
-        // Return the token
-        return ResponseEntity.ok(new AuthResponse(jwt));
+        // Return the success message
+        return ResponseEntity.ok("OK");
     }
 }

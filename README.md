@@ -39,6 +39,12 @@ Backend code for the course project of the CS 308 course in Sabancı University.
 
 - Afterwards, you will be able to send requests from the frontend container to the backend container.
 
+## How to run tests for the backend?
+
+- Use the file `docker-compose.test.yml` to run the tests. You should see the outputs on the logs of the container.
+
+- To see the logs of the container, you can click the container named `backend-test` on Docker Desktop.
+
 ## Important Notes on Database Connections
 
 - The dev database, which we are going to use as a playground, is mapped to the port `5433` on the machine, and can be used with the dev environment, i.e., the Docker Compose files `docker-compose.dev.*.yml`.

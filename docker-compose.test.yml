@@ -1,0 +1,19 @@
+services:
+  backend-test:
+    build:
+      context: ./backend
+      dockerfile: test.Dockerfile
+    # Name of the container
+    container_name: backend-test
+    # The container will not be restarted
+    restart: "no"
+    volumes:
+      # The Docker socket from the host is mount into the container
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      # Spring application is run with the test profile
+      - SPRING_PROFILES_ACTIVE=test
+      # Testcontainers uses the DNS name provided by Docker as the hostname for the host machine
+      - TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal
+    # The container uses the host's networking stack
+    network_mode: "host"
