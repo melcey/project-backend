@@ -5,11 +5,6 @@ CREATE TABLE IF NOT EXISTS categories (
     description TEXT
 );
 
--- Grant ownership and privileges to user_service_role
-ALTER TABLE categories OWNER TO user_service_role;
-GRANT ALL PRIVILEGES ON TABLE categories TO user_service_role;
-GRANT USAGE, SELECT ON SEQUENCE categories_category_id_seq TO user_service_role;
-
 -- Insert initial categories
 INSERT INTO categories (name, description)
 VALUES
