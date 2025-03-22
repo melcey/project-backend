@@ -12,4 +12,4 @@ COPY src ./src
 RUN chmod +x mvnw
 
 # Command to run tests when container starts
-ENTRYPOINT ["./mvnw", "test"]
+ENTRYPOINT ["./mvnw", "clean", "test"]
