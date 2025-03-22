@@ -26,7 +26,7 @@ jobs:
 
       - name: Create external Docker network
         run: docker network create --driver bridge website-net-dev
-
+        
       - name: Run JUnit tests
         run: cd backend && ./mvnw test
 
