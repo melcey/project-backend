@@ -1,5 +1,7 @@
 package com.cs308.backend.model;
 
+import java.util.Set;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -7,6 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 // The entity User
@@ -41,10 +44,15 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    // The products (to be used when the role is product manager)
+    // One-to-many association mapped by the "productManager" field in the Product class
+    @OneToMany(mappedBy = "productManager")
+    private Set<Product> managedProducts;
+
     // The default constructor
     public User() {}
 
-    // The constructor with all fields filled
+    // The constructor with all fields other than the managed products filled
     public User(Long id, String name, byte[] encrpytedEmail, String address, byte[] passwordHashed, Role role) {
         this.id = id;
         this.name = name;
@@ -121,7 +129,9 @@ public class User {
         builder.append("User [id=").append(id)
             .append(", name=").append(name)
             .append( ", address=").append(address)
-            .append(", role=").append(role.toString()).append( "]");
+            .append(", role=").append(role.toString())
+            .append( "]");
+            
         return builder.toString();
     }
     
@@ -150,5 +160,13 @@ public class User {
         } else if (!id.equals(other.id))
             return false;
         return true;
+    }
+
+    public Set<Product> getManagedProducts() {
+        return managedProducts;
+    }
+
+    public void setManagedProducts(Set<Product> managedProducts) {
+        this.managedProducts = managedProducts;
     }
 }
