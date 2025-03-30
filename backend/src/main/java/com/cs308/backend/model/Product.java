@@ -84,6 +84,24 @@ public class Product {
         this.imageUrl = imageUrl;
     }
 
+    public Product(Long id, String name, String model, String serialNumber, String description, int quantityInStock,
+            BigDecimal price, String warrantyStatus, String distributorInfo, Boolean isActive, String imageUrl,
+            Category category, User productManager) {
+        this.id = id;
+        this.name = name;
+        this.model = model;
+        this.serialNumber = serialNumber;
+        this.description = description;
+        this.quantityInStock = quantityInStock;
+        this.price = price;
+        this.warrantyStatus = warrantyStatus;
+        this.distributorInfo = distributorInfo;
+        this.isActive = isActive;
+        this.imageUrl = imageUrl;
+        this.category = category;
+        this.productManager = productManager;
+    }
+
     public Long getId() {
         return id;
     }
@@ -203,7 +221,7 @@ public class Product {
             .append(", isActive=").append(isActive)
             .append(", imageUrl=").append(imageUrl)
             .append(", category=").append(category)
-            .append(", productManager=").append(productManager)
+            .append(", productManager=").append(productManager.toString())
             .append("]");
             
         return builder.toString();

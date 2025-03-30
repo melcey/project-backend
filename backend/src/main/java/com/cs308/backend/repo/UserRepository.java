@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 // Extending both JpaRepository<User, Long> for findBy... queries
-// and UserRepositoryObj to be able to deal with User objects passed as paramters
+// and UserRepositoryObj to be able to deal with User objects passed as parameters
 public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryObj {
     // SELECT queries:
     // The actual SQL query to log in
