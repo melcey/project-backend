@@ -11,5 +11,6 @@ import java.util.Optional;
 public interface CategoryRepository extends JpaRepository<Category, Long>, CategoryRepositoryObj {
     // SELECT queries:
     List<Category> findByName(String name);
+    List<Category> findByNameContains(String name);
     Optional<Category> findById(Long id);
 }

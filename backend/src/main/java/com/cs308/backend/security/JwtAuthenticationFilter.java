@@ -39,6 +39,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
+            // Skip authentication for GET /products
+            if ("GET".equalsIgnoreCase(request.getMethod()) &&
+                request.getRequestURI().startsWith("/products")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
                 Long userId = tokenProvider.getUserIdFromToken(jwt);
 

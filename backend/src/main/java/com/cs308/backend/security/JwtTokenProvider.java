@@ -75,4 +75,16 @@ public class JwtTokenProvider {
         }
         return false;
     }
+
+    void setJwtSecret(String jwtSecret) {
+        this.jwtSecret = jwtSecret;
+    }
+
+    void setJwtExpirationInMs(int jwtExpirationInMs) {
+        this.jwtExpirationInMs = jwtExpirationInMs;
+    }
+
+    void setKey(Key key) {
+        this.key = key;
+    }
 }

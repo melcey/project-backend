@@ -1,20 +1,21 @@
 package com.cs308.backend;
 
-import static org.junit.Assert.assertThat;
-
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -26,8 +27,6 @@ import com.cs308.backend.model.User;
 import com.cs308.backend.repo.CategoryRepository;
 import com.cs308.backend.repo.ProductRepository;
 import com.cs308.backend.repo.UserRepository;
-import com.cs308.backend.security.CustomUserDetailsService;
-import com.cs308.backend.security.JwtAuthenticationFilter;
 
 // Specifies the configuration class as the main application of the backend
 @SpringBootTest(classes = BackendApplication.class)
@@ -63,15 +62,6 @@ class BackendApplicationTests {
 
     @Autowired
     private ProductRepository productRepository;
-    
-    @Autowired
-    private MockMvc mockMvc;
-    
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
-    
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
 	@Test
 	// Tests whether the application context is loaded successfully.
@@ -87,119 +77,486 @@ class BackendApplicationTests {
 		}
 	}
 
-	// ------ Repo Tests ------
-
     @Test
+	// Tests whether the repository beans exist as non-null objects when the application runs
     void testRepositoryBeansPresent() {
-        //assertThat(userRepository).isNotNull();
-        //assertThat(categoryRepository).isNotNull();
-        //assertThat(productRepository).isNotNull();
+		Assertions.assertNotNull(userRepository);
+		Assertions.assertNotNull(categoryRepository);
+		Assertions.assertNotNull(productRepository);
     }
 
+	@Test
+	void testUserInsertion() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+		User inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
+
+		Assertions.assertNotNull(inserted);
+		Assertions.assertNotNull(inserted.getId());
+		Assertions.assertEquals(testUser.getName(), inserted.getName());
+		Assertions.assertEquals(testUser.getAddress(), inserted.getAddress());
+		Assertions.assertEquals(testUser.getRole(), inserted.getRole());
+		
+		// Verify that email and password are stored encrypted/hashed
+		byte[] encryptedEmail = inserted.getEncryptedEmail();
+		byte[] passwordHash = inserted.getPasswordHashed();
+		Assertions.assertNotNull(encryptedEmail, "Encrypted email should not be null");
+		Assertions.assertNotNull(passwordHash, "Password hash should not be null");
+		Assertions.assertNotEquals("test@example.com", new String(encryptedEmail));
+		Assertions.assertNotEquals("password123", new String(passwordHash));
+	}
+
+	@Test
+	void testUserQueryById() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+		User inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
+
+		Optional<User> found = userRepository.findById(inserted.getId());
+		Assertions.assertTrue(found.isPresent(), "User should be retrievable by ID");
+		Assertions.assertEquals(inserted.getName(), found.get().getName());
+	}
+
+	@Test
+	void testUserQueryByEmail() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+		User inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
+		
+		Optional<User> found = userRepository.findByEmail("test@example.com");
+		Assertions.assertTrue(found.isPresent(), "User should be retrievable by email");
+		Assertions.assertEquals(inserted.getName(), found.get().getName());
+	}
+
+	@Test
+	void testUserQueryByName() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+		userRepository.insertNewUser(testUser, "test@example.com", "test123");
+
+		List<User> users = userRepository.findByName(testUser.getName());
+		Assertions.assertFalse(users.isEmpty(), "At least one user should be returned via name query");
+	}
+
+	@Test
+	void testUserQueryByAddress() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+		userRepository.insertNewUser(testUser, "test@example.com", "test123");
+
+		List<User> users = userRepository.findByAddress(testUser.getAddress());
+		Assertions.assertFalse(users.isEmpty(), "At least one user should be returned via address query");
+	}
+
+	@Test
+	void testUserQueryByCredentials() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+		User inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
+
+		Optional<User> found = userRepository.findByEmailAndPasswordAndRole("test@example.com", "test123", testUser.getRole().toString());
+		Assertions.assertTrue(found.isPresent(), "User should be retrievable by credentials");
+		Assertions.assertEquals(inserted.getName(), found.get().getName());
+	}
+
+	@Test
+	void testUserUpdateName() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+		User inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
+
+		User updated = userRepository.updateUserName(inserted, "Updated Name");
+		Assertions.assertEquals("Updated Name", updated.getName(), "User name should be updated");
+	}
+
+	@Test
+	void testUserUpdateEmail() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+		User inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
+
+		User updated = userRepository.updateUserEmail(inserted, "newtest@example.com");
+		// Verify that the stored encrypted email does not match the plain text
+		Assertions.assertNotEquals("newtest@example.com", new String(updated.getEncryptedEmail()));
+	}
+
+	@Test
+	void testUserUpdateAddress() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+		User inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
+
+		User updated = userRepository.updateUserAddress(inserted, "456 New Address");
+		Assertions.assertEquals("456 New Address", updated.getAddress(), "User address should be updated");
+	}
+
+	@Test
+	void testUserUpdatePassword() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+		User inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
+
+		User updated = userRepository.updateUserPassword(inserted, "newPassword456");
+		// Verify that the new password is stored hashed/encrypted
+		Assertions.assertNotEquals("newPassword456", new String(updated.getPasswordHashed()));
+	}
+
+	@Test
+	void testUserDeletion() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+		User inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
+
+		userRepository.deleteUserById(inserted);
+		Optional<User> found = userRepository.findById(inserted.getId());
+		Assertions.assertFalse(found.isPresent(), "User should be deleted");
+	}
+
     @Test
-    void testUserRepositoryOperations() {
-        // Create a sample User instance. Adjust constructors/getters as necessary.
-        User sampleUser = new User();
-        sampleUser.setName("John Doe");
-        sampleUser.setAddress("123 Main St");
-        // Role should be set accordingly based on your implementation.
-        sampleUser.setRole(Role.customer);
+	void testCategoryInsertion() {
+		Category category = new Category();
+		category.setName("Electronics");
+		category.setDescription("Electronic gadgets and devices");
 
-        // This test calls the repository method (assumes the insertNewUser is implemented correctly)
-        // Using plain strings for email and password.
-        User insertedUser = userRepository.insertNewUser(sampleUser, "john@example.com", "password123");
-        //assertThat(insertedUser).isNotNull();
-        //assertThat(insertedUser.getName()).isEqualTo("John Doe");
+		Category inserted = categoryRepository.insertNewCategory(category);
+		Assertions.assertNotNull(inserted);
+		Assertions.assertNotNull(inserted.getId());
+	}
 
-        // Optionally, test update and deletion functions if implemented
-    }
+	@Test
+	void testCategoryQueryById() {
+		Category category = new Category();
+		category.setName("Home");
+		category.setDescription("Home appliances");
+		Category inserted = categoryRepository.insertNewCategory(category);
 
-    @Test
-    void testCategoryRepositoryOperations() {
-        Category category = new Category();
-        category.setName("Electronics");
-        category.setDescription("Electronic items category");
+		Optional<Category> found = categoryRepository.findById(inserted.getId());
+		Assertions.assertTrue(found.isPresent());
+		Assertions.assertEquals("Home", found.get().getName());
+	}
 
-        Category newCategory = categoryRepository.insertNewCategory(category);
-        //assertThat(newCategory).isNotNull();
-        //assertThat(newCategory.getName()).isEqualTo("Electronics");
-    }
+	@Test
+	void testCategoryQueryByName() {
+		Category category = new Category();
+		category.setName("Sports");
+		category.setDescription("Sports equipment");
+		categoryRepository.insertNewCategory(category);
 
-    @Test
-    void testProductRepositoryOperations() {
-        // Create sample Category for product relation
-        Category category = new Category();
-        category.setName("Books");
-        category.setDescription("Books category");
-        Category savedCategory = categoryRepository.insertNewCategory(category);
+		List<Category> categories = categoryRepository.findByName("Sports");
+		Assertions.assertFalse(categories.isEmpty());
+	}
 
-        Product product = new Product();
-        product.setName("Spring Boot in Action");
-        product.setModel("1st Edition");
-        product.setSerialNumber("SBIA-001");
-        product.setDescription("A book about Spring Boot");
-        product.setPrice(new BigDecimal("39.99"));
-        product.setQuantityInStock(20);
-        // Set relationships as needed
-        product.setCategory(savedCategory);
-        // Assuming a dummy manager exists; adjust as necessary.
-        User manager = new User();
-        manager.setName("Manager");
-        product.setProductManager(manager);
+	@Test
+	void testCategoryUpdateName() {
+		Category category = new Category();
+		category.setName("Books");
+		category.setDescription("Book category");
+		Category inserted = categoryRepository.insertNewCategory(category);
 
-        Product insertedProduct = productRepository.insertNewProduct(product);
-        //assertThat(insertedProduct).isNotNull();
-        //assertThat(insertedProduct.getName()).isEqualTo("Spring Boot in Action");
-    }
+		Category updated = categoryRepository.updateCategoryName(inserted, "Literature");
+		Assertions.assertEquals("Literature", updated.getName());
+	}
 
-    // ------ Model Tests ------
+	@Test
+	void testCategoryUpdateDescription() {
+		Category category = new Category();
+		category.setName("Clothing");
+		category.setDescription("All kinds of clothing");
+		Category inserted = categoryRepository.insertNewCategory(category);
 
-    @Test
-    void testModelObjects() {
-        // For User model
-        User user = new User();
-        user.setName("Alice");
-        user.setAddress("456 Elm St");
-        user.setRole(Role.product_manager);
-        //assertThat(user.getName()).isEqualTo("Alice");
-        //assertThat(user.getRole()).isEqualTo(Role.product_manager);
+		Category updated = categoryRepository.updateCategoryDescription(inserted, "Men and Women Clothing");
+		Assertions.assertEquals("Men and Women Clothing", updated.getDescription());
+	}
 
-        // For Category model
-        Category category = new Category();
-        category.setName("Home Appliances");
-        category.setDescription("Appliances for home");
-        //assertThat(category.getName()).isEqualTo("Home Appliances");
+	@Test
+	void testCategoryDeletion() {
+		Category category = new Category();
+		category.setName("Automotive");
+		category.setDescription("Automotive parts");
+		Category inserted = categoryRepository.insertNewCategory(category);
 
-        // For Product model
-        Product product = new Product();
-        product.setName("Washing Machine");
-        product.setPrice(new BigDecimal("499.99"));
-        product.setQuantityInStock(10);
-        //assertThat(product.getPrice()).isEqualByComparingTo(new BigDecimal("499.99"));
-    }
+		categoryRepository.deleteCategoryById(inserted);
+		Optional<Category> found = categoryRepository.findById(inserted.getId());
+		Assertions.assertFalse(found.isPresent(), "Category should be deleted");
+	}
 
-    // ------ Security Tests ------
+	@Test
+	void testProductInsertion() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
 
-    @Test
-    void testSecurityBeansPresent() {
-        //assertThat(customUserDetailsService).isNotNull();
-        //assertThat(jwtAuthenticationFilter).isNotNull();
-    }
+		Category category = new Category();
+		category.setName("Books");
+		category.setDescription("Books category");
+		Category savedCategory = categoryRepository.insertNewCategory(category);
+		
+		Product product = new Product();
+		product.setName("Effective Java");
+		product.setModel("3rd Edition");
+		product.setSerialNumber("EJ-003");
+		product.setDescription("Programming guide");
+		product.setPrice(new BigDecimal("45.00"));
+		product.setQuantityInStock(12);
+		product.setCategory(savedCategory);
+		product.setProductManager(testUser);
 
-    // If you have additional methods to test token processing or authentication flows,
-    // you could instantiate JwtAuthenticationFilter with mocked requests.
-    
-    // ------ Controller Tests ------
+		Product inserted = productRepository.insertNewProduct(product);
+		Assertions.assertNotNull(inserted);
+		Assertions.assertNotNull(inserted.getId());
+	}
 
-    @Test
-    void testAuthControllerEndpoint() throws Exception {
-        // Assuming there is an endpoint defined in AuthController. Adjust the URL as needed.
-        //mockMvc.perform(get("/auth/test"))
-        //    .andExpect(status().isOk());
+	@Test
+	void testProductQueryById() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+
+		Category category = new Category();
+		category.setName("Music");
+		category.setDescription("Musical instruments");
+		Category savedCategory = categoryRepository.insertNewCategory(category);
+		
+		Product product = new Product();
+		product.setName("Piano");
+		product.setModel("Grand");
+		product.setSerialNumber("PN-001");
+		product.setDescription("Grand piano");
+		product.setPrice(new BigDecimal("5000.00"));
+		product.setQuantityInStock(3);
+		product.setCategory(savedCategory);
+		product.setProductManager(testUser);
+		Product inserted = productRepository.insertNewProduct(product);
+		
+		Optional<Product> found = productRepository.findById(inserted.getId());
+		Assertions.assertTrue(found.isPresent());
+		Assertions.assertEquals("Piano", found.get().getName());
+	}
+
+	@Test
+	void testProductUpdateName() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+
+		Category category = new Category();
+		category.setName("Gadgets");
+		category.setDescription("Gadgets and accessories");
+		Category savedCategory = categoryRepository.insertNewCategory(category);
+		
+		Product product = new Product();
+		product.setName("Old Gadget");
+		product.setModel("V1");
+		product.setSerialNumber("GD-100");
+		product.setDescription("Old description");
+		product.setPrice(new BigDecimal("99.99"));
+		product.setQuantityInStock(20);
+		product.setCategory(savedCategory);
+		product.setProductManager(testUser);
+		Product inserted = productRepository.insertNewProduct(product);
+		
+		Product updated = productRepository.updateProductName(inserted, "New Gadget");
+		Assertions.assertEquals("New Gadget", updated.getName());
+	}
+
+	@Test
+	void testProductUpdateModel() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+
+		Category category = new Category();
+		category.setName("Gadgets");
+		category.setDescription("Tech gadgets");
+		Category savedCategory = categoryRepository.insertNewCategory(category);
+		
+		Product product = new Product();
+		product.setName("Smartphone");
+		product.setModel("Model X");
+		product.setSerialNumber("SP-101");
+		product.setDescription("Latest smartphone");
+		product.setPrice(new BigDecimal("699.99"));
+		product.setQuantityInStock(50);
+		product.setCategory(savedCategory);
+		product.setProductManager(testUser);
+		Product inserted = productRepository.insertNewProduct(product);
+		
+		Product updated = productRepository.updateProductModel(inserted, "Model Y");
+		Assertions.assertEquals("Model Y", updated.getModel());
+	}
+
+	@Test
+	void testProductUpdateSerialNumber() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+
+		Category category = new Category();
+		category.setName("Appliances");
+		category.setDescription("Home appliances");
+		Category savedCategory = categoryRepository.insertNewCategory(category);
+		
+		Product product = new Product();
+		product.setName("Refrigerator");
+		product.setModel("X100");
+		product.setSerialNumber("RF-500");
+		product.setDescription("Double door refrigerator");
+		product.setPrice(new BigDecimal("899.99"));
+		product.setQuantityInStock(10);
+		product.setCategory(savedCategory);
+		product.setProductManager(testUser);
+		Product inserted = productRepository.insertNewProduct(product);
+		
+		Product updated = productRepository.updateProductSerialNumber(inserted, "RF-501");
+		Assertions.assertEquals("RF-501", updated.getSerialNumber());
+	}
+
+	@Test
+	void testProductUpdateDescription() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+
+		Category category = new Category();
+		category.setName("Furniture");
+		category.setDescription("Home furniture");
+		Category savedCategory = categoryRepository.insertNewCategory(category);
+		
+		Product product = new Product();
+		product.setName("Sofa");
+		product.setModel("Comfort");
+		product.setSerialNumber("SF-300");
+		product.setDescription("Old description");
+		product.setPrice(new BigDecimal("299.99"));
+		product.setQuantityInStock(8);
+		product.setCategory(savedCategory);
+		product.setProductManager(testUser);
+		Product inserted = productRepository.insertNewProduct(product);
+		
+		Product updated = productRepository.updateProductDescription(inserted, "Updated comfy sofa");
+		Assertions.assertEquals("Updated comfy sofa", updated.getDescription());
+	}
+
+	@Test
+	void testProductUpdateQuantity() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+
+		Category category = new Category();
+		category.setName("Books");
+		category.setDescription("Books category");
+		Category savedCategory = categoryRepository.insertNewCategory(category);
+		
+		Product product = new Product();
+		product.setName("Clean Code");
+		product.setModel("1st Edition");
+		product.setSerialNumber("CC-007");
+		product.setDescription("Software craftsmanship guide");
+		product.setPrice(new BigDecimal("39.99"));
+		product.setQuantityInStock(5);
+		product.setCategory(savedCategory);
+		product.setProductManager(testUser);
+		Product inserted = productRepository.insertNewProduct(product);
+		
+		Product updated = productRepository.updateProductQuantityInStock(inserted, 10);
+		Assertions.assertEquals(10, updated.getQuantityInStock());
+	}
+
+	@Test
+	void testProductUpdatePrice() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+
+		Category category = new Category();
+		category.setName("Software");
+		category.setDescription("Software products");
+		Category savedCategory = categoryRepository.insertNewCategory(category);
+		
+		Product product = new Product();
+		product.setName("IntelliJ IDEA");
+		product.setModel("Ultimate");
+		product.setSerialNumber("IJ-2025");
+		product.setDescription("IDE for JVM languages");
+		product.setPrice(new BigDecimal("199.99"));
+		product.setQuantityInStock(25);
+		product.setCategory(savedCategory);
+		product.setProductManager(testUser);
+		Product inserted = productRepository.insertNewProduct(product);
+		
+		Product updated = productRepository.updateProductPrice(inserted, new BigDecimal("249.99"));
+		Assertions.assertEquals(new BigDecimal("249.99"), updated.getPrice());
+	}
+
+	@Test
+	void testProductDeletion() {
+		User testUser = new User();
+		testUser.setName("Test User");
+		testUser.setAddress("123 Test St");
+		testUser.setRole(Role.product_manager);
+
+		Category category = new Category();
+		category.setName("Toys");
+		category.setDescription("Kids' toys");
+		Category savedCategory = categoryRepository.insertNewCategory(category);
+		
+		Product product = new Product();
+		product.setName("Lego Set");
+		product.setModel("Star Wars");
+		product.setSerialNumber("LG-404");
+		product.setDescription("Lego Star Wars set");
+		product.setPrice(new BigDecimal("59.99"));
+		product.setQuantityInStock(40);
+		product.setCategory(savedCategory);
+		product.setProductManager(testUser);
+		Product inserted = productRepository.insertNewProduct(product);
+		
+		productRepository.deleteProductById(inserted);
+		Optional<Product> found = productRepository.findById(inserted.getId());
+		Assertions.assertFalse(found.isPresent(), "Product should be deleted");
+	}
+
+	// Clears the test data for each repository after each test
+	@AfterEach
+    void cleanUp() {
+        productRepository.deleteAll();
+        categoryRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
 	// Runs after all the tests are completed
-	@org.junit.jupiter.api.AfterAll
+	@AfterAll
 	static void tearDown() {
 		// Closes the mock PostgreSQL database container
 		postgresContainer.close();
