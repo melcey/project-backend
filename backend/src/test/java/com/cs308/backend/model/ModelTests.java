@@ -5,6 +5,11 @@ import java.math.BigDecimal;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import com.cs308.backend.dao.Category;
+import com.cs308.backend.dao.Product;
+import com.cs308.backend.dao.Role;
+import com.cs308.backend.dao.User;
+
 class ModelTests {
 
     @Test

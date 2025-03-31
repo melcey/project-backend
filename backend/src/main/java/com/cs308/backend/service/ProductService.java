@@ -1,13 +1,14 @@
 package com.cs308.backend.service;
 
-import com.cs308.backend.model.Category;
-import com.cs308.backend.model.Product;
-import com.cs308.backend.model.User;
+import com.cs308.backend.dao.Category;
+import com.cs308.backend.dao.Product;
+import com.cs308.backend.dao.User;
 import com.cs308.backend.repo.CategoryRepository;
 import com.cs308.backend.repo.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,19 +28,43 @@ public class ProductService {
     }
 
     public List<Product> findProductsByName(String name) {
-        return productRepository.findByName(name);
-    }
+        List<Product> foundProducts = new ArrayList<>();
+        List<Product> exactMatches = productRepository.findByName(name);
 
-    public List<Product> searchProductsByName(String name) {
-        return productRepository.findByNameContains(name);
+        if ((exactMatches != null) && (!(exactMatches.isEmpty()))) {
+            for (Product exactMatch: exactMatches) {
+                foundProducts.add(exactMatch);
+            }
+        }
+
+        List<Product> containingMatches = productRepository.findByNameContains(name);
+        if ((containingMatches != null) && (!(containingMatches.isEmpty()))) {
+            for (Product containingMatch: containingMatches) {
+                foundProducts.add(containingMatch);
+            }
+        }
+
+        return foundProducts;
     }
 
     public List<Product> findProductsByModel(String model) {
-        return productRepository.findByModel(model);
-    }
+        List<Product> foundProducts = new ArrayList<>();
+        List<Product> exactMatches = productRepository.findByModel(model);
 
-    public List<Product> searchProductsByModel(String model) {
-        return productRepository.findByModelContains(model);
+        if ((exactMatches != null) && (!(exactMatches.isEmpty()))) {
+            for (Product exactMatch: exactMatches) {
+                foundProducts.add(exactMatch);
+            }
+        }
+
+        List<Product> containingMatches = productRepository.findByModelContains(model);
+        if ((containingMatches != null) && (!(containingMatches.isEmpty()))) {
+            for (Product containingMatch: containingMatches) {
+                foundProducts.add(containingMatch);
+            }
+        }
+
+        return foundProducts;
     }
 
     public List<Product> findProductsBySerialNumber(String serialNumber) {

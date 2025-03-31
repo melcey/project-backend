@@ -1,6 +1,6 @@
 package com.cs308.backend.repo;
 
-import com.cs308.backend.model.User;
+import com.cs308.backend.dao.User;
 
 // The specific interface to deal with queries
 // for which the entire User objects will need to be passed in Java

@@ -4,9 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.cs308.backend.model.Category;
-import com.cs308.backend.model.Product;
-import com.cs308.backend.model.User;
+import com.cs308.backend.dao.Category;
+import com.cs308.backend.dao.Product;
+import com.cs308.backend.dao.User;
 
 import java.util.List;
 import java.util.Optional;

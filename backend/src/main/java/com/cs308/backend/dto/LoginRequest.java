@@ -1,6 +1,6 @@
 package com.cs308.backend.dto;
 
-import com.cs308.backend.model.Role;
+import com.cs308.backend.dao.Role;
 
 public class LoginRequest {
     private String email;

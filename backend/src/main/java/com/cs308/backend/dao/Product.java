@@ -1,4 +1,4 @@
-package com.cs308.backend.model;
+package com.cs308.backend.dao;
 
 import java.math.BigDecimal;
 

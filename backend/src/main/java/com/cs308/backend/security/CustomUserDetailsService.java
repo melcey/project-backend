@@ -1,6 +1,6 @@
 package com.cs308.backend.security;
 
-import com.cs308.backend.model.User;
+import com.cs308.backend.dao.User;
 import com.cs308.backend.repo.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

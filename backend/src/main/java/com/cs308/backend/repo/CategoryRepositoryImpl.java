@@ -3,7 +3,7 @@ package com.cs308.backend.repo;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cs308.backend.model.Category;
+import com.cs308.backend.dao.Category;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

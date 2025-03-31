@@ -20,10 +20,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.cs308.backend.model.Category;
-import com.cs308.backend.model.Product;
-import com.cs308.backend.model.Role;
-import com.cs308.backend.model.User;
+import com.cs308.backend.dao.Category;
+import com.cs308.backend.dao.Product;
+import com.cs308.backend.dao.Role;
+import com.cs308.backend.dao.User;
 import com.cs308.backend.repo.CategoryRepository;
 import com.cs308.backend.repo.ProductRepository;
 import com.cs308.backend.repo.UserRepository;

@@ -6,10 +6,10 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.cs308.backend.dao.Role;
+import com.cs308.backend.dao.User;
 import com.cs308.backend.dto.LoginRequest;
 import com.cs308.backend.dto.SignUpRequest;
-import com.cs308.backend.model.Role;
-import com.cs308.backend.model.User;
 import com.cs308.backend.repo.UserRepository;
 import com.cs308.backend.security.JwtTokenProvider;
 import org.junit.jupiter.api.Test;

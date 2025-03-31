@@ -2,9 +2,9 @@ package com.cs308.backend.repo;
 
 import java.math.BigDecimal;
 
-import com.cs308.backend.model.Category;
-import com.cs308.backend.model.Product;
-import com.cs308.backend.model.User;
+import com.cs308.backend.dao.Category;
+import com.cs308.backend.dao.Product;
+import com.cs308.backend.dao.User;
 
 // The specific interface to deal with queries
 // for which the entire Product objects will need to be passed in Java

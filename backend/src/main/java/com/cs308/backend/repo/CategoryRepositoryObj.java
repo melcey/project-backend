@@ -1,6 +1,6 @@
 package com.cs308.backend.repo;
 
-import com.cs308.backend.model.Category;
+import com.cs308.backend.dao.Category;
 
 // The specific interface to deal with queries
 // for which the entire Category objects will need to be passed in Java

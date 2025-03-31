@@ -21,8 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.cs308.backend.model.Role;
-import com.cs308.backend.model.User;
+import com.cs308.backend.dao.Role;
+import com.cs308.backend.dao.User;
 import com.cs308.backend.repo.UserRepository;
 class SecurityTests {
 

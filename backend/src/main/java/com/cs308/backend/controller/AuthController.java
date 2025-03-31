@@ -1,9 +1,9 @@
 package com.cs308.backend.controller;
 
+import com.cs308.backend.dao.User;
 import com.cs308.backend.dto.AuthResponse;
 import com.cs308.backend.dto.LoginRequest;
 import com.cs308.backend.dto.SignUpRequest;
-import com.cs308.backend.model.User;
 import com.cs308.backend.repo.UserRepository;
 import com.cs308.backend.security.JwtTokenProvider;
 import org.springframework.http.ResponseEntity;
