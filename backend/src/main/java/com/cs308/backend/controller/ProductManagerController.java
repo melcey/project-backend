@@ -31,6 +31,7 @@ import com.cs308.backend.dto.ProductManagerRequest;
 import com.cs308.backend.dto.ProductResponse;
 import com.cs308.backend.dto.UpdateProductRequest;
 import com.cs308.backend.security.UserPrincipal;
+import com.cs308.backend.service.ProductManagerActionService;
 import com.cs308.backend.service.ProductService;
 import com.cs308.backend.service.UserService;
 
@@ -39,10 +40,12 @@ import com.cs308.backend.service.UserService;
 public class ProductManagerController {
     private final ProductService productService;
     private final UserService userService;
+    private final ProductManagerActionService actionService;
 
-    public ProductManagerController(ProductService productService, UserService userService) {
+    public ProductManagerController(ProductService productService, UserService userService, ProductManagerActionService actionService) {
         this.productService = productService;
         this.userService = userService;
+        this.actionService = actionService;
     }
 
     // Get all the products you manage as a product manager
@@ -198,6 +201,8 @@ public class ProductManagerController {
         product.setProductManager(user);
         Product createdProduct = productService.createProduct(product);
 
+        actionService.logAction(user, "CREATE_PRODUCT", Long.toString(createdProduct.getId()));
+
         return ResponseEntity.ok(new ProductResponse(createdProduct.getId(), createdProduct.getName(), createdProduct.getModel(), createdProduct.getSerialNumber(), createdProduct.getDescription(), createdProduct.getQuantityInStock(), createdProduct.getPrice(), createdProduct.getWarrantyStatus(), createdProduct.getDistributorInfo(), createdProduct.getIsActive(), createdProduct.getImageUrl(), new CategoryResponse(createdProduct.getCategory().getId(), createdProduct.getCategory().getName(), createdProduct.getCategory().getDescription())));
     }
 
@@ -230,6 +235,7 @@ public class ProductManagerController {
         }
 
         productService.deleteProduct(id);
+        actionService.logAction(user, "DELETE_PRODUCT", Long.toString(id));
 
         return ResponseEntity.ok("OK");
     }
@@ -273,50 +279,71 @@ public class ProductManagerController {
         }
 
         if (updateProductRequest.getName() != null) {
+            String oldName = product.getName();
             product = productService.updateProductName(id, updateProductRequest.getName());
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldName, updateProductRequest.getName()));
         }
 
         if (updateProductRequest.getModel() != null) {
+            String oldModel = product.getModel();
             product = productService.updateProductModel(id, updateProductRequest.getModel());
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldModel, updateProductRequest.getModel()));
         }
 
         if (updateProductRequest.getSerialNumber() != null) {
+            String oldSerialNumber = product.getSerialNumber();
             product = productService.updateProductSerialNumber(id, updateProductRequest.getSerialNumber());
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldSerialNumber, updateProductRequest.getSerialNumber()));
         }
 
         if (updateProductRequest.getDescription() != null) {
+            String oldDescription = product.getDescription();
             product = productService.updateProductDescription(id, updateProductRequest.getDescription());
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldDescription, updateProductRequest.getDescription()));
         }
 
         if (updateProductRequest.getQuantityInStock() != null) {
+            Integer oldQuantityInStock = product.getQuantityInStock();
             product = productService.updateProductQuantityInStock(id, updateProductRequest.getQuantityInStock());
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %d -> %d", product.getId(), oldQuantityInStock.intValue(), updateProductRequest.getQuantityInStock().intValue()));
         }
 
         if (updateProductRequest.getPrice() != null) {
+            BigDecimal oldPrice = product.getPrice();
             product = productService.updateProductPrice(id, updateProductRequest.getPrice());
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldPrice.toString(), updateProductRequest.getPrice().toString()));
         }
 
         if (updateProductRequest.getWarrantyStatus() != null) {
+            String oldWarrantyStatus = product.getWarrantyStatus();
             product = productService.updateProductWarrantyStatus(id, updateProductRequest.getWarrantyStatus());
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldWarrantyStatus, updateProductRequest.getWarrantyStatus()));
         }
 
         if (updateProductRequest.getDistributorInfo() != null) {
+            String oldDistributorInfo = product.getDistributorInfo();
             product = productService.updateProductDistributorInfo(id, updateProductRequest.getDistributorInfo());
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldDistributorInfo, updateProductRequest.getDistributorInfo()));
         }
 
         if (updateProductRequest.getIsActive() != null) {
+            boolean oldIsActive = product.getIsActive();
             product = productService.updateProductIsActive(id, updateProductRequest.getIsActive());
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %b -> %b", product.getId(), oldIsActive, updateProductRequest.getIsActive()));
         }
 
         if (updateProductRequest.getImageUrl() != null) {
+            String oldImageUrl = product.getImageUrl();
             product = productService.updateProductImageUrl(id, updateProductRequest.getImageUrl());
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldImageUrl, updateProductRequest.getImageUrl()));
         }
 
         if (updateProductRequest.getCategory() != null) {
+            String oldCategory = product.getCategory().toString();
             product = productService.updateProductCategory(id, updateProductRequest.getCategory());
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldCategory, product.getCategory().toString()));
         }
-        
-        // Returns the old price?
+
         return ResponseEntity.ok(new ProductResponse(product.getId(), product.getName(), product.getModel(), product.getSerialNumber(), product.getDescription(), product.getQuantityInStock(), product.getPrice(), product.getWarrantyStatus(), product.getDistributorInfo(), product.getIsActive(), product.getImageUrl(), new CategoryResponse(product.getCategory().getId(), product.getCategory().getName(), product.getCategory().getDescription())));
     }
 
@@ -348,8 +375,9 @@ public class ProductManagerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
         }
 
+        String oldName = foundProduct.get().getName();
         Product updatedProduct = productService.updateProductName(id, newName);
-
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldName, updatedProduct.getName()));
         return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
     }
 
@@ -381,8 +409,9 @@ public class ProductManagerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
         }
 
+        String oldModel = foundProduct.get().getModel();
         Product updatedProduct = productService.updateProductModel(id, newModel);
-
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldModel, updatedProduct.getModel()));
         return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
     }
 
@@ -414,8 +443,9 @@ public class ProductManagerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
         }
 
+        String oldSerialNumber = foundProduct.get().getSerialNumber();
         Product updatedProduct = productService.updateProductSerialNumber(id, newSerialNumber);
-
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldSerialNumber, updatedProduct.getSerialNumber()));
         return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
     }
 
@@ -447,7 +477,9 @@ public class ProductManagerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
         }
 
+        String oldDescription = foundProduct.get().getDescription();
         Product updatedProduct = productService.updateProductDescription(id, newDescription);
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldDescription, updatedProduct.getDescription()));
         return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
     }
 
@@ -479,7 +511,9 @@ public class ProductManagerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
         }
         
+        Integer oldQuantityInStock = foundProduct.get().getQuantityInStock();
         Product updatedProduct = productService.updateProductQuantityInStock(id, newQuantity);
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %d -> %d", updatedProduct.getId(), oldQuantityInStock.intValue(), updatedProduct.getQuantityInStock()));
         return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
     }
 
@@ -511,7 +545,9 @@ public class ProductManagerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
         }
 
+        BigDecimal oldPrice = foundProduct.get().getPrice();
         Product updatedProduct = productService.updateProductPrice(id, newPrice);
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldPrice.toString(), updatedProduct.getPrice().toString()));
         return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
     }
 
@@ -543,7 +579,9 @@ public class ProductManagerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
         }
 
+        String oldWarrantyStatus = foundProduct.get().getWarrantyStatus();
         Product updatedProduct = productService.updateProductWarrantyStatus(id, newWarrantyStatus);
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldWarrantyStatus, updatedProduct.getWarrantyStatus()));
         return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
     }
     
@@ -575,7 +613,9 @@ public class ProductManagerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
         }
 
+        String oldDistributorInfo = foundProduct.get().getDistributorInfo();
         Product updatedProduct = productService.updateProductDistributorInfo(id, newDistributorInfo);
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldDistributorInfo, updatedProduct.getDistributorInfo()));
         return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
     }
     
@@ -610,7 +650,9 @@ public class ProductManagerController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product is already activated");
         }
 
+        boolean oldIsActive = foundProduct.get().getIsActive();
         Product updatedProduct = productService.updateProductIsActive(id, true);
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %b -> %b", updatedProduct.getId(), oldIsActive, updatedProduct.getIsActive()));
         return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
     }
 
@@ -645,9 +687,46 @@ public class ProductManagerController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product is already deactivated");
         }
 
+        boolean oldIsActive = foundProduct.get().getIsActive();
         Product updatedProduct = productService.updateProductIsActive(id, false);
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %b -> %b", updatedProduct.getId(), oldIsActive, updatedProduct.getIsActive()));
         return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
     }
+
+    // Update image URL
+    @PutMapping("/{id}/img")
+    public ResponseEntity<?> updateProductImageUrl(@PathVariable Long id, @RequestBody String newImageUrl) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ((auth == null) || (!(auth.isAuthenticated()))) {
+            // Automatically handled by Spring Boot; no need to implement an error controller
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
+
+        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
+            
+        User user = userDetails.getUser();
+
+        if (user.getRole() != Role.product_manager) {
+            // Automatically handled by Spring Boot; no need to implement an error controller
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
+        }
+
+        Optional<Product> foundProduct = productService.findProductById(id);
+        if (!(foundProduct.isPresent())) {
+            // Automatically handled by Spring Boot; no need to implement an error controller
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
+        }
+        else if (!(foundProduct.get().getProductManager().equals(user))) {
+            // Automatically handled by Spring Boot; no need to implement an error controller
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
+        }
+
+        String oldImageUrl = foundProduct.get().getImageUrl();
+        Product updatedProduct = productService.updateProductImageUrl(id, newImageUrl);
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldImageUrl, updatedProduct.getImageUrl()));
+        return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
+    }
+
     
     // Update category
     @PutMapping("/{id}/category")
@@ -677,7 +756,9 @@ public class ProductManagerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
         }
 
+        String oldCategory = foundProduct.get().getCategory().toString();
         Product updatedProduct = productService.updateProductCategory(id, newCategoryName);
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldCategory, updatedProduct.getCategory().toString()));
         return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
     }
     
@@ -717,7 +798,9 @@ public class ProductManagerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
         }
 
+        String oldProductManager = foundProduct.get().getProductManager().toString();
         Product updatedProduct = productService.updateProductManager(id, newProductManager);
+        actionService.logAction(user, "CHANGE_PRODUCTMANAGER", String.format("%d: %s -> %s", updatedProduct.getId(), oldProductManager, updatedProduct.getProductManager().toString()));
         return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
     }
 }
