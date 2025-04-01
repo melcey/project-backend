@@ -1,8 +1,10 @@
 package com.cs308.backend.security;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,10 +14,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.authentication.AuthenticationProvider;
-import com.cs308.backend.repo.UserRepository;
+
+import com.cs308.backend.service.UserService;
 
 @Configuration
+// Enables component scanning across the package to register the beans (important for tests)
+// In normal use, this should not create any issues since the beans are registered once per context
+@ComponentScan(basePackages = "com.cs308.backend.security")
 @EnableWebSecurity
 @EnableMethodSecurity
 public class JwtSecurityConfig {
@@ -73,7 +78,7 @@ public class JwtSecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(UserRepository userRepository) {
-        return new CustomAuthenticationProvider(userRepository);
+    public AuthenticationProvider authenticationProvider(UserService userService) {
+        return new CustomAuthenticationProvider(userService);
     }
 }

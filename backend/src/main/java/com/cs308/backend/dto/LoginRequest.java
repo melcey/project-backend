@@ -1,11 +1,23 @@
 package com.cs308.backend.dto;
 
-import com.cs308.backend.model.Role;
+import com.cs308.backend.dao.Role;
 
 public class LoginRequest {
     private String email;
     private String password;
     private Role role;
+
+    public LoginRequest() {
+        this.email = null;
+        this.password = null;
+        this.role = null;
+    }
+
+    public LoginRequest(String email, String password, Role role) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
 
     // Getters and Setters
     public String getEmail() {

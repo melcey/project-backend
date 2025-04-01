@@ -3,7 +3,7 @@ package com.cs308.backend.repo;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cs308.backend.model.User;
+import com.cs308.backend.dao.User;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -37,9 +37,8 @@ public class UserRepositoryImpl implements UserRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(newUser);
         // Returns the retrieved result
         return newUser;
     }
@@ -63,7 +62,7 @@ public class UserRepositoryImpl implements UserRepositoryObj {
     @Override
     public User updateUserName(User user, String newName) {
         // Creates the query command to update the name of the given user
-        String sqlQuery = "UPDATE users SET name = :new_name WHERE user_id = :id";
+        String sqlQuery = "UPDATE users SET name = :new_name WHERE user_id = :id RETURNING *";
         
         // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
         User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
@@ -73,9 +72,8 @@ public class UserRepositoryImpl implements UserRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(updatedUser);
         // Returns the retrieved result
         return updatedUser;
     }
@@ -83,7 +81,7 @@ public class UserRepositoryImpl implements UserRepositoryObj {
     @Override
     public User updateUserEmail(User user, String newEmail) {
         // Creates the query command to update the email of the given user
-        String sqlQuery = "UPDATE users SET email = crypt(:new_email, gen_salt('bf'))::bytea WHERE user_id = :id";
+        String sqlQuery = "UPDATE users SET email = crypt(:new_email, gen_salt('bf'))::bytea WHERE user_id = :id RETURNING *";
         
         // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
         User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
@@ -93,9 +91,8 @@ public class UserRepositoryImpl implements UserRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(updatedUser);
         // Returns the retrieved result
         return updatedUser;
     }
@@ -103,7 +100,7 @@ public class UserRepositoryImpl implements UserRepositoryObj {
     @Override
     public User updateUserAddress(User user, String newAddress) {
         // Creates the query command to update the address of the given user
-        String sqlQuery = "UPDATE users SET home_address = :new_address WHERE user_id = :id";
+        String sqlQuery = "UPDATE users SET home_address = :new_address WHERE user_id = :id RETURNING *";
         
         // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
         User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
@@ -113,9 +110,8 @@ public class UserRepositoryImpl implements UserRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(updatedUser);
         // Returns the retrieved result
         return updatedUser;
     }
@@ -123,7 +119,7 @@ public class UserRepositoryImpl implements UserRepositoryObj {
     @Override
     public User updateUserPassword(User user, String newPassword) {
         // Creates the query command to update the password of the given user
-        String sqlQuery = "UPDATE users SET password_hash = crypt(:new_password, gen_salt('bf'))::bytea WHERE user_id = :id";
+        String sqlQuery = "UPDATE users SET password_hash = crypt(:new_password, gen_salt('bf'))::bytea WHERE user_id = :id RETURNING *";
         
         // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
         User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
@@ -133,9 +129,8 @@ public class UserRepositoryImpl implements UserRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(updatedUser);
         // Returns the retrieved result
         return updatedUser;
     }

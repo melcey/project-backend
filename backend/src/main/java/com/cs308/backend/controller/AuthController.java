@@ -1,31 +1,45 @@
 package com.cs308.backend.controller;
 
-import com.cs308.backend.dto.AuthResponse;
-import com.cs308.backend.dto.LoginRequest;
-import com.cs308.backend.dto.SignUpRequest;
-import com.cs308.backend.model.User;
-import com.cs308.backend.repo.UserRepository;
-import com.cs308.backend.security.JwtTokenProvider;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.cs308.backend.dao.User;
+import com.cs308.backend.dto.AuthResponse;
+import com.cs308.backend.dto.LoginRequest;
+import com.cs308.backend.dto.SignUpRequest;
+import com.cs308.backend.security.JwtTokenProvider;
+import com.cs308.backend.service.UserService;
+
+/*
+ * How to retrieve the user details in a controller or service (later use)?
+ * Include the token as a header:
+ *      Authorization: Bearer <your-token>
+ * JwtAuthenticationFilter will handle the filtering
+ * Include the following lines in the controller or service:
+ *      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+ *      UserPrincipal userPrincipal = (UserPrincipal) auth.getPrincipal();
+ */
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final JwtTokenProvider tokenProvider;
 
     public AuthController(AuthenticationManager authenticationManager,
-            UserRepository userRepository,
+            UserService userService,
             JwtTokenProvider tokenProvider) {
         this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.tokenProvider = tokenProvider;
     }
 
@@ -54,7 +68,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignUpRequest signUpRequest) {
         // Check if user already exists
-        if (userRepository.findByEmail(signUpRequest.getEmail()).isPresent()) {
+        if (userService.findByEmail(signUpRequest.getEmail()).isPresent()) {
             return ResponseEntity
                     .badRequest()
                     .body("Email already in use!");
@@ -67,24 +81,14 @@ public class AuthController {
                 signUpRequest.getRole());
 
         // Save user with encrypted email and password
-        user = userRepository.insertNewUser(
+        user = userService.insertNewUser(
                 user,
                 signUpRequest.getEmail(),
                 signUpRequest.getPassword());
 
-        // Create authentication token
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                signUpRequest.getEmail(),
-                signUpRequest.getPassword());
-        authToken.setDetails(signUpRequest.getRole());
+        // No authentication will be performed while registering a user; they will need to explicitly log in
 
-        // Authenticate the new user
-        Authentication authentication = authenticationManager.authenticate(authToken);
-
-        // Generate JWT token
-        String jwt = tokenProvider.generateToken(authentication);
-
-        // Return the token
-        return ResponseEntity.ok(new AuthResponse(jwt));
+        // Return the success message
+        return ResponseEntity.ok("OK");
     }
 }

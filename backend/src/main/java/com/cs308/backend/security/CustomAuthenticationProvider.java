@@ -1,8 +1,5 @@
 package com.cs308.backend.security;
 
-import com.cs308.backend.model.Role;
-import com.cs308.backend.model.User;
-import com.cs308.backend.repo.UserRepository;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,13 +7,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
+import com.cs308.backend.dao.Role;
+import com.cs308.backend.dao.User;
+import com.cs308.backend.service.UserService;
+
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
+    private final UserService userService;
 
-    private final UserRepository userRepository;
-
-    public CustomAuthenticationProvider(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public CustomAuthenticationProvider(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         Role role = extractRoleFromAuthentication(authentication);
 
         // Find user with provided credentials
-        User user = userRepository.findByEmailAndPasswordAndRole(email, password, role.getValue())
+        User user = userService.findByEmailAndPasswordAndRole(email, password, role.getValue())
                 .orElseThrow(() -> new BadCredentialsException("Invalid email/password combination or role"));
 
         // Create UserPrincipal from the found user

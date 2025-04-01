@@ -1,4 +1,7 @@
-package com.cs308.backend.model;
+package com.cs308.backend.dao;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,6 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 // The entity User
@@ -41,10 +45,23 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    // The default constructor
-    public User() {}
+    // The products (to be used when the role is product manager)
+    // One-to-many association mapped by the "productManager" field in the Product class
+    @OneToMany(mappedBy = "productManager")
+    private Set<Product> managedProducts;
 
-    // The constructor with all fields filled
+    // The default constructor
+    public User() {
+        this.id = null;
+        this.name = null;
+        this.encryptedEmail = null;
+        this.address = null;
+        this.passwordHashed = null;
+        this.role = null;
+        this.managedProducts = new HashSet<>();
+    }
+
+    // The constructor with all fields other than the managed products filled
     public User(Long id, String name, byte[] encrpytedEmail, String address, byte[] passwordHashed, Role role) {
         this.id = id;
         this.name = name;
@@ -52,6 +69,7 @@ public class User {
         this.address = address;
         this.passwordHashed = passwordHashed;
         this.role = role;
+        this.managedProducts = new HashSet<>();
     }
 
     // The constructor to be used
@@ -63,6 +81,7 @@ public class User {
         this.address = address;
         this.passwordHashed = null;
         this.role = role;
+        this.managedProducts = new HashSet<>();
     }
 
     // Getters and setters
@@ -120,8 +139,17 @@ public class User {
         StringBuilder builder = new StringBuilder();
         builder.append("User [id=").append(id)
             .append(", name=").append(name)
-            .append( ", address=").append(address)
-            .append(", role=").append(role.toString()).append( "]");
+            .append( ", address=").append(address);
+
+        if (role != null) {
+            builder.append(", role=").append(role.toString());
+        }
+        else {
+            builder.append(", role=").append("null");
+        }
+
+        builder.append( "]");
+            
         return builder.toString();
     }
     
@@ -150,5 +178,13 @@ public class User {
         } else if (!id.equals(other.id))
             return false;
         return true;
+    }
+
+    public Set<Product> getManagedProducts() {
+        return managedProducts;
+    }
+
+    public void setManagedProducts(Set<Product> managedProducts) {
+        this.managedProducts = managedProducts;
     }
 }
