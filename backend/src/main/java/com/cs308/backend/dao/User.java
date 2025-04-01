@@ -1,5 +1,6 @@
 package com.cs308.backend.dao;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.persistence.Column;
@@ -50,7 +51,15 @@ public class User {
     private Set<Product> managedProducts;
 
     // The default constructor
-    public User() {}
+    public User() {
+        this.id = null;
+        this.name = null;
+        this.encryptedEmail = null;
+        this.address = null;
+        this.passwordHashed = null;
+        this.role = null;
+        this.managedProducts = new HashSet<>();
+    }
 
     // The constructor with all fields other than the managed products filled
     public User(Long id, String name, byte[] encrpytedEmail, String address, byte[] passwordHashed, Role role) {
@@ -60,6 +69,7 @@ public class User {
         this.address = address;
         this.passwordHashed = passwordHashed;
         this.role = role;
+        this.managedProducts = new HashSet<>();
     }
 
     // The constructor to be used
@@ -71,6 +81,7 @@ public class User {
         this.address = address;
         this.passwordHashed = null;
         this.role = role;
+        this.managedProducts = new HashSet<>();
     }
 
     // Getters and setters
@@ -128,9 +139,16 @@ public class User {
         StringBuilder builder = new StringBuilder();
         builder.append("User [id=").append(id)
             .append(", name=").append(name)
-            .append( ", address=").append(address)
-            .append(", role=").append(role.toString())
-            .append( "]");
+            .append( ", address=").append(address);
+
+        if (role != null) {
+            builder.append(", role=").append(role.toString());
+        }
+        else {
+            builder.append(", role=").append("null");
+        }
+
+        builder.append( "]");
             
         return builder.toString();
     }

@@ -297,7 +297,7 @@ class BackendApplicationTests {
 		category.setDescription("Automotive parts");
 		Category inserted = categoryRepository.insertNewCategory(category);
 
-		categoryRepository.deleteCategoryById(inserted);
+		categoryRepository.deleteCategory(inserted);
 		Optional<Category> found = categoryRepository.findById(inserted.getId());
 		Assertions.assertFalse(found.isPresent(), "Category should be deleted");
 	}
@@ -542,7 +542,7 @@ class BackendApplicationTests {
 		product.setProductManager(testUser);
 		Product inserted = productRepository.insertNewProduct(product);
 		
-		productRepository.deleteProductById(inserted);
+		productRepository.deleteProduct(inserted);
 		Optional<Product> found = productRepository.findById(inserted.getId());
 		Assertions.assertFalse(found.isPresent(), "Product should be deleted");
 	}

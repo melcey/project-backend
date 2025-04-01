@@ -46,15 +46,15 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
+        
+        entityManager.refresh(newProduct);
         
         // Returns the retrieved result
         return newProduct;
     }
 
     @Override
-    public void deleteProductById(Product product) {
+    public void deleteProduct(Product product) {
         // Creates the query command to delete the product with the given ID
         String sqlQuery = "DELETE FROM products WHERE product_id = :id";
         
@@ -98,8 +98,8 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
+        
+        entityManager.refresh(updatedProduct);
         
         // Returns the retrieved result
         return updatedProduct;
@@ -118,9 +118,9 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(updatedProduct);
+
         // Returns the retrieved result
         return updatedProduct;
     }
@@ -138,9 +138,9 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(updatedProduct);
+
         // Returns the retrieved result
         return updatedProduct;
     }
@@ -158,9 +158,9 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(updatedProduct);
+
         // Returns the retrieved result
         return updatedProduct;
     }
@@ -178,9 +178,9 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(updatedProduct);
+
         // Returns the retrieved result
         return updatedProduct;
     }
@@ -198,9 +198,9 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(updatedProduct);
+
         // Returns the retrieved result
         return updatedProduct;
     }
@@ -218,9 +218,9 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(updatedProduct);
+
         // Returns the retrieved result
         return updatedProduct;
     }
@@ -238,9 +238,9 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(updatedProduct);
+
         // Returns the retrieved result
         return updatedProduct;
     }
@@ -258,9 +258,29 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(updatedProduct);
+
+        // Returns the retrieved result
+        return updatedProduct;
+    }
+
+    @Override
+    public Product updateProductImageUrl(Product product, String newImageUrl) {
+        // Creates the query command to update the image URL of the given product
+        String sqlQuery = "UPDATE products SET image_url = :new_image_url WHERE product_id = :id RETURNING *";
+        
+        // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a Product object
+        Product updatedProduct = (Product)entityManager.createNativeQuery(sqlQuery, Product.class)
+            .setParameter("new_image_url", newImageUrl)
+            .setParameter("id", product.getId())
+            .getSingleResult();
+
+        // Pending changes are written to the database
+        entityManager.flush();
+        
+        entityManager.refresh(updatedProduct);
+
         // Returns the retrieved result
         return updatedProduct;
     }
@@ -278,9 +298,9 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(updatedProduct);
+
         // Returns the retrieved result
         return updatedProduct;
     }
@@ -298,8 +318,8 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
+        
+        entityManager.refresh(updatedProduct);
         
         // Returns the retrieved result
         return updatedProduct;

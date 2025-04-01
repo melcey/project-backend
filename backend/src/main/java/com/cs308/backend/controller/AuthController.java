@@ -1,17 +1,21 @@
 package com.cs308.backend.controller;
 
-import com.cs308.backend.dao.User;
-import com.cs308.backend.dto.AuthResponse;
-import com.cs308.backend.dto.LoginRequest;
-import com.cs308.backend.dto.SignUpRequest;
-import com.cs308.backend.repo.UserRepository;
-import com.cs308.backend.security.JwtTokenProvider;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.cs308.backend.dao.User;
+import com.cs308.backend.dto.AuthResponse;
+import com.cs308.backend.dto.LoginRequest;
+import com.cs308.backend.dto.SignUpRequest;
+import com.cs308.backend.security.JwtTokenProvider;
+import com.cs308.backend.service.UserService;
 
 /*
  * How to retrieve the user details in a controller or service (later use)?
@@ -28,14 +32,14 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final JwtTokenProvider tokenProvider;
 
     public AuthController(AuthenticationManager authenticationManager,
-            UserRepository userRepository,
+            UserService userService,
             JwtTokenProvider tokenProvider) {
         this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.tokenProvider = tokenProvider;
     }
 
@@ -64,7 +68,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignUpRequest signUpRequest) {
         // Check if user already exists
-        if (userRepository.findByEmail(signUpRequest.getEmail()).isPresent()) {
+        if (userService.findByEmail(signUpRequest.getEmail()).isPresent()) {
             return ResponseEntity
                     .badRequest()
                     .body("Email already in use!");
@@ -77,7 +81,7 @@ public class AuthController {
                 signUpRequest.getRole());
 
         // Save user with encrypted email and password
-        user = userRepository.insertNewUser(
+        user = userService.insertNewUser(
                 user,
                 signUpRequest.getEmail(),
                 signUpRequest.getPassword());

@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @WebMvcTest(AuthController.class)
 // Spring Security will not block the endpoints from being called during the tests
 @WithMockUser
+// To be revisited
 public class AuthControllerTests {
 
     @Autowired

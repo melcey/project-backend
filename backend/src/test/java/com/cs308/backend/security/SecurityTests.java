@@ -1,12 +1,13 @@
 package com.cs308.backend.security;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-
-import jakarta.servlet.FilterChain;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,25 +15,32 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
 import com.cs308.backend.repo.UserRepository;
+import com.cs308.backend.service.UserService;
+
+import jakarta.servlet.FilterChain;
+
+// To be revisited
 class SecurityTests {
 
     private UserRepository userRepositoryMock;
+    private UserService userServiceMock;
     private CustomAuthenticationProvider customAuthProvider;
 
     @BeforeEach
     void setup() {
         userRepositoryMock = mock(UserRepository.class);
-        customAuthProvider = new CustomAuthenticationProvider(userRepositoryMock);
+        userServiceMock = mock(UserService.class);
+        customAuthProvider = new CustomAuthenticationProvider(userServiceMock);
         SecurityContextHolder.clearContext();
     }
 
@@ -235,6 +243,7 @@ class SecurityTests {
         verify(filterChain, times(1)).doFilter(request, response);
     }
 
+    // To be tested
     @Test
     void testJwtSecurityConfigBeans() {
         // Load Spring context for JwtSecurityConfig

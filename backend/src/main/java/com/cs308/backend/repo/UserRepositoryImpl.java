@@ -37,9 +37,8 @@ public class UserRepositoryImpl implements UserRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(newUser);
         // Returns the retrieved result
         return newUser;
     }
@@ -73,9 +72,8 @@ public class UserRepositoryImpl implements UserRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(updatedUser);
         // Returns the retrieved result
         return updatedUser;
     }
@@ -93,9 +91,8 @@ public class UserRepositoryImpl implements UserRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(updatedUser);
         // Returns the retrieved result
         return updatedUser;
     }
@@ -113,9 +110,8 @@ public class UserRepositoryImpl implements UserRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(updatedUser);
         // Returns the retrieved result
         return updatedUser;
     }
@@ -133,9 +129,8 @@ public class UserRepositoryImpl implements UserRepositoryObj {
 
         // Pending changes are written to the database
         entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
         
+        entityManager.refresh(updatedUser);
         // Returns the retrieved result
         return updatedUser;
     }

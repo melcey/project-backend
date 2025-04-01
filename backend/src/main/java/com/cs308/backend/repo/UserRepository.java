@@ -1,14 +1,14 @@
 package com.cs308.backend.repo;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
-
-import java.util.List;
-import java.util.Optional;
 
 // Extending both JpaRepository<User, Long> for findBy... queries
 // and UserRepositoryObj to be able to deal with User objects passed as parameters
@@ -33,12 +33,15 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
     List<User> findByName(String name);
 
     // Here, a JPQL query is used in order to leverage the Role enum in Java
-    @Query(value = "SELECT u FROM User u WHERE u.role = :#{#role.getValue()}")
+    @Query(value = "SELECT u FROM User u WHERE u.role = :#{#role.getValue()}", nativeQuery = false)
     List<User> findByRole(@Param("role") Role role);
 
     List<User> findByAddress(String address);
 
     Optional<User> findById(Long id);
+
+    @Query(value = "SELECT * FROM users WHERE user_id = :id AND role = :role", nativeQuery = true)
+    Optional<User> findByIdAndRole(@Param("id") Long id, @Param("role") String role);
 
     // What to do for multiple attribute search in API (if we need ever):
     // Run each query for the filters => Return the intersection

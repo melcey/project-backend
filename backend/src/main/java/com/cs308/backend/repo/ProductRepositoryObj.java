@@ -13,7 +13,7 @@ public interface ProductRepositoryObj {
     Product insertNewProduct(Product product);
 
     // The method to delete a product from the `products` table given its ID
-    void deleteProductById(Product product);
+    void deleteProduct(Product product);
 
     // The method to delete a product from the `products` table given its product manager
     void deleteProductByManager(User productManager);
@@ -44,6 +44,9 @@ public interface ProductRepositoryObj {
 
     // The method to update a product's activity status
     Product updateProductIsActive(Product product, boolean newIsActive);
+
+    // The method to update a product's image URL
+    Product updateProductImageUrl(Product product, String newImageUrl);
 
     // The method to update a product's category
     Product updateProductCategory(Product product, Category newCategory);

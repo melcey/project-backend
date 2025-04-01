@@ -1,444 +1,109 @@
 package com.cs308.backend.controller;
 
-import com.cs308.backend.dao.Product;
-import com.cs308.backend.dao.Role;
-import com.cs308.backend.dao.User;
-import com.cs308.backend.security.UserPrincipal;
-import com.cs308.backend.service.ProductService;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.cs308.backend.dao.Product;
+import com.cs308.backend.dto.CategoryResponse;
+import com.cs308.backend.dto.ProductListResponse;
+import com.cs308.backend.dto.ProductResponse;
+import com.cs308.backend.service.ProductService;
 
 @RestController
 @RequestMapping("/products")
 public class ProductController {
 
     private final ProductService productService;
+
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
 
     // Retrieve a product by its ID
     @GetMapping("/{id}")
-    public Product getProductById(@PathVariable Long id) {
+    public ResponseEntity<?> getProductById(@PathVariable Long id) {
         Optional<Product> productOpt = productService.findProductById(id);
-        return productOpt.orElse(null);
+
+        if (!productOpt.isPresent()) {
+            // Automatically handled by Spring Boot; no need to implement an error controller
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
+        }
+
+        return ResponseEntity.ok(new ProductResponse(productOpt.get().getId(), productOpt.get().getName(), productOpt.get().getModel(), productOpt.get().getSerialNumber(), productOpt.get().getDescription(), productOpt.get().getQuantityInStock(), productOpt.get().getPrice(), productOpt.get().getWarrantyStatus(), productOpt.get().getDistributorInfo(), productOpt.get().getIsActive(), productOpt.get().getImageUrl(), new CategoryResponse(productOpt.get().getCategory().getId(), productOpt.get().getCategory().getName(), productOpt.get().getCategory().getDescription())));
     }
 
-    // Turn this into a unified search endpoint
-    // Retrieve products by name (including full name and containing)
-    // For example: GET /products?name=Widget
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllProducts() {
+        List<Product> allRetrieved = productService.findAllProducts();
+        List<ProductResponse> allProducts = new ArrayList<>();
+
+        for (Product retrieved: allRetrieved) {
+            allProducts.add(new ProductResponse(retrieved.getId(), retrieved.getName(), retrieved.getModel(), retrieved.getSerialNumber(), retrieved.getDescription(), retrieved.getQuantityInStock(), retrieved.getPrice(), retrieved.getWarrantyStatus(), retrieved.getDistributorInfo(), retrieved.getIsActive(), retrieved.getImageUrl(), new CategoryResponse(retrieved.getCategory().getId(), retrieved.getCategory().getName(), retrieved.getCategory().getDescription())));
+        }
+
+        return ResponseEntity.ok(new ProductListResponse(allProducts));
+    }
+    
+    // A unified search endpoint for products
     @GetMapping
-    public List<Product> getProducts(@RequestParam(required = false) String name) {
-        if (name != null) {
-            return productService.findProductsByName(name);
-        }
-        
-        // Returns an empty ArrayList if the name is null
-        return new ArrayList<>();
-    }
+    public ResponseEntity<?> searchProducts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String model,
+            @RequestParam(required = false) String serialNumber,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) String distributorInfo,
+            @RequestParam(required = false) Boolean isActive,
+            @RequestParam(required = false) String warrantyStatus,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) Integer minQuantity,
+            @RequestParam(required = false) Integer maxQuantity) {
 
-    // Create a new product
-    @PostMapping
-    public Product createProduct(@RequestBody Product product) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ((auth == null) || (!(auth.isAuthenticated()))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
-        }
-
-        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
-            
-        User user = userDetails.getUser();
-
-        if (user.getRole() != Role.product_manager) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
+        if ((name == null) && (model == null) && (serialNumber == null) &&
+            (description == null) && (distributorInfo == null) && (isActive == null) &&
+            (warrantyStatus == null) && (minPrice == null) && (maxPrice == null) &&
+            (minQuantity == null) && (maxQuantity == null)) {
+            return ResponseEntity.ok(new ProductListResponse());
         }
 
-        product.setProductManager(user);
-        return productService.createProduct(product);
-    }
+        List<Product> foundProducts = productService.searchProducts(name, model, serialNumber, description, distributorInfo, isActive,
+                warrantyStatus, minPrice, maxPrice, minQuantity, maxQuantity);
+        List<ProductResponse> responseProductList = new ArrayList<>();
 
-    // Delete a product by its id
-    @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable Long id) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ((auth == null) || (!(auth.isAuthenticated()))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        for (Product foundProduct: foundProducts) {
+            responseProductList.add(
+                new ProductResponse(
+                    foundProduct.getId(),
+                    foundProduct.getName(),
+                    foundProduct.getModel(),
+                    foundProduct.getSerialNumber(),
+                    foundProduct.getDescription(),
+                    foundProduct.getQuantityInStock(),
+                    foundProduct.getPrice(),
+                    foundProduct.getWarrantyStatus(),
+                    foundProduct.getDistributorInfo(),
+                    foundProduct.getIsActive(),
+                    foundProduct.getImageUrl(),
+                    new CategoryResponse(
+                        foundProduct.getCategory().getId(),
+                        foundProduct.getCategory().getName(),
+                        foundProduct.getCategory().getDescription()
+                    )
+                )
+            );
         }
 
-        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
-            
-        User user = userDetails.getUser();
-
-        if (user.getRole() != Role.product_manager) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
-        }
-        
-        Optional<Product> foundProduct = productService.findProductById(id);
-        if (!(foundProduct.isPresent())) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
-        }
-        else if (!(foundProduct.get().getProductManager().equals(user))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
-        }
-
-        productService.deleteProduct(id);
-    }
-
-    // Update endpoints for individual fields
-
-    // Update product name
-    @PutMapping("/{id}/name")
-    public Product updateProductName(@PathVariable Long id, @RequestBody String newName) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ((auth == null) || (!(auth.isAuthenticated()))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
-        }
-
-        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
-            
-        User user = userDetails.getUser();
-
-        if (user.getRole() != Role.product_manager) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
-        }
-
-        Optional<Product> foundProduct = productService.findProductById(id);
-        if (!(foundProduct.isPresent())) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
-        }
-        else if (!(foundProduct.get().getProductManager().equals(user))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
-        }
-
-        return productService.updateProductName(id, newName);
-    }
-
-    // Update product model
-    @PutMapping("/{id}/model")
-    public Product updateProductModel(@PathVariable Long id, @RequestBody String newModel) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ((auth == null) || (!(auth.isAuthenticated()))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
-        }
-
-        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
-            
-        User user = userDetails.getUser();
-
-        if (user.getRole() != Role.product_manager) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
-        }
-
-        Optional<Product> foundProduct = productService.findProductById(id);
-        if (!(foundProduct.isPresent())) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
-        }
-        else if (!(foundProduct.get().getProductManager().equals(user))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
-        }
-
-        return productService.updateProductModel(id, newModel);
-    }
-
-    // Update product serial number
-    @PutMapping("/{id}/serialNumber")
-    public Product updateProductSerialNumber(@PathVariable Long id, @RequestBody String newSerialNumber) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ((auth == null) || (!(auth.isAuthenticated()))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
-        }
-
-        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
-            
-        User user = userDetails.getUser();
-
-        if (user.getRole() != Role.product_manager) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
-        }
-
-        Optional<Product> foundProduct = productService.findProductById(id);
-        if (!(foundProduct.isPresent())) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
-        }
-        else if (!(foundProduct.get().getProductManager().equals(user))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
-        }
-
-        return productService.updateProductSerialNumber(id, newSerialNumber);
-    }
-
-    // Update product description
-    @PutMapping("/{id}/description")
-    public Product updateProductDescription(@PathVariable Long id, @RequestBody String newDescription) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ((auth == null) || (!(auth.isAuthenticated()))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
-        }
-
-        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
-            
-        User user = userDetails.getUser();
-
-        if (user.getRole() != Role.product_manager) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
-        }
-
-        Optional<Product> foundProduct = productService.findProductById(id);
-        if (!(foundProduct.isPresent())) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
-        }
-        else if (!(foundProduct.get().getProductManager().equals(user))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
-        }
-
-        return productService.updateProductDescription(id, newDescription);
-    }
-
-    // Update product stock quantity
-    @PutMapping("/{id}/quantity")
-    public Product updateProductQuantity(@PathVariable Long id, @RequestBody int newQuantity) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ((auth == null) || (!(auth.isAuthenticated()))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
-        }
-
-        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
-            
-        User user = userDetails.getUser();
-
-        if (user.getRole() != Role.product_manager) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
-        }
-
-        Optional<Product> foundProduct = productService.findProductById(id);
-        if (!(foundProduct.isPresent())) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
-        }
-        else if (!(foundProduct.get().getProductManager().equals(user))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
-        }
-        
-        return productService.updateProductQuantityInStock(id, newQuantity);
-    }
-
-    // Update product price
-    @PutMapping("/{id}/price")
-    public Product updateProductPrice(@PathVariable Long id, @RequestBody BigDecimal newPrice) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ((auth == null) || (!(auth.isAuthenticated()))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
-        }
-
-        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
-            
-        User user = userDetails.getUser();
-
-        if (user.getRole() != Role.product_manager) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
-        }
-
-        Optional<Product> foundProduct = productService.findProductById(id);
-        if (!(foundProduct.isPresent())) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
-        }
-        else if (!(foundProduct.get().getProductManager().equals(user))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
-        }
-
-        return productService.updateProductPrice(id, newPrice);
-    }
-
-    // Update warranty status
-    @PutMapping("/{id}/warrantyStatus")
-    public Product updateProductWarrantyStatus(@PathVariable Long id, @RequestBody String newWarrantyStatus) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ((auth == null) || (!(auth.isAuthenticated()))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
-        }
-
-        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
-            
-        User user = userDetails.getUser();
-
-        if (user.getRole() != Role.product_manager) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
-        }
-
-        Optional<Product> foundProduct = productService.findProductById(id);
-        if (!(foundProduct.isPresent())) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
-        }
-        else if (!(foundProduct.get().getProductManager().equals(user))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
-        }
-
-        return productService.updateProductWarrantyStatus(id, newWarrantyStatus);
-    }
-    
-    // Update distributor info
-    @PutMapping("/{id}/distributorInfo")
-    public Product updateProductDistributorInfo(@PathVariable Long id, @RequestBody String newDistributorInfo) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ((auth == null) || (!(auth.isAuthenticated()))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
-        }
-
-        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
-            
-        User user = userDetails.getUser();
-
-        if (user.getRole() != Role.product_manager) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
-        }
-
-        Optional<Product> foundProduct = productService.findProductById(id);
-        if (!(foundProduct.isPresent())) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
-        }
-        else if (!(foundProduct.get().getProductManager().equals(user))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
-        }
-
-        return productService.updateProductDistributorInfo(id, newDistributorInfo);
-    }
-    
-    // Update active status
-    @PutMapping("/{id}/isActive")
-    public Product updateProductIsActive(@PathVariable Long id, @RequestBody Boolean newIsActive) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ((auth == null) || (!(auth.isAuthenticated()))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
-        }
-
-        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
-            
-        User user = userDetails.getUser();
-
-        if (user.getRole() != Role.product_manager) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
-        }
-
-        Optional<Product> foundProduct = productService.findProductById(id);
-        if (!(foundProduct.isPresent())) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
-        }
-        else if (!(foundProduct.get().getProductManager().equals(user))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
-        }
-
-        return productService.updateProductIsActive(id, newIsActive);
-    }
-    
-    // Update category
-    @PutMapping("/{id}/category")
-    public Product updateProductCategory(@PathVariable Long id, @RequestBody String newCategoryName) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ((auth == null) || (!(auth.isAuthenticated()))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
-        }
-
-        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
-            
-        User user = userDetails.getUser();
-
-        if (user.getRole() != Role.product_manager) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
-        }
-
-        Optional<Product> foundProduct = productService.findProductById(id);
-        if (!(foundProduct.isPresent())) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
-        }
-        else if (!(foundProduct.get().getProductManager().equals(user))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
-        }
-
-        return productService.updateProductCategory(id, newCategoryName);
-    }
-    
-    // Update product manager
-    @PutMapping("/{id}/productManager")
-    public Product updateProductManager(@PathVariable Long id, @RequestBody User newProductManager) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ((auth == null) || (!(auth.isAuthenticated()))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
-        }
-
-        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
-            
-        User user = userDetails.getUser();
-
-        if (user.getRole() != Role.product_manager) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
-        }
-
-        Optional<Product> foundProduct = productService.findProductById(id);
-        if (!(foundProduct.isPresent())) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
-        }
-        else if (!(foundProduct.get().getProductManager().equals(user))) {
-            // Automatically handled by Spring Boot; no need to implement an error controller
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
-        }
-
-        return productService.updateProductManager(id, newProductManager);
+        return ResponseEntity.ok(new ProductListResponse(responseProductList));
     }
 }

@@ -40,7 +40,7 @@ public class CategoryRepositoryImpl implements CategoryRepositoryObj {
     }
 
     @Override
-    public void deleteCategoryById(Category category) {
+    public void deleteCategory(Category category) {
         // Creates the query command to delete the category with the given ID
         String sqlQuery = "DELETE FROM categories WHERE category_id = :id";
         

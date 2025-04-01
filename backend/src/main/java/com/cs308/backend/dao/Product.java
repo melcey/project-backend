@@ -51,7 +51,7 @@ public class Product {
 
     @Column(name = "is_active")
     // The default value in the table is true
-    private Boolean isActive = true;
+    private boolean isActive = true;
 
     @Column(name = "image_url")
     private String imageUrl;
@@ -68,10 +68,22 @@ public class Product {
     @JoinColumn(name = "product_manager_id")
     private User productManager;
 
-    public Product() {}
+    public Product() {
+        this.name = null;
+        this.model = null;
+        this.serialNumber = null;
+        this.description = null;
+        this.quantityInStock = 0;
+        this.price = null;
+        this.warrantyStatus = null;
+        this.distributorInfo = null;
+        this.imageUrl = null;
+        this.category = null;
+        this.productManager = null;
+    }
 
     public Product(String name, String model, String serialNumber, String description, int quantityInStock,
-            BigDecimal price, String warrantyStatus, String distributorInfo, Boolean isActive, String imageUrl) {
+            BigDecimal price, String warrantyStatus, String distributorInfo, boolean isActive, String imageUrl) {
         this.name = name;
         this.model = model;
         this.serialNumber = serialNumber;
@@ -82,10 +94,12 @@ public class Product {
         this.distributorInfo = distributorInfo;
         this.isActive = isActive;
         this.imageUrl = imageUrl;
+        this.category = null;
+        this.productManager = null;
     }
 
     public Product(Long id, String name, String model, String serialNumber, String description, int quantityInStock,
-            BigDecimal price, String warrantyStatus, String distributorInfo, Boolean isActive, String imageUrl,
+            BigDecimal price, String warrantyStatus, String distributorInfo, boolean isActive, String imageUrl,
             Category category, User productManager) {
         this.id = id;
         this.name = name;
@@ -174,11 +188,11 @@ public class Product {
         this.distributorInfo = distributorInfo;
     }
 
-    public Boolean getIsActive() {
+    public boolean getIsActive() {
         return isActive;
     }
 
-    public void setIsActive(Boolean isActive) {
+    public void setIsActive(boolean isActive) {
         this.isActive = isActive;
     }
 
@@ -219,10 +233,23 @@ public class Product {
             .append(", warrantyStatus=").append(warrantyStatus)
             .append(", distributorInfo=").append(distributorInfo)
             .append(", isActive=").append(isActive)
-            .append(", imageUrl=").append(imageUrl)
-            .append(", category=").append(category)
-            .append(", productManager=").append(productManager.toString())
-            .append("]");
+            .append(", imageUrl=").append(imageUrl);
+
+        if (category != null) {
+            builder.append(", category=").append(category.toString());
+        }
+        else {
+            builder.append(", category=null");
+        }
+        
+        if (productManager != null) {
+            builder.append(", productManager=").append(productManager.toString());
+        }
+        else {
+            builder.append(", productManager=null");
+        }
+
+        builder.append("]");
             
         return builder.toString();
     }

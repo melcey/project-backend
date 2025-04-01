@@ -1,5 +1,6 @@
 package com.cs308.backend.dao;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.persistence.Column;
@@ -30,11 +31,16 @@ public class Category {
     @OneToMany(mappedBy = "category")
     private Set<Product> products;
 
-    public Category() {}
+    public Category() {
+        this.name = null;
+        this.description = null;
+        this.products = new HashSet<>();
+    }
 
     public Category(String name, String description) {
         this.name = name;
         this.description = description;
+        this.products = new HashSet<>();
     }
 
     public Long getId() {
@@ -92,5 +98,19 @@ public class Category {
         } else if (!id.equals(other.id))
             return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Category [id=")
+            .append(id)
+            .append(", name=")
+            .append(name)
+            .append(", description=")
+            .append(description)
+            .append("]");
+            
+        return builder.toString();
     }
 }

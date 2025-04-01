@@ -1,11 +1,11 @@
 package com.cs308.backend.repo;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.cs308.backend.dao.Category;
-
-import java.util.List;
-import java.util.Optional;
 
 // Extending both JpaRepository<Category, Long> for findBy... queries
 // and CategoryRepositoryObj to be able to deal with Category objects passed as parameters

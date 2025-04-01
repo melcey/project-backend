@@ -7,6 +7,18 @@ public class LoginRequest {
     private String password;
     private Role role;
 
+    public LoginRequest() {
+        this.email = null;
+        this.password = null;
+        this.role = null;
+    }
+
+    public LoginRequest(String email, String password, Role role) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
     // Getters and Setters
     public String getEmail() {
         return email;

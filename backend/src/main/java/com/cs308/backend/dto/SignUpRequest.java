@@ -9,6 +9,22 @@ public class SignUpRequest {
     private String address;
     private Role role;
 
+    public SignUpRequest() {
+        this.name = null;
+        this.email = null;
+        this.password = null;
+        this.address = null;
+        this.role = null;
+    }
+
+    public SignUpRequest(String name, String email, String password, String address, Role role) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.address = address;
+        this.role = role;
+    }
+
     // Getters and Setters
     public String getName() {
         return name;

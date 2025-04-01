@@ -9,7 +9,7 @@ public interface CategoryRepositoryObj {
     Category insertNewCategory(Category category);
 
     // The method to delete a category from the `categories` table given its ID
-    void deleteCategoryById(Category category);
+    void deleteCategory(Category category);
 
     // The method to update a category's name
     Category updateCategoryName(Category category, String newName);
