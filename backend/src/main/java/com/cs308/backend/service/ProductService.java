@@ -30,7 +30,7 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public List<Product> searchProducts(String name, String model, String serialNumber, String description, String distributorInfo, Boolean isActive, String warrantyStatus, BigDecimal minPrice, BigDecimal maxPrice, Integer minQuantity, Integer maxQuantity) {
+    public List<Product> searchProducts(String name, String model, String serialNumber, String description, String distributorInfo, Boolean isActive, String warrantyStatus, BigDecimal minPrice, BigDecimal maxPrice, Integer minQuantity, Integer maxQuantity, List<Long> categoryIds) {
 
         Set<Product> resultSet = new HashSet<>();
 
@@ -67,11 +67,16 @@ public class ProductService {
         if (maxQuantity != null) {
             resultSet.addAll(findProductsByQuantityInStockLessThanEqual(maxQuantity));
         }
+        if ((categoryIds != null) && (!(categoryIds.isEmpty()))) {
+            for (Long categoryId: categoryIds) {
+                resultSet.addAll(findProductsByCategory(findCategoryById(categoryId).get()));
+            }
+        }
         
         return new ArrayList<>(resultSet);
     }
 
-    public List<Product> searchManagedProducts(User productManager, String name, String model, String serialNumber, String description, String distributorInfo, Boolean isActive, String warrantyStatus, BigDecimal minPrice, BigDecimal maxPrice, Integer minQuantity, Integer maxQuantity) {
+    public List<Product> searchManagedProducts(User productManager, String name, String model, String serialNumber, String description, String distributorInfo, Boolean isActive, String warrantyStatus, BigDecimal minPrice, BigDecimal maxPrice, Integer minQuantity, Integer maxQuantity, List<Long> categoryIds) {
 
         Set<Product> resultSet = new HashSet<>();
 
@@ -107,6 +112,11 @@ public class ProductService {
         }
         if (maxQuantity != null) {
             resultSet.addAll(findManagedProductsByQuantityInStockLessThanEqual(maxQuantity, productManager));
+        }
+        if ((categoryIds != null) && (!(categoryIds.isEmpty()))) {
+            for (Long categoryId: categoryIds) {
+                resultSet.addAll(findManagedProductsByCategory(findCategoryById(categoryId).get(), productManager));
+            }
         }
         
         return new ArrayList<>(resultSet);
@@ -455,11 +465,11 @@ public class ProductService {
                 .orElse(null);
     }
 
-    public Product updateProductCategory(Long productId, String newCategoryName) {
-        Category newCategory = categoryRepository.findByName(newCategoryName).get(0);
+    public Product updateProductCategory(Long productId, Long newCategoryId) {
+        Optional<Category> newCategory = categoryRepository.findById(newCategoryId);
 
         return productRepository.findById(productId)
-                .map(product -> productRepository.updateProductCategory(product, newCategory))
+                .map(product -> productRepository.updateProductCategory(product, newCategory.get()))
                 .orElse(null);
     }
     

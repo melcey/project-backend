@@ -56,6 +56,8 @@ public class ProductController {
     }
     
     // A unified search endpoint for products
+    // Example use for category search:
+    //GET /products?categoryId=1&categoryId=2&categoryId=3
     @GetMapping
     public ResponseEntity<?> searchProducts(
             @RequestParam(required = false) String name,
@@ -68,17 +70,18 @@ public class ProductController {
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) Integer minQuantity,
-            @RequestParam(required = false) Integer maxQuantity) {
+            @RequestParam(required = false) Integer maxQuantity,
+            @RequestParam(required = false) List<Long> categoryId) {
 
-        if ((name == null) && (model == null) && (serialNumber == null) &&
-            (description == null) && (distributorInfo == null) && (isActive == null) &&
-            (warrantyStatus == null) && (minPrice == null) && (maxPrice == null) &&
-            (minQuantity == null) && (maxQuantity == null)) {
-            return ResponseEntity.ok(new ProductListResponse());
-        }
+            if ((name == null) && (model == null) && (serialNumber == null) &&
+                (description == null) && (distributorInfo == null) && (isActive == null) &&
+                (warrantyStatus == null) && (minPrice == null) && (maxPrice == null) &&
+                (minQuantity == null) && (maxQuantity == null) && ((categoryId == null) || (categoryId.isEmpty()))) {
+                return ResponseEntity.ok(new ProductListResponse());
+            }
 
         List<Product> foundProducts = productService.searchProducts(name, model, serialNumber, description, distributorInfo, isActive,
-                warrantyStatus, minPrice, maxPrice, minQuantity, maxQuantity);
+                warrantyStatus, minPrice, maxPrice, minQuantity, maxQuantity, categoryId);
         List<ProductResponse> responseProductList = new ArrayList<>();
 
         for (Product foundProduct: foundProducts) {

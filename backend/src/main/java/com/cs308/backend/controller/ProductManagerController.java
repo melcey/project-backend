@@ -105,6 +105,8 @@ public class ProductManagerController {
 
 
     // Search endpoint for products you manage as a product manager
+    // Example use for category search:
+    //GET /prodman?categoryId=1&categoryId=2&categoryId=3
     @GetMapping
     public ResponseEntity<?> searchManagedProducts(
             @RequestParam(required = false) String name,
@@ -117,7 +119,8 @@ public class ProductManagerController {
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) Integer minQuantity,
-            @RequestParam(required = false) Integer maxQuantity) {
+            @RequestParam(required = false) Integer maxQuantity,
+            @RequestParam(required = false) List<Long> categoryId) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if ((auth == null) || (!(auth.isAuthenticated()))) {
@@ -137,12 +140,12 @@ public class ProductManagerController {
         if ((name == null) && (model == null) && (serialNumber == null) &&
             (description == null) && (distributorInfo == null) && (isActive == null) &&
             (warrantyStatus == null) && (minPrice == null) && (maxPrice == null) &&
-            (minQuantity == null) && (maxQuantity == null)) {
+            (minQuantity == null) && (maxQuantity == null) && ((categoryId == null) || (categoryId.isEmpty()))) {
             return ResponseEntity.ok(new ProductListResponse());
         }
 
         List<Product> foundProducts = productService.searchManagedProducts(user, name, model, serialNumber, description, distributorInfo, isActive,
-                warrantyStatus, minPrice, maxPrice, minQuantity, maxQuantity);
+                warrantyStatus, minPrice, maxPrice, minQuantity, maxQuantity, categoryId);
         List<ProductResponse> responseProductList = new ArrayList<>();
 
         for (Product foundProduct: foundProducts) {
@@ -274,7 +277,7 @@ public class ProductManagerController {
         if (updateProductRequest == null) {
             throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, "No updates to the product");
         }
-        else if ((updateProductRequest.getName() == null) && (updateProductRequest.getModel() == null) && (updateProductRequest.getSerialNumber() == null) && (updateProductRequest.getDescription() == null) && (updateProductRequest.getQuantityInStock() == null) && ((updateProductRequest.getPrice() == null)) && (updateProductRequest.getWarrantyStatus() == null) && (updateProductRequest.getDistributorInfo() == null) && (updateProductRequest.getIsActive() == null) && (updateProductRequest.getCategory() == null)) {
+        else if ((updateProductRequest.getName() == null) && (updateProductRequest.getModel() == null) && (updateProductRequest.getSerialNumber() == null) && (updateProductRequest.getDescription() == null) && (updateProductRequest.getQuantityInStock() == null) && ((updateProductRequest.getPrice() == null)) && (updateProductRequest.getWarrantyStatus() == null) && (updateProductRequest.getDistributorInfo() == null) && (updateProductRequest.getIsActive() == null) && (updateProductRequest.getCategoryId() == null)) {
             throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, "No updates to the product");
         }
 
@@ -338,9 +341,9 @@ public class ProductManagerController {
             actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldImageUrl, updateProductRequest.getImageUrl()));
         }
 
-        if (updateProductRequest.getCategory() != null) {
+        if (updateProductRequest.getCategoryId() != null) {
             String oldCategory = product.getCategory().toString();
-            product = productService.updateProductCategory(id, updateProductRequest.getCategory());
+            product = productService.updateProductCategory(id, updateProductRequest.getCategoryId());
             actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldCategory, product.getCategory().toString()));
         }
 
@@ -730,7 +733,7 @@ public class ProductManagerController {
     
     // Update category
     @PutMapping("/{id}/category")
-    public ResponseEntity<?> updateProductCategory(@PathVariable Long id, @RequestBody String newCategoryName) {
+    public ResponseEntity<?> updateProductCategory(@PathVariable Long id, @RequestBody Long newCategoryId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if ((auth == null) || (!(auth.isAuthenticated()))) {
             // Automatically handled by Spring Boot; no need to implement an error controller
@@ -757,7 +760,7 @@ public class ProductManagerController {
         }
 
         String oldCategory = foundProduct.get().getCategory().toString();
-        Product updatedProduct = productService.updateProductCategory(id, newCategoryName);
+        Product updatedProduct = productService.updateProductCategory(id, newCategoryId);
         actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldCategory, updatedProduct.getCategory().toString()));
         return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
     }
