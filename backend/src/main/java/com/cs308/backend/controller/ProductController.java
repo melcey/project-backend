@@ -1,5 +1,6 @@
 package com.cs308.backend.controller;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -8,8 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -17,7 +18,6 @@ import com.cs308.backend.dao.Product;
 import com.cs308.backend.dto.CategoryResponse;
 import com.cs308.backend.dto.ProductListResponse;
 import com.cs308.backend.dto.ProductResponse;
-import com.cs308.backend.dto.SearchProductRequest;
 import com.cs308.backend.service.ProductService;
 
 @RestController
@@ -57,21 +57,28 @@ public class ProductController {
     
     // A unified search endpoint for products
     @GetMapping
-    public ResponseEntity<?> searchProducts(@RequestBody SearchProductRequest productToSearch) {
+    public ResponseEntity<?> searchProducts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String model,
+            @RequestParam(required = false) String serialNumber,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) String distributorInfo,
+            @RequestParam(required = false) Boolean isActive,
+            @RequestParam(required = false) String warrantyStatus,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) Integer minQuantity,
+            @RequestParam(required = false) Integer maxQuantity) {
 
-        if (productToSearch == null) {
+        if ((name == null) && (model == null) && (serialNumber == null) &&
+            (description == null) && (distributorInfo == null) && (isActive == null) &&
+            (warrantyStatus == null) && (minPrice == null) && (maxPrice == null) &&
+            (minQuantity == null) && (maxQuantity == null)) {
             return ResponseEntity.ok(new ProductListResponse());
         }
 
-        if ((productToSearch.getName() == null) && (productToSearch.getModel() == null) && (productToSearch.getSerialNumber() == null) &&
-            (productToSearch.getDescription() == null) && (productToSearch.getDistributorInfo() == null) && (productToSearch.getIsActive() == null) &&
-            (productToSearch.getWarrantyStatus() == null) && (productToSearch.getMinPrice() == null) && (productToSearch.getMaxPrice() == null) &&
-            (productToSearch.getMinQuantity() == null) && (productToSearch.getMaxQuantity() == null) && ((productToSearch.getCategoryIds() == null) || (productToSearch.getCategoryIds().isEmpty()))) {
-            return ResponseEntity.ok(new ProductListResponse());
-        }
-
-        List<Product> foundProducts = productService.searchProducts(productToSearch.getName(), productToSearch.getModel(), productToSearch.getSerialNumber(), productToSearch.getDescription(), productToSearch.getDistributorInfo(), productToSearch.getIsActive(),
-            productToSearch.getWarrantyStatus(), productToSearch.getMinPrice(), productToSearch.getMaxPrice(), productToSearch.getMinQuantity(), productToSearch.getMaxQuantity(), productToSearch.getCategoryIds());
+        List<Product> foundProducts = productService.searchProducts(name, model, serialNumber, description, distributorInfo, isActive,
+                warrantyStatus, minPrice, maxPrice, minQuantity, maxQuantity);
         List<ProductResponse> responseProductList = new ArrayList<>();
 
         for (Product foundProduct: foundProducts) {

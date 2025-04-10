@@ -14,7 +14,7 @@ public class UpdateProductRequest {
     private String distributorInfo;
     private Boolean isActive;
     private String imageUrl;
-    private Long categoryId;
+    private String category;
 
     public UpdateProductRequest() {
         this.name = null;
@@ -26,12 +26,12 @@ public class UpdateProductRequest {
         this.warrantyStatus = null;
         this.distributorInfo = null;
         this.imageUrl = null;
-        this.categoryId = null;
+        this.category = null;
     }
 
     public UpdateProductRequest(String name, String model, String serialNumber, String description,
             Integer quantityInStock, BigDecimal price, String warrantyStatus, String distributorInfo, Boolean isActive,
-            String imageUrl, Long categoryId) {
+            String imageUrl, String category) {
         this.name = name;
         this.model = model;
         this.serialNumber = serialNumber;
@@ -42,7 +42,7 @@ public class UpdateProductRequest {
         this.distributorInfo = distributorInfo;
         this.isActive = isActive;
         this.imageUrl = imageUrl;
-        this.categoryId = categoryId;
+        this.category = category;
     }
 
     public String getName() {
@@ -125,12 +125,12 @@ public class UpdateProductRequest {
         this.imageUrl = imageUrl;
     }
 
-    public Long getCategoryId() {
-        return categoryId;
+    public String getCategory() {
+        return category;
     }
 
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory(String category) {
+        this.category = category;
     }
     
 }
