@@ -74,11 +74,11 @@ public class Comment {
         this.commentingUser = commentingUser;
     }
 
-    public boolean isApproved() {
+    public boolean getIsApproved() {
         return approved;
     }
 
-    public void setApproved(boolean approved) {
+    public void setIsApproved(boolean approved) {
         this.approved = approved;
     }
 
