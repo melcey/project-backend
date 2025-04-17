@@ -41,9 +41,15 @@ Backend code for the course project of the CS 308 course in Sabancı University.
 
 ## How to run tests for the backend?
 
-- Use the file `docker-compose.test.yml` to run the tests. You should see the outputs on the logs of the container.
+- If you want to run the tests in your local environment:
 
-- To see the logs of the container, you can click the container named `backend-test` on Docker Desktop.
+  - Since we use Testcontainers to mock the database, you will need to run Docker at the background while you are running the tests in your local environment.
+
+- If you want to run the tests in Docker:
+
+  - Use the file `docker-compose.test.yml` to run the tests. You should see the outputs on the logs of the container.
+
+  - To see the logs of the container, you can click the container named `backend-test` on Docker Desktop.
 
 ## Important Notes on Database Connections
 
