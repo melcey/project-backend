@@ -2,6 +2,7 @@ package com.cs308.backend.dao;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "cart_items", schema = "public")
@@ -22,8 +23,21 @@ public class CartItem {
     @Column(name = "quantity", nullable = false)
     private int quantity;
 
-    @Column(name = "price_at_addition", nullable = false)
+    @Column(name = "price_at_addition", nullable = false, precision = 10, scale = 2)
     private BigDecimal priceAtAddition;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    public CartItem() {}
+
+    public CartItem(Cart cart, Product product, int quantity, BigDecimal priceAtAddition) {
+        this.cart = cart;
+        this.product = product;
+        this.quantity = quantity;
+        this.priceAtAddition = priceAtAddition;
+        this.createdAt = LocalDateTime.now();
+    }
 
     // Getters and Setters
     public Long getId() {
@@ -64,5 +78,13 @@ public class CartItem {
 
     public void setPriceAtAddition(BigDecimal priceAtAddition) {
         this.priceAtAddition = priceAtAddition;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

@@ -33,7 +33,7 @@ public class Delivery {
     @Column(name = "quantity", nullable = false)
     private int quantity;
 
-    @Column(name = "total_price", nullable = false)
+    @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalPrice;
 
     @Column(name = "delivery_address")

@@ -1,41 +1,30 @@
 package com.cs308.backend.service;
 
-import com.cs308.backend.d
-
-    public Object addItemToCart(Long userId, Long productId, int quantity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addItemToCart'");
-    }
-
-    public Object getOrCreateCart(Long userId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getOrCreateCart'");
-    }ao.Cart;
+import com.cs308.backend.dao.Cart;
 import com.cs308.backend.dao.CartItem;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.repo.CartRepository;
-import com.cs308.backend.repo.CartItemRepository;
+import com.cs308.backend.repo.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 @Service
 public class CartService {
     private final CartRepository cartRepository;
-    private final CartItemRepository cartItemRepository;
     private final ProductService productService;
+    private final UserRepository userRepository;
 
-    public CartService(CartRepository cartRepository, CartItemRepository cartItemRepository, ProductService productService) {
+    public CartService(CartRepository cartRepository, ProductService productService, UserRepository userRepository) {
         this.cartRepository = cartRepository;
-        this.cartItemRepository = cartItemRepository;
         this.productService = productService;
+        this.userRepository = userRepository;
     }
 
     public Cart getOrCreateCart(Long userId) {
         return cartRepository.findByUserId(userId).orElseGet(() -> {
             Cart cart = new Cart();
-            cart.setUser(new User(userId)); // Assuming User entity exists
+            cart.setUser(userRepository.findById(userId).get()); // Assuming User entity exists
             return cartRepository.save(cart);
         });
     }

@@ -47,7 +47,7 @@ public class Comment {
         this.commentedProduct = commentedProduct;
         this.commentingUser = commentingUser;
         this.comment = comment;
-        this.commentDate =LocalDateTime.now();
+        this.commentDate = LocalDateTime.now();
     }
 
     public Long getId() {
