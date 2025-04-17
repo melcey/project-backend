@@ -51,7 +51,7 @@ public class User {
     private Set<Product> managedProducts;
 
     // The default constructor
-    public User() {
+    public User(Long userId) {
         this.id = null;
         this.name = null;
         this.encryptedEmail = null;
