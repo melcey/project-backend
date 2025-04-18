@@ -1,5 +1,17 @@
 package com.cs308.backend.controller;
 
+import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Rating;
 import com.cs308.backend.dao.Role;
@@ -9,24 +21,13 @@ import com.cs308.backend.repo.ProductRepository;
 import com.cs308.backend.repo.RatingRepository;
 import com.cs308.backend.security.UserPrincipal;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Optional;
-
 @RestController
-@RequestMapping("/api/ratings")
+@RequestMapping("/ratings")
 public class RatingController {
 
     private final RatingRepository ratingRepository;
     private final ProductRepository productRepository;
 
-    @Autowired
     public RatingController(RatingRepository ratingRepository, ProductRepository productRepository) {
         this.ratingRepository = ratingRepository;
         this.productRepository = productRepository;
