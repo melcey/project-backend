@@ -22,7 +22,7 @@ public class OrderItem {
 
     // Many order items-one order
     @ManyToOne
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
     // One order item-one product

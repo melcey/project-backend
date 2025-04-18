@@ -2,7 +2,10 @@ package com.cs308.backend.dao;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -37,14 +41,20 @@ public class Order {
     @Column(name = "delivery_address")
     private String deliveryAddress;
 
-    public Order() {}
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems;
 
-    public Order(User user, LocalDateTime orderDate, String status, BigDecimal totalPrice, String deliveryAddress) {
+    public Order() {
+        orderItems = new ArrayList<>();
+    }
+
+    public Order(User user, String status, BigDecimal totalPrice, String deliveryAddress, List<OrderItem> orderItems) {
         this.user = user;
-        this.orderDate = orderDate;
+        this.orderDate = LocalDateTime.now();
         this.status = status;
         this.totalPrice = totalPrice;
         this.deliveryAddress = deliveryAddress;
+        this.orderItems = orderItems;
     }
 
     public Long getId() {
@@ -93,6 +103,14 @@ public class Order {
 
     public void setDeliveryAddress(String deliveryAddress) {
         this.deliveryAddress = deliveryAddress;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
     }
 
     @Override
