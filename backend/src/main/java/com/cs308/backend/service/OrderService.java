@@ -2,6 +2,7 @@ package com.cs308.backend.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,10 @@ public class OrderService {
 
     public List<Order> findAllOrdersByUser(User user) {
         return orderRepository.findAllByUser(user);
+    }
+
+    public Optional<Order> findOrder(Long orderId) {
+        return orderRepository.findById(orderId);
     }
 
     public List<OrderItem> findAllOrderItemsByProduct(Product product) {

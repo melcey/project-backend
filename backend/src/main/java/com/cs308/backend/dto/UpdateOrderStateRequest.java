@@ -1,13 +1,13 @@
 package com.cs308.backend.dto;
 
-public class UpdateOrderRequest {
+public class UpdateOrderStateRequest {
     private String status;
 
-    public UpdateOrderRequest() {
-        status = null;
+    public UpdateOrderStateRequest() {
+        this.status = null;
     }
 
-    public UpdateOrderRequest(String status) {
+    public UpdateOrderStateRequest(String status) {
         this.status = status;
     }
 
