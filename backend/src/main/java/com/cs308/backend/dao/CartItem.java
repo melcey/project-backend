@@ -87,4 +87,43 @@ public class CartItem {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("CartItem [id=").append(id)
+            .append(", cart=").append(cart)
+            .append(", product=").append(product)
+            .append(", quantity=").append(quantity)
+            .append(", priceAtAddition=").append(priceAtAddition)
+            .append(", createdAt=").append(createdAt)
+            .append("]");
+
+        return builder.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        CartItem other = (CartItem) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        return true;
+    }
 }

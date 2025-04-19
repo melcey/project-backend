@@ -22,7 +22,7 @@ public class OrderItem {
 
     // Many order items-one order
     @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "order_id")
     private Order order;
 
     // One order item-one product
@@ -91,7 +91,7 @@ public class OrderItem {
         builder.append("OrderItem [id=")
             .append(id)
             .append(", order=")
-            .append(order.toString())
+            .append(order)
             .append(", product=")
             .append(product)
             .append(", quantity=")

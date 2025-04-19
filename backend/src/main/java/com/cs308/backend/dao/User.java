@@ -3,6 +3,7 @@ package com.cs308.backend.dao;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -25,7 +26,7 @@ public class User {
     private Long id;
     
     // The name of the user
-    @Column(name = "name", nullable = false, length = 255)
+    @Column(name = "name", length = 255, nullable = false)
     private String name;
 
     // The encrypted email address of the user
@@ -47,17 +48,11 @@ public class User {
 
     // The products (to be used when the role is product manager)
     // One-to-many association mapped by the "productManager" field in the Product class
-    @OneToMany(mappedBy = "productManager")
+    @OneToMany(mappedBy = "productManager", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Product> managedProducts;
 
     // The default constructor
     public User() {
-        this.id = null;
-        this.name = null;
-        this.encryptedEmail = null;
-        this.address = null;
-        this.passwordHashed = null;
-        this.role = null;
         this.managedProducts = new HashSet<>();
     }
 
@@ -133,22 +128,28 @@ public class User {
         this.role = role;
     }
 
+    public Set<Product> getManagedProducts() {
+        return managedProducts;
+    }
+
+    public void setManagedProducts(Set<Product> managedProducts) {
+        this.managedProducts = managedProducts;
+    }
+
     // toString() method overridden for User
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("User [id=").append(id)
             .append(", name=").append(name)
-            .append( ", address=").append(address);
+            .append( ", address=").append(address)
+            .append(", role=").append(role);
 
-        if (role != null) {
-            builder.append(", role=").append(role.toString());
-        }
-        else {
-            builder.append(", role=").append("null");
+        if (this.role.equals(Role.product_manager)) {
+            builder.append(", managedProducts=").append(managedProducts);
         }
 
-        builder.append( "]");
+        builder.append("]");
             
         return builder.toString();
     }
@@ -178,13 +179,5 @@ public class User {
         } else if (!id.equals(other.id))
             return false;
         return true;
-    }
-
-    public Set<Product> getManagedProducts() {
-        return managedProducts;
-    }
-
-    public void setManagedProducts(Set<Product> managedProducts) {
-        this.managedProducts = managedProducts;
     }
 }

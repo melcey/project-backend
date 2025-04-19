@@ -1,5 +1,7 @@
 package com.cs308.backend.controller;
 
+import java.util.Optional;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
 import com.cs308.backend.dto.AuthResponse;
 import com.cs308.backend.dto.LoginRequest;
+import com.cs308.backend.dto.MessageResponse;
 import com.cs308.backend.dto.SignUpRequest;
 import com.cs308.backend.security.JwtTokenProvider;
 import com.cs308.backend.service.UserService;
@@ -71,24 +75,33 @@ public class AuthController {
         if (userService.findByEmail(signUpRequest.getEmail()).isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body("Email already in use!");
+                    .body(new MessageResponse("Email already in use!"));
         }
 
-        // Create new user
-        User user = new User(
+        try {
+            // Create new user
+            User user = new User(
                 signUpRequest.getName(),
                 signUpRequest.getAddress(),
-                signUpRequest.getRole());
+                Role.fromString(signUpRequest.getRole()));
 
-        // Save user with encrypted email and password
-        user = userService.insertNewUser(
+            // Save user with encrypted email and password
+            Optional<User> createdUser = userService.insertNewUser(
                 user,
                 signUpRequest.getEmail(),
                 signUpRequest.getPassword());
 
-        // No authentication will be performed while registering a user; they will need to explicitly log in
+            if (!(createdUser.isPresent())) {
+                return ResponseEntity.badRequest().body(new MessageResponse("User creation failed"));
+            }
 
-        // Return the success message
-        return ResponseEntity.ok("OK");
+            // No authentication will be performed while registering a user; they will need to explicitly log in
+
+            // Return the success message
+            return ResponseEntity.ok(new MessageResponse("OK"));
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse("User creation failed"));
+        }
     }
 }

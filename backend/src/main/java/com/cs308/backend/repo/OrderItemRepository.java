@@ -1,11 +1,12 @@
 package com.cs308.backend.repo;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.cs308.backend.dao.Order;
 import com.cs308.backend.dao.OrderItem;
 import com.cs308.backend.dao.Product;
-import java.util.List;
 
 
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {

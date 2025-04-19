@@ -41,7 +41,7 @@ public class UserService {
         return userRepository.findByIdAndRole(id, role.getValue());
     }
     
-    public User insertNewUser(User user, String email, String password) {
+    public Optional<User> insertNewUser(User user, String email, String password) {
         return userRepository.insertNewUser(user, email, password);
     }
 
@@ -49,19 +49,19 @@ public class UserService {
         userRepository.deleteUserById(user);
     }
 
-    public User updateUserName(User user, String newName) {
+    public Optional<User> updateUserName(User user, String newName) {
         return userRepository.updateUserName(user, newName);
     }
 
-    public User updateUserEmail(User user, String newEmail) {
+    public Optional<User> updateUserEmail(User user, String newEmail) {
         return userRepository.updateUserEmail(user, newEmail);
     }
 
-    public User updateUserAddress(User user, String newAddress) {
+    public Optional<User> updateUserAddress(User user, String newAddress) {
         return userRepository.updateUserAddress(user, newAddress);
     }
 
-    public User updateUserPassword(User user, String newPassword) {
+    public Optional<User> updateUserPassword(User user, String newPassword) {
         return userRepository.updateUserPassword(user, newPassword);
     }
 }

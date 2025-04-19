@@ -8,6 +8,8 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,7 +35,8 @@ public class Order {
     private LocalDateTime orderDate;
 
     @Column(name = "status", length = 50, nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
     @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalPrice;
@@ -45,10 +48,10 @@ public class Order {
     private List<OrderItem> orderItems;
 
     public Order() {
-        orderItems = new ArrayList<>();
+        this.orderItems = new ArrayList<>();
     }
 
-    public Order(User user, String status, BigDecimal totalPrice, String deliveryAddress, List<OrderItem> orderItems) {
+    public Order(User user, OrderStatus status, BigDecimal totalPrice, String deliveryAddress, List<OrderItem> orderItems) {
         this.user = user;
         this.orderDate = LocalDateTime.now();
         this.status = status;
@@ -81,11 +84,11 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-    public String getStatus() {
+    public OrderStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(OrderStatus status) {
         this.status = status;
     }
 
@@ -116,18 +119,13 @@ public class Order {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Order [id=")
-            .append(id)
-            .append(", user=")
-            .append(user.toString())
-            .append(", orderDate=")
-            .append(orderDate)
-            .append(", status=")
-            .append(status)
-            .append(", totalPrice=")
-            .append(totalPrice)
-            .append(", deliveryAddress=")
-            .append(deliveryAddress)
+        builder.append("Order [id=").append(id)
+            .append(", user=").append(user)
+            .append(", orderDate=").append(orderDate)
+            .append(", status=").append(status)
+            .append(", totalPrice=").append(totalPrice)
+            .append(", deliveryAddress=").append(deliveryAddress)
+            .append(", orderItems=").append(orderItems)
             .append("]");
 
         return builder.toString();

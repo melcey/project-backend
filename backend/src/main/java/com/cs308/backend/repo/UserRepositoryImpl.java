@@ -1,5 +1,7 @@
 package com.cs308.backend.repo;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,27 +22,31 @@ public class UserRepositoryImpl implements UserRepositoryObj {
     private EntityManager entityManager;
 
     @Override
-    public User insertNewUser(User user, String email, String password) {
-        
+    public Optional<User> insertNewUser(User user, String email, String password) {
         // Creates the query command in SQL to insert the new record to the table and return the inserted data
         // Casts the result from crypt() into BYTEA
         String sqlQuery = "INSERT INTO users (name, email, home_address, password_hash, role) VALUES (:name, crypt(:email, gen_salt('bf'))::bytea, :address, crypt(:password, gen_salt('bf'))::bytea, :role) RETURNING *";
-        
-        // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
-        User newUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
-            .setParameter("name", user.getName())
-            .setParameter("email", email)
-            .setParameter("address", user.getAddress())
-            .setParameter("password", password)
-            .setParameter("role", user.getRole().getValue())
-            .getSingleResult();
 
-        // Pending changes are written to the database
-        entityManager.flush();
-        
-        entityManager.refresh(newUser);
-        // Returns the retrieved result
-        return newUser;
+        try {
+            // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
+            User newUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
+                .setParameter("name", user.getName())
+                .setParameter("email", email)
+                .setParameter("address", user.getAddress())
+                .setParameter("password", password)
+                .setParameter("role", user.getRole().getValue())
+                .getSingleResult();
+
+            // Pending changes are written to the database
+            entityManager.flush();
+            entityManager.refresh(newUser);
+
+            // Returns the retrieved result
+            return Optional.of(newUser);
+        }
+        catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -60,78 +66,98 @@ public class UserRepositoryImpl implements UserRepositoryObj {
     }
 
     @Override
-    public User updateUserName(User user, String newName) {
+    public Optional<User> updateUserName(User user, String newName) {
         // Creates the query command to update the name of the given user
         String sqlQuery = "UPDATE users SET name = :new_name WHERE user_id = :id RETURNING *";
-        
-        // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
-        User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
-            .setParameter("new_name", newName)
-            .setParameter("id", user.getId())
-            .getSingleResult();
 
-        // Pending changes are written to the database
-        entityManager.flush();
-        
-        entityManager.refresh(updatedUser);
-        // Returns the retrieved result
-        return updatedUser;
+        try {
+            // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
+            User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
+                .setParameter("new_name", newName)
+                .setParameter("id", user.getId())
+                .getSingleResult();
+
+            // Pending changes are written to the database
+            entityManager.flush();
+            entityManager.refresh(updatedUser);
+
+            // Returns the retrieved result
+            return Optional.of(updatedUser);
+        }
+        catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public User updateUserEmail(User user, String newEmail) {
+    public Optional<User> updateUserEmail(User user, String newEmail) {
         // Creates the query command to update the email of the given user
         String sqlQuery = "UPDATE users SET email = crypt(:new_email, gen_salt('bf'))::bytea WHERE user_id = :id RETURNING *";
-        
-        // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
-        User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
-            .setParameter("new_email", newEmail)
-            .setParameter("id", user.getId())
-            .getSingleResult();
 
-        // Pending changes are written to the database
-        entityManager.flush();
-        
-        entityManager.refresh(updatedUser);
-        // Returns the retrieved result
-        return updatedUser;
+        try {
+            // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
+            User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
+                .setParameter("new_email", newEmail)
+                .setParameter("id", user.getId())
+                .getSingleResult();
+
+            // Pending changes are written to the database
+            entityManager.flush();
+            entityManager.refresh(updatedUser);
+
+            // Returns the retrieved result
+            return Optional.of(updatedUser);
+        }
+        catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public User updateUserAddress(User user, String newAddress) {
+    public Optional<User> updateUserAddress(User user, String newAddress) {
         // Creates the query command to update the address of the given user
         String sqlQuery = "UPDATE users SET home_address = :new_address WHERE user_id = :id RETURNING *";
-        
-        // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
-        User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
-            .setParameter("new_address", newAddress)
-            .setParameter("id", user.getId())
-            .getSingleResult();
 
-        // Pending changes are written to the database
-        entityManager.flush();
-        
-        entityManager.refresh(updatedUser);
-        // Returns the retrieved result
-        return updatedUser;
+        try {
+            // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
+            User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
+                .setParameter("new_address", newAddress)
+                .setParameter("id", user.getId())
+                .getSingleResult();
+
+            // Pending changes are written to the database
+            entityManager.flush();
+            entityManager.refresh(updatedUser);
+
+            // Returns the retrieved result
+            return Optional.of(updatedUser);
+        }
+        catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public User updateUserPassword(User user, String newPassword) {
+    public Optional<User> updateUserPassword(User user, String newPassword) {
         // Creates the query command to update the password of the given user
         String sqlQuery = "UPDATE users SET password_hash = crypt(:new_password, gen_salt('bf'))::bytea WHERE user_id = :id RETURNING *";
-        
-        // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
-        User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
-            .setParameter("new_password", newPassword)
-            .setParameter("id", user.getId())
-            .getSingleResult();
 
-        // Pending changes are written to the database
-        entityManager.flush();
-        
-        entityManager.refresh(updatedUser);
-        // Returns the retrieved result
-        return updatedUser;
+        try {
+            // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
+            User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
+                .setParameter("new_password", newPassword)
+                .setParameter("id", user.getId())
+                .getSingleResult();
+
+            // Pending changes are written to the database
+            entityManager.flush();
+
+            entityManager.refresh(updatedUser);
+            // Returns the retrieved result
+            return Optional.of(updatedUser);
+        }
+        catch (Exception e) {
+            return Optional.empty();
+        }
     }
 }

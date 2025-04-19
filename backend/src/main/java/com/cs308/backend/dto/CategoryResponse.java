@@ -5,11 +5,7 @@ public class CategoryResponse {
     private String name;
     private String description;
 
-    public CategoryResponse() {
-        this.id = null;
-        this.name = null;
-        this.description = null;
-    }
+    public CategoryResponse() {}
 
     public CategoryResponse(Long id, String name, String description) {
         this.id = id;
@@ -42,10 +38,23 @@ public class CategoryResponse {
     }
 
     @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("CategoryResponse [id=").append(id)
+            .append(", name=").append(name)
+            .append(", description=").append(description)
+            .append("]");
+
+        return builder.toString();
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((description == null) ? 0 : description.hashCode());
         return result;
     }
 
@@ -63,6 +72,16 @@ public class CategoryResponse {
                 return false;
         } else if (!id.equals(other.id))
             return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (description == null) {
+            if (other.description != null)
+                return false;
+        } else if (!description.equals(other.description))
+            return false;
         return true;
-    }    
+    } 
 }

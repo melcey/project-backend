@@ -3,9 +3,7 @@ package com.cs308.backend.dto;
 public class UpdateOrderStateRequest {
     private String status;
 
-    public UpdateOrderStateRequest() {
-        this.status = null;
-    }
+    public UpdateOrderStateRequest() {}
 
     public UpdateOrderStateRequest(String status) {
         this.status = status;
@@ -17,5 +15,39 @@ public class UpdateOrderStateRequest {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("UpdateOrderStateRequest [status=").append(status)
+            .append("]");
+
+        return builder.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((status == null) ? 0 : status.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        UpdateOrderStateRequest other = (UpdateOrderStateRequest) obj;
+        if (status == null) {
+            if (other.status != null)
+                return false;
+        } else if (!status.equals(other.status))
+            return false;
+        return true;
     }
 }

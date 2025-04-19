@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.cs308.backend.dao.Order;
 import com.cs308.backend.dao.OrderItem;
+import com.cs308.backend.dao.OrderStatus;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.User;
 import com.cs308.backend.repo.OrderItemRepository;
@@ -23,13 +24,23 @@ public class OrderService {
         this.orderItemRepository = orderItemRepository;
     }
 
-    public Order addNewOrder(Order orderToAdd) {
-        return orderRepository.save(orderToAdd);
+    public Optional<Order> addNewOrder(Order orderToAdd) {
+        try {
+            return Optional.of(orderRepository.save(orderToAdd));
+        }
+        catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
-    public Order updateOrderStatus(Order orderToUpdate, String newStatus) {
-        orderToUpdate.setStatus(newStatus);
-        return orderRepository.save(orderToUpdate);
+    public Optional<Order> updateOrderStatus(Order orderToUpdate, String newStatus) {
+        try {
+            orderToUpdate.setStatus(OrderStatus.fromString(newStatus));
+            return Optional.of(orderRepository.save(orderToUpdate));
+        }
+        catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     public List<Order> findAllOrdersByUser(User user) {
@@ -49,8 +60,10 @@ public class OrderService {
 
         List<OrderItem> orderItemsOfProduct = orderItemRepository.findAllByProduct(product);
         for (OrderItem orderItemOfProduct: orderItemsOfProduct) {
-            if (orderRepository.findByOrderItemsContains(orderItemOfProduct).isPresent()) {
-                ordersWithProduct.add(orderRepository.findByOrderItemsContains(orderItemOfProduct).get());
+            Optional<Order> retrievedOrder = orderRepository.findByOrderItemsContains(orderItemOfProduct);
+
+            if (retrievedOrder.isPresent()) {
+                ordersWithProduct.add(retrievedOrder.get());
             }
         }
 

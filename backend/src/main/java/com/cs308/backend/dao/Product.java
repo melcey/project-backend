@@ -65,22 +65,10 @@ public class Product {
     // Many-to-one association with the User class (for product managers)
     @ManyToOne
     // The foreign key product_manager_id is joined to determine the manager of the product
-    @JoinColumn(name = "product_manager_id")
+    @JoinColumn(name = "product_manager_id", referencedColumnName = "user_id")
     private User productManager;
 
-    public Product() {
-        this.name = null;
-        this.model = null;
-        this.serialNumber = null;
-        this.description = null;
-        this.quantityInStock = 0;
-        this.price = null;
-        this.warrantyStatus = null;
-        this.distributorInfo = null;
-        this.imageUrl = null;
-        this.category = null;
-        this.productManager = null;
-    }
+    public Product() {}
 
     public Product(String name, String model, String serialNumber, String description, int quantityInStock,
             BigDecimal price, String warrantyStatus, String distributorInfo, boolean isActive, String imageUrl) {
@@ -233,23 +221,10 @@ public class Product {
             .append(", warrantyStatus=").append(warrantyStatus)
             .append(", distributorInfo=").append(distributorInfo)
             .append(", isActive=").append(isActive)
-            .append(", imageUrl=").append(imageUrl);
-
-        if (category != null) {
-            builder.append(", category=").append(category.toString());
-        }
-        else {
-            builder.append(", category=null");
-        }
-        
-        if (productManager != null) {
-            builder.append(", productManager=").append(productManager.toString());
-        }
-        else {
-            builder.append(", productManager=null");
-        }
-
-        builder.append("]");
+            .append(", imageUrl=").append(imageUrl)
+            .append(", category=").append(category)
+            .append(", productManager=").append(productManager)
+            .append("]");
             
         return builder.toString();
     }
@@ -278,6 +253,4 @@ public class Product {
             return false;
         return true;
     }
-
-    
 }

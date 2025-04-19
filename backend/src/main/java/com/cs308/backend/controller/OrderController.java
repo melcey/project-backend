@@ -21,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.cs308.backend.dao.Order;
 import com.cs308.backend.dao.OrderItem;
+import com.cs308.backend.dao.OrderStatus;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
@@ -134,27 +135,41 @@ public class OrderController {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
             }
 
-            Product currentProduct = productService.updateProductQuantityInStock(retrievedProduct.get().getId(), retrievedProduct.get().getQuantityInStock() - 1);
+            Optional<Product> currentProduct = productService.updateProductQuantityInStock(retrievedProduct.get().getId(), retrievedProduct.get().getQuantityInStock() - 1);
 
-            orderItems.add(new OrderItem(null, currentProduct, newOrderItem.getQuantity(), newOrderItem.getPrice()));
+            if (!(currentProduct.isPresent())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            }
+
+            orderItems.add(new OrderItem(null, currentProduct.get(), newOrderItem.getQuantity(), newOrderItem.getPrice()));
         }
         
-        Order newOrder = new Order(user, orderToCreate.getStatus(), orderToCreate.getTotalPrice(), orderToCreate.getDeliveryAddress(), null);
-
-        for (OrderItem orderItem: orderItems) {
-            orderItem.setOrder(newOrder);
+        try {
+            Order newOrder = new Order(user, OrderStatus.fromString(orderToCreate.getStatus()), orderToCreate.getTotalPrice(), orderToCreate.getDeliveryAddress(), null);
+            
+            for (OrderItem orderItem: orderItems) {
+                orderItem.setOrder(newOrder);
+            }
+    
+            newOrder.setOrderItems(orderItems);
+    
+            Optional<Order> addedOrder = orderService.addNewOrder(newOrder);
+    
+            if (!(addedOrder.isPresent())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order creation failed");
+            }
+    
+            List<OrderItemResponse> responseItems = new ArrayList<>();
+    
+            for (OrderItem addedOrderItem: addedOrder.get().getOrderItems()) {
+                responseItems.add(new OrderItemResponse(addedOrderItem.getId(), addedOrder.get().getId(), new ProductResponse(addedOrderItem.getProduct().getId(), addedOrderItem.getProduct().getName(), addedOrderItem.getProduct().getModel(), addedOrderItem.getProduct().getSerialNumber(), addedOrderItem.getProduct().getDescription(), addedOrderItem.getProduct().getQuantityInStock(), addedOrderItem.getProduct().getPrice(), addedOrderItem.getProduct().getWarrantyStatus(), addedOrderItem.getProduct().getDistributorInfo(), addedOrderItem.getProduct().getIsActive(), addedOrderItem.getProduct().getImageUrl(), new CategoryResponse(addedOrderItem.getProduct().getCategory().getId(), addedOrderItem.getProduct().getCategory().getName(), addedOrderItem.getProduct().getCategory().getDescription())), addedOrderItem.getQuantity(), addedOrderItem.getPrice()));
+            }
+    
+            return ResponseEntity.ok(new OrderResponse(addedOrder.get().getId(), user.getId(), addedOrder.get().getOrderDate(), addedOrder.get().getStatus(), addedOrder.get().getTotalPrice(), addedOrder.get().getDeliveryAddress(), responseItems));
         }
-
-        newOrder.setOrderItems(orderItems);
-
-        Order addedOrder = orderService.addNewOrder(newOrder);
-        List<OrderItemResponse> responseItems = new ArrayList<>();
-
-        for (OrderItem addedOrderItem: addedOrder.getOrderItems()) {
-            responseItems.add(new OrderItemResponse(addedOrderItem.getId(), addedOrder.getId(), new ProductResponse(addedOrderItem.getProduct().getId(), addedOrderItem.getProduct().getName(), addedOrderItem.getProduct().getModel(), addedOrderItem.getProduct().getSerialNumber(), addedOrderItem.getProduct().getDescription(), addedOrderItem.getProduct().getQuantityInStock(), addedOrderItem.getProduct().getPrice(), addedOrderItem.getProduct().getWarrantyStatus(), addedOrderItem.getProduct().getDistributorInfo(), addedOrderItem.getProduct().getIsActive(), addedOrderItem.getProduct().getImageUrl(), new CategoryResponse(addedOrderItem.getProduct().getCategory().getId(), addedOrderItem.getProduct().getCategory().getName(), addedOrderItem.getProduct().getCategory().getDescription())), addedOrderItem.getQuantity(), addedOrderItem.getPrice()));
+        catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order creation failed");
         }
-
-        return ResponseEntity.ok(new OrderResponse(addedOrder.getId(), user.getId(), addedOrder.getOrderDate(), addedOrder.getStatus(), addedOrder.getTotalPrice(), addedOrder.getDeliveryAddress(), responseItems));
     }
     
     // One of "pending", "processing", "shipped", "delivered"
@@ -179,15 +194,19 @@ public class OrderController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order could not be found");
         }
 
-        Order updatedOrder = orderService.updateOrderStatus(retrievedOrder.get(), newStateRequest.getStatus());
+        Optional<Order> updatedOrder = orderService.updateOrderStatus(retrievedOrder.get(), newStateRequest.getStatus());
+
+        if (!(updatedOrder.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order creation failed");
+        }
 
         List<OrderItemResponse> responseItems = new ArrayList<>();
 
-        for (OrderItem updatedOrderItem: updatedOrder.getOrderItems()) {
-            responseItems.add(new OrderItemResponse(updatedOrderItem.getId(), updatedOrder.getId(), new ProductResponse(updatedOrderItem.getProduct().getId(), updatedOrderItem.getProduct().getName(), updatedOrderItem.getProduct().getModel(), updatedOrderItem.getProduct().getSerialNumber(), updatedOrderItem.getProduct().getDescription(), updatedOrderItem.getProduct().getQuantityInStock(), updatedOrderItem.getProduct().getPrice(), updatedOrderItem.getProduct().getWarrantyStatus(), updatedOrderItem.getProduct().getDistributorInfo(), updatedOrderItem.getProduct().getIsActive(), updatedOrderItem.getProduct().getImageUrl(), new CategoryResponse(updatedOrderItem.getProduct().getCategory().getId(), updatedOrderItem.getProduct().getCategory().getName(), updatedOrderItem.getProduct().getCategory().getDescription())), updatedOrderItem.getQuantity(), updatedOrderItem.getPrice()));
+        for (OrderItem updatedOrderItem: updatedOrder.get().getOrderItems()) {
+            responseItems.add(new OrderItemResponse(updatedOrderItem.getId(), updatedOrder.get().getId(), new ProductResponse(updatedOrderItem.getProduct().getId(), updatedOrderItem.getProduct().getName(), updatedOrderItem.getProduct().getModel(), updatedOrderItem.getProduct().getSerialNumber(), updatedOrderItem.getProduct().getDescription(), updatedOrderItem.getProduct().getQuantityInStock(), updatedOrderItem.getProduct().getPrice(), updatedOrderItem.getProduct().getWarrantyStatus(), updatedOrderItem.getProduct().getDistributorInfo(), updatedOrderItem.getProduct().getIsActive(), updatedOrderItem.getProduct().getImageUrl(), new CategoryResponse(updatedOrderItem.getProduct().getCategory().getId(), updatedOrderItem.getProduct().getCategory().getName(), updatedOrderItem.getProduct().getCategory().getDescription())), updatedOrderItem.getQuantity(), updatedOrderItem.getPrice()));
         }
 
-        return ResponseEntity.ok(new OrderResponse(updatedOrder.getId(), user.getId(), updatedOrder.getOrderDate(), updatedOrder.getStatus(), updatedOrder.getTotalPrice(), updatedOrder.getDeliveryAddress(), responseItems));
+        return ResponseEntity.ok(new OrderResponse(updatedOrder.get().getId(), user.getId(), updatedOrder.get().getOrderDate(), updatedOrder.get().getStatus(), updatedOrder.get().getTotalPrice(), updatedOrder.get().getDeliveryAddress(), responseItems));
     }
 
     @DeleteMapping("/{id}")
@@ -217,14 +236,18 @@ public class OrderController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Order does not belong to the user");
         }
 
-        Order deletedOrder = orderService.updateOrderStatus(orderToDelete, "cancelled");
+        Optional<Order> deletedOrder = orderService.updateOrderStatus(orderToDelete, "cancelled");
+
+        if (!(deletedOrder.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order creation failed");
+        }
 
         List<OrderItemResponse> responseItems = new ArrayList<>();
 
-        for (OrderItem deletedOrderItem: deletedOrder.getOrderItems()) {
-            responseItems.add(new OrderItemResponse(deletedOrderItem.getId(), deletedOrder.getId(), new ProductResponse(deletedOrderItem.getProduct().getId(), deletedOrderItem.getProduct().getName(), deletedOrderItem.getProduct().getModel(), deletedOrderItem.getProduct().getSerialNumber(), deletedOrderItem.getProduct().getDescription(), deletedOrderItem.getProduct().getQuantityInStock(), deletedOrderItem.getProduct().getPrice(), deletedOrderItem.getProduct().getWarrantyStatus(), deletedOrderItem.getProduct().getDistributorInfo(), deletedOrderItem.getProduct().getIsActive(), deletedOrderItem.getProduct().getImageUrl(), new CategoryResponse(deletedOrderItem.getProduct().getCategory().getId(), deletedOrderItem.getProduct().getCategory().getName(), deletedOrderItem.getProduct().getCategory().getDescription())), deletedOrderItem.getQuantity(), deletedOrderItem.getPrice()));
+        for (OrderItem deletedOrderItem: deletedOrder.get().getOrderItems()) {
+            responseItems.add(new OrderItemResponse(deletedOrderItem.getId(), deletedOrder.get().getId(), new ProductResponse(deletedOrderItem.getProduct().getId(), deletedOrderItem.getProduct().getName(), deletedOrderItem.getProduct().getModel(), deletedOrderItem.getProduct().getSerialNumber(), deletedOrderItem.getProduct().getDescription(), deletedOrderItem.getProduct().getQuantityInStock(), deletedOrderItem.getProduct().getPrice(), deletedOrderItem.getProduct().getWarrantyStatus(), deletedOrderItem.getProduct().getDistributorInfo(), deletedOrderItem.getProduct().getIsActive(), deletedOrderItem.getProduct().getImageUrl(), new CategoryResponse(deletedOrderItem.getProduct().getCategory().getId(), deletedOrderItem.getProduct().getCategory().getName(), deletedOrderItem.getProduct().getCategory().getDescription())), deletedOrderItem.getQuantity(), deletedOrderItem.getPrice()));
         }
 
-        return ResponseEntity.ok(new OrderResponse(deletedOrder.getId(), user.getId(), deletedOrder.getOrderDate(), deletedOrder.getStatus(), deletedOrder.getTotalPrice(), deletedOrder.getDeliveryAddress(), responseItems));
+        return ResponseEntity.ok(new OrderResponse(deletedOrder.get().getId(), user.getId(), deletedOrder.get().getOrderDate(), deletedOrder.get().getStatus(), deletedOrder.get().getTotalPrice(), deletedOrder.get().getDeliveryAddress(), responseItems));
     }
 }

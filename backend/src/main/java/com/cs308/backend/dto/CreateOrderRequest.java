@@ -12,9 +12,6 @@ public class CreateOrderRequest {
     private List<OrderItemRequest> orderItems;
 
     public CreateOrderRequest() {
-        this.status = null;
-        this.totalPrice = null;
-        this.deliveryAddress = null;
         this.orderItems = new ArrayList<>();
     }
 
@@ -56,5 +53,60 @@ public class CreateOrderRequest {
 
     public void setOrderItems(List<OrderItemRequest> orderItems) {
         this.orderItems = orderItems;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("CreateOrderRequest [status=").append(status)
+            .append(", totalPrice=").append(totalPrice)
+            .append(", deliveryAddress=").append(deliveryAddress)
+            .append(", orderItems=").append(orderItems)
+            .append("]");
+
+        return builder.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((status == null) ? 0 : status.hashCode());
+        result = prime * result + ((totalPrice == null) ? 0 : totalPrice.hashCode());
+        result = prime * result + ((deliveryAddress == null) ? 0 : deliveryAddress.hashCode());
+        result = prime * result + ((orderItems == null) ? 0 : orderItems.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        CreateOrderRequest other = (CreateOrderRequest) obj;
+        if (status == null) {
+            if (other.status != null)
+                return false;
+        } else if (!status.equals(other.status))
+            return false;
+        if (totalPrice == null) {
+            if (other.totalPrice != null)
+                return false;
+        } else if (!totalPrice.equals(other.totalPrice))
+            return false;
+        if (deliveryAddress == null) {
+            if (other.deliveryAddress != null)
+                return false;
+        } else if (!deliveryAddress.equals(other.deliveryAddress))
+            return false;
+        if (orderItems == null) {
+            if (other.orderItems != null)
+                return false;
+        } else if (!orderItems.equals(other.orderItems))
+            return false;
+        return true;
     }
 }

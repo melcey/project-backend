@@ -17,16 +17,6 @@ public class ProductResponse {
     private CategoryResponse category;
 
     public ProductResponse() {
-        this.id = null;
-        this.name = null;
-        this.model = null;
-        this.serialNumber = null;
-        this.description = null;
-        this.quantityInStock = 0;
-        this.price = null;
-        this.warrantyStatus = null;
-        this.distributorInfo = null;
-        this.imageUrl = null;
         this.category = new CategoryResponse();
     }
 
@@ -143,5 +133,108 @@ public class ProductResponse {
         this.category = category;
     }
 
-    
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ProductResponse [id=").append(id)
+            .append(", name=").append(name)
+            .append(", model=").append(model)
+            .append(", serialNumber=").append(serialNumber)
+            .append(", description=").append(description)
+            .append(", quantityInStock=").append(quantityInStock)
+            .append(", price=").append(price)
+            .append(", warrantyStatus=").append(warrantyStatus)
+            .append(", distributorInfo=").append(distributorInfo)
+            .append(", isActive=").append(isActive)
+            .append(", imageUrl=").append(imageUrl)
+            .append(", category=").append(category)
+            .append("]");
+
+        return builder.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((model == null) ? 0 : model.hashCode());
+        result = prime * result + ((serialNumber == null) ? 0 : serialNumber.hashCode());
+        result = prime * result + ((description == null) ? 0 : description.hashCode());
+        result = prime * result + quantityInStock;
+        result = prime * result + ((price == null) ? 0 : price.hashCode());
+        result = prime * result + ((warrantyStatus == null) ? 0 : warrantyStatus.hashCode());
+        result = prime * result + ((distributorInfo == null) ? 0 : distributorInfo.hashCode());
+        result = prime * result + (isActive ? 1231 : 1237);
+        result = prime * result + ((imageUrl == null) ? 0 : imageUrl.hashCode());
+        result = prime * result + ((category == null) ? 0 : category.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ProductResponse other = (ProductResponse) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (model == null) {
+            if (other.model != null)
+                return false;
+        } else if (!model.equals(other.model))
+            return false;
+        if (serialNumber == null) {
+            if (other.serialNumber != null)
+                return false;
+        } else if (!serialNumber.equals(other.serialNumber))
+            return false;
+        if (description == null) {
+            if (other.description != null)
+                return false;
+        } else if (!description.equals(other.description))
+            return false;
+        if (quantityInStock != other.quantityInStock)
+            return false;
+        if (price == null) {
+            if (other.price != null)
+                return false;
+        } else if (!price.equals(other.price))
+            return false;
+        if (warrantyStatus == null) {
+            if (other.warrantyStatus != null)
+                return false;
+        } else if (!warrantyStatus.equals(other.warrantyStatus))
+            return false;
+        if (distributorInfo == null) {
+            if (other.distributorInfo != null)
+                return false;
+        } else if (!distributorInfo.equals(other.distributorInfo))
+            return false;
+        if (isActive != other.isActive)
+            return false;
+        if (imageUrl == null) {
+            if (other.imageUrl != null)
+                return false;
+        } else if (!imageUrl.equals(other.imageUrl))
+            return false;
+        if (category == null) {
+            if (other.category != null)
+                return false;
+        } else if (!category.equals(other.category))
+            return false;
+        return true;
+    }
 }
