@@ -21,16 +21,22 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cs308.backend.dao.Category;
+import com.cs308.backend.dao.Order;
+import com.cs308.backend.dao.OrderItem;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
 import com.cs308.backend.dto.CategoryResponse;
 import com.cs308.backend.dto.CreateProductRequest;
+import com.cs308.backend.dto.OrderItemResponse;
+import com.cs308.backend.dto.OrderListResponse;
+import com.cs308.backend.dto.OrderResponse;
 import com.cs308.backend.dto.ProductListResponse;
 import com.cs308.backend.dto.ProductManagerRequest;
 import com.cs308.backend.dto.ProductResponse;
 import com.cs308.backend.dto.UpdateProductRequest;
 import com.cs308.backend.security.UserPrincipal;
+import com.cs308.backend.service.OrderService;
 import com.cs308.backend.service.ProductManagerActionService;
 import com.cs308.backend.service.ProductService;
 import com.cs308.backend.service.UserService;
@@ -40,11 +46,13 @@ import com.cs308.backend.service.UserService;
 public class ProductManagerController {
     private final ProductService productService;
     private final UserService userService;
+    private final OrderService orderService;
     private final ProductManagerActionService actionService;
 
-    public ProductManagerController(ProductService productService, UserService userService, ProductManagerActionService actionService) {
+    public ProductManagerController(ProductService productService, UserService userService, OrderService orderService, ProductManagerActionService actionService) {
         this.productService = productService;
         this.userService = userService;
+        this.orderService = orderService;
         this.actionService = actionService;
     }
 
@@ -98,6 +106,9 @@ public class ProductManagerController {
         if (!(foundProduct.isPresent())) {
             // Automatically handled by Spring Boot; no need to implement an error controller
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There is no such product");
+        }
+        else if (!(foundProduct.get().getProductManager().equals(user))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by this product manager");
         }
 
         return ResponseEntity.ok(new ProductResponse(foundProduct.get().getId(), foundProduct.get().getName(), foundProduct.get().getModel(), foundProduct.get().getSerialNumber(), foundProduct.get().getDescription(), foundProduct.get().getQuantityInStock(), foundProduct.get().getPrice(), foundProduct.get().getWarrantyStatus(), foundProduct.get().getDistributorInfo(), foundProduct.get().getIsActive(), foundProduct.get().getImageUrl(), new CategoryResponse(foundProduct.get().getCategory().getId(), foundProduct.get().getCategory().getName(), foundProduct.get().getCategory().getDescription())));
@@ -173,6 +184,50 @@ public class ProductManagerController {
 
         return ResponseEntity.ok(new ProductListResponse(responseProductList));
     }
+
+    @GetMapping("/orders/{id}")
+    public ResponseEntity<?> getOrdersForManagedProduct(@RequestParam Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ((auth == null) || (!(auth.isAuthenticated()))) {
+            // Automatically handled by Spring Boot; no need to implement an error controller
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
+
+        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
+            
+        User user = userDetails.getUser();
+
+        if (user.getRole() != Role.product_manager) {
+            // Automatically handled by Spring Boot; no need to implement an error controller
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
+        }
+
+        Optional<Product> foundProduct = productService.findManagedProductById(id, user);
+        if (!(foundProduct.isPresent())) {
+            // Automatically handled by Spring Boot; no need to implement an error controller
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There is no such product");
+        }
+        else if (!(foundProduct.get().getProductManager().equals(user))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by this product manager");
+        }
+
+        List<Order> foundOrders = orderService.findAllOrdersIncludingProduct(foundProduct.get());
+
+        List<OrderResponse> responseOrders = new ArrayList<>();
+
+        for (Order foundOrder: foundOrders) {
+            List<OrderItemResponse> responseOrderItems = new ArrayList<>();
+
+            for (OrderItem foundOrderItem: foundOrder.getOrderItems()) {
+                responseOrderItems.add(new OrderItemResponse(foundOrderItem.getId(), foundOrderItem.getOrder().getId(), new ProductResponse(foundOrderItem.getProduct().getId(), foundOrderItem.getProduct().getName(), foundOrderItem.getProduct().getModel(), foundOrderItem.getProduct().getSerialNumber(), foundOrderItem.getProduct().getDescription(), foundOrderItem.getProduct().getQuantityInStock(), foundOrderItem.getProduct().getPrice(), foundOrderItem.getProduct().getWarrantyStatus(), foundOrderItem.getProduct().getDistributorInfo(), foundOrderItem.getProduct().getIsActive(), foundOrderItem.getProduct().getImageUrl(), new CategoryResponse(foundOrderItem.getProduct().getCategory().getId(), foundOrderItem.getProduct().getCategory().getName(), foundOrderItem.getProduct().getCategory().getDescription())), foundOrderItem.getQuantity(), foundOrderItem.getPrice()));
+            }
+
+            responseOrders.add(new OrderResponse(foundOrder.getId(), foundOrder.getUser().getId(), foundOrder.getOrderDate(), foundOrder.getStatus(), foundOrder.getTotalPrice(), foundOrder.getDeliveryAddress(), responseOrderItems));
+        }
+
+        return ResponseEntity.ok(new OrderListResponse(responseOrders));
+    }
+    
 
     // Create a new product
     @PostMapping
