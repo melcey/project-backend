@@ -65,10 +65,10 @@ public class JwtSecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/products/**").permitAll()
                         // Our private endpoints
-                        .requestMatchers("/order/**").hasRole("customer")
-                        .requestMatchers("/order/**").hasRole("product_manager")
-                        .requestMatchers("/sales/**").hasRole("sales_manager")
-                        .requestMatchers("/prodman/**").hasRole("product_manager")
+                        .requestMatchers("/order/**").hasRole("CUSTOMER")
+                        .requestMatchers("/order/**").hasRole("PRODUCT_MANAGER")
+                        .requestMatchers("/sales/**").hasRole("SALES_MANAGER")
+                        .requestMatchers("/prodman/**").hasRole("PRODUCT_MANAGER")
                         .anyRequest().authenticated())
 
                 .authenticationProvider(authenticationProvider);
