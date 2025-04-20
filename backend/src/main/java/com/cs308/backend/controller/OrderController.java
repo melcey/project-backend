@@ -193,11 +193,11 @@ public class OrderController {
         if (!(retrievedOrder.isPresent())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order could not be found");
         }
-
+        
         Optional<Order> updatedOrder = orderService.updateOrderStatus(retrievedOrder.get(), newStateRequest.getStatus());
 
         if (!(updatedOrder.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order creation failed");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order status update failed");
         }
 
         List<OrderItemResponse> responseItems = new ArrayList<>();
@@ -239,7 +239,7 @@ public class OrderController {
         Optional<Order> deletedOrder = orderService.updateOrderStatus(orderToDelete, "cancelled");
 
         if (!(deletedOrder.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order creation failed");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order deletion failed");
         }
 
         List<OrderItemResponse> responseItems = new ArrayList<>();

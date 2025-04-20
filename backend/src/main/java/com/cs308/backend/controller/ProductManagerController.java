@@ -185,7 +185,7 @@ public class ProductManagerController {
         return ResponseEntity.ok(new ProductListResponse(responseProductList));
     }
 
-    @GetMapping("/orders/{id}")
+    @GetMapping("/{id}/orders")
     public ResponseEntity<?> getOrdersForManagedProduct(@RequestParam Long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if ((auth == null) || (!(auth.isAuthenticated()))) {
