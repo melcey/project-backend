@@ -27,8 +27,7 @@ public class PaymentService {
     @Autowired
     private InvoiceService invoiceService;
 
-    private static final String ENCRYPTION_KEY = "your-32-byte-encryption-key-here"; // In production, use proper key
-                                                                                     // management
+    private static final String ENCRYPTION_KEY = "zQUBdFwXE4a5PwzGL1XM14807r53Bd4RyoctkjNqIus=";
 
     @Transactional
     public Payment processPayment(PaymentRequest paymentRequest) {
@@ -97,5 +96,16 @@ public class PaymentService {
         // Mock payment gateway integration
         // In production, integrate with actual payment gateway
         return true;
+    }
+
+    public Optional<Payment> findByOrderId(Long orderId) {
+        Optional<Order> retrievedOrder = orderRepository.findById(orderId);
+
+        // If there is no Order object in the Optional<> wrapper
+        if (!(retrievedOrder.isPresent())) {
+            return Optional.empty();
+        }
+
+        return paymentRepository.findByOrder(retrievedOrder.get());
     }
 }
