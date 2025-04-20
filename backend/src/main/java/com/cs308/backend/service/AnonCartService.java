@@ -27,7 +27,7 @@ public class AnonCartService {
         try {
             AnonCart createdAnonCart = anonCartRepository.save(anonCart);
             return Optional.of(createdAnonCart);
-            // AnonCart's ID should be kept
+            // AnonCart's ID should be kept in the frontend
         }
         catch (Exception e) {
             return Optional.empty();
@@ -38,25 +38,47 @@ public class AnonCartService {
         return anonCartRepository.findById(anonCartId);
     }
 
-    public AnonCart addItemToAnonCart(Long userId, Long productId, int quantity) {
-        AnonCart anonCart = getOrCreateAnonCart(userId);
-        Product product = productService.findProductById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+    public Optional<AnonCart> addItemToAnonCart(Long anonCartId, Long productId, int quantity) {
+        Optional<AnonCart> anonCart = anonCartRepository.findById(anonCartId);
 
-        AnonCartItem anonCartItem = anonCart.getItems().stream()
+        if (!(anonCart.isPresent())) {
+            return Optional.empty();
+        }
+
+        AnonCart foundAnonCart = anonCart.get();
+
+        Optional<Product> product = productService.findProductById(productId);
+
+        if (!(product.isPresent())) {
+            return anonCart;
+        }
+
+        Product foundProduct = product.get();
+
+        AnonCart oldAnonCart = foundAnonCart.clone();
+
+
+        AnonCartItem anonCartItem = anonCart.get().getItems().stream()
             .filter(item -> item.getProduct().getId().equals(productId))
             .findFirst()
-            .orElse(new CartItem());
+            .orElse(new AnonCartItem());
 
-        anonCartItem.setCart(cart);
-        anonCartItem.setProduct(product);
+        anonCartItem.setCart(foundAnonCart);
+        anonCartItem.setProduct(foundProduct);
         anonCartItem.setQuantity(anonCartItem.getQuantity() + quantity);
-        anonCartItem.setPriceAtAddition(product.getPrice());
+        anonCartItem.setPriceAtAddition(foundProduct.getPrice());
 
-        anonCart.getItems().add(anonCartItem);
-        anonCart.setTotalPrice(anonCart.getItems().stream()
+        foundAnonCart.getItems().add(anonCartItem);
+        foundAnonCart.setTotalPrice(foundAnonCart.getItems().stream()
             .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
             .reduce(BigDecimal.ZERO, BigDecimal::add));
 
-        return anonCartRepository.save(anonCart);
+        try {
+            AnonCart updatedAnonCart = anonCartRepository.save(foundAnonCart);
+            return Optional.of(updatedAnonCart);
+        }
+        catch (Exception e) {
+            return Optional.of(oldAnonCart);
+        }
     }
 }

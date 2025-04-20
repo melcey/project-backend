@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "anon_cart_items", schema = "public")
-public class AnonCartItem {
+public class AnonCartItem implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cart_item_id")
@@ -125,5 +125,18 @@ public class AnonCartItem {
         } else if (!id.equals(other.id))
             return false;
         return true;
+    }
+
+    @Override
+    public AnonCartItem clone() {
+        try {
+            AnonCartItem clonedItem = (AnonCartItem) super.clone();
+            // Deep copy mutable fields
+            clonedItem.setPriceAtAddition(new BigDecimal(this.priceAtAddition.toString())); 
+            clonedItem.setCart(null);
+            return clonedItem;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError("Cloning not supported", e);
+        }
     }
 }

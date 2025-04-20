@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "anon_carts", schema = "public")
-public class AnonCart {
+public class AnonCart implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cart_id")
@@ -115,5 +115,24 @@ public class AnonCart {
         } else if (!id.equals(other.id))
             return false;
         return true;
+    }
+
+    @Override
+    public AnonCart clone() {
+        try {
+            AnonCart clonedCart = (AnonCart) super.clone();
+            // Deep copy the items list
+            List<AnonCartItem> clonedItems = new ArrayList<>();
+            for (AnonCartItem item : this.items) {
+                clonedItems.add(item.clone());
+            }
+            clonedCart.setItems(clonedItems);
+            for (AnonCartItem clonedItem : clonedCart.items) {
+                clonedItem.setCart(clonedCart);
+            }
+            return clonedCart;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError("Cloning not supported", e);
+        }
     }
 }

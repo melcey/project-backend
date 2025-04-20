@@ -2,8 +2,13 @@ package com.cs308.backend.controller;
 
 import com.cs308.backend.dao.Cart;
 import com.cs308.backend.service.CartService;
+
+import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/cart")
@@ -16,7 +21,13 @@ public class CartController {
 
     @GetMapping
     public ResponseEntity<Cart> getCart(@RequestParam Long userId) {
-        return ResponseEntity.ok(cartService.getOrCreateCart(userId));
+        Optional<Cart> retrievedCart = cartService.getCartOfUser(userId);
+
+        if (!(retrievedCart.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There is no such cart");
+        }
+
+        return ResponseEntity.ok(retrievedCart.get());
     }
 
     @PutMapping("/add")

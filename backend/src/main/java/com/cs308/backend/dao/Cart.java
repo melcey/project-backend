@@ -8,13 +8,13 @@ import java.util.List;
 
 @Entity
 @Table(name = "carts", schema = "public")
-public class Cart {
+public class Cart implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cart_id")
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -129,5 +129,24 @@ public class Cart {
         } else if (!id.equals(other.id))
             return false;
         return true;
+    }
+
+    @Override
+    public Cart clone() {
+        try {
+            Cart clonedCart = (Cart) super.clone();
+            // Deep copy the items list
+            List<CartItem> clonedItems = new ArrayList<>();
+            for (CartItem item : this.items) {
+                clonedItems.add(item.clone());
+            }
+            clonedCart.setItems(clonedItems);
+            for (CartItem clonedItem : clonedCart.items) {
+                clonedItem.setCart(clonedCart);
+            }
+            return clonedCart;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError("Cloning not supported", e);
+        }
     }
 }
