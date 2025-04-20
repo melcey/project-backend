@@ -3,6 +3,7 @@ package com.cs308.backend.dao;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,12 +29,10 @@ public class Category {
     private String description;
 
     // One-to-many association mapped by the "category" field in the Product class
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Product> products;
 
     public Category() {
-        this.name = null;
-        this.description = null;
         this.products = new HashSet<>();
     }
 
@@ -76,6 +75,18 @@ public class Category {
     }
 
     @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Category [id=").append(id)
+            .append(", name=").append(name)
+            .append(", description=").append(description)
+            .append(", products=").append(products)
+            .append("]");
+            
+        return builder.toString();
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -98,19 +109,5 @@ public class Category {
         } else if (!id.equals(other.id))
             return false;
         return true;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Category [id=")
-            .append(id)
-            .append(", name=")
-            .append(name)
-            .append(", description=")
-            .append(description)
-            .append("]");
-            
-        return builder.toString();
     }
 }

@@ -11,7 +11,8 @@ public enum Role {
 
     private final String value;
 
-    Role(String value) {
+    // An enum constructor in Java should always be private (it is implicitly private if you do not specify)
+    private Role(String value) {
         this.value = value;
     }
     
@@ -29,7 +30,7 @@ public enum Role {
             }
         }
 
-        throw new IllegalArgumentException("Invalid role: " + role);
+        throw new IllegalArgumentException(String.format("Invalid role: %s", role));
     }
 
     @Override

@@ -387,7 +387,7 @@ public class ProductService {
     }
 
     
-    public Product createProduct(Product product) {
+    public Optional<Product> createProduct(Product product) {
         return productRepository.insertNewProduct(product);
     }
     
@@ -400,82 +400,82 @@ public class ProductService {
     }
     
     public void deleteProductsByManager(User productManager) {
-        productRepository.deleteProductByManager(productManager);
+        productRepository.deleteProductsByManager(productManager);
     }
     
     
     
-    public Product updateProductName(Long productId, String newName) {
+    public Optional<Product> updateProductName(Long productId, String newName) {
         return productRepository.findById(productId)
                 .map(product -> productRepository.updateProductName(product, newName))
-                .orElse(null);
+                .orElse(Optional.empty());
     }
     
-    public Product updateProductModel(Long productId, String newModel) {
+    public Optional<Product> updateProductModel(Long productId, String newModel) {
         return productRepository.findById(productId)
                 .map(product -> productRepository.updateProductModel(product, newModel))
-                .orElse(null);
+                .orElse(Optional.empty());
     }
     
-    public Product updateProductSerialNumber(Long productId, String newSerialNumber) {
+    public Optional<Product> updateProductSerialNumber(Long productId, String newSerialNumber) {
         return productRepository.findById(productId)
                 .map(product -> productRepository.updateProductSerialNumber(product, newSerialNumber))
-                .orElse(null);
+                .orElse(Optional.empty());
     }
     
-    public Product updateProductDescription(Long productId, String newDescription) {
+    public Optional<Product> updateProductDescription(Long productId, String newDescription) {
         return productRepository.findById(productId)
                 .map(product -> productRepository.updateProductDescription(product, newDescription))
-                .orElse(null);
+                .orElse(Optional.empty());
     }
     
-    public Product updateProductQuantityInStock(Long productId, int newQuantityInStock) {
+    public Optional<Product> updateProductQuantityInStock(Long productId, int newQuantityInStock) {
         return productRepository.findById(productId)
                 .map(product -> productRepository.updateProductQuantityInStock(product, newQuantityInStock))
-                .orElse(null);
+                .orElse(Optional.empty());
     }
     
-    public Product updateProductPrice(Long productId, BigDecimal newPrice) {
+    public Optional<Product> updateProductPrice(Long productId, BigDecimal newPrice) {
         return productRepository.findById(productId)
                 .map(product -> productRepository.updateProductPrice(product, newPrice))
-                .orElse(null);
+                .orElse(Optional.empty());
     }
     
-    public Product updateProductWarrantyStatus(Long productId, String newWarrantyStatus) {
+    public Optional<Product> updateProductWarrantyStatus(Long productId, String newWarrantyStatus) {
         return productRepository.findById(productId)
                 .map(product -> productRepository.updateProductWarrantyStatus(product, newWarrantyStatus))
-                .orElse(null);
+                .orElse(Optional.empty());
     }
     
-    public Product updateProductDistributorInfo(Long productId, String newDistributorInfo) {
+    public Optional<Product> updateProductDistributorInfo(Long productId, String newDistributorInfo) {
         return productRepository.findById(productId)
                 .map(product -> productRepository.updateProductDistributorInfo(product, newDistributorInfo))
-                .orElse(null);
+                .orElse(Optional.empty());
     }
     
-    public Product updateProductIsActive(Long productId, boolean newIsActive) {
+    public Optional<Product> updateProductIsActive(Long productId, boolean newIsActive) {
         return productRepository.findById(productId)
                 .map(product -> productRepository.updateProductIsActive(product, newIsActive))
-                .orElse(null);
+                .orElse(Optional.empty());
     }
     
-    public Product updateProductImageUrl(Long productId, String newImageUrl) {
+    public Optional<Product> updateProductImageUrl(Long productId, String newImageUrl) {
         return productRepository.findById(productId)
                 .map(product -> productRepository.updateProductImageUrl(product, newImageUrl))
-                .orElse(null);
+                .orElse(Optional.empty());
     }
 
-    public Product updateProductCategory(Long productId, Long newCategoryId) {
+    public Optional<Product> updateProductCategory(Long productId, Long newCategoryId) {
         Optional<Category> newCategory = categoryRepository.findById(newCategoryId);
 
         return productRepository.findById(productId)
                 .map(product -> productRepository.updateProductCategory(product, newCategory.get()))
-                .orElse(null);
+                .orElse(Optional.empty());
     }
     
-    public Product updateProductManager(Long productId, User newProductManager) {
+    public Optional<Product> updateProductManager(Long productId, User newProductManager) {
         return productRepository.findById(productId)
                 .map(product -> productRepository.updateProductManager(product, newProductManager))
-                .orElse(null);
+                .orElse(Optional.empty());
     }
 }

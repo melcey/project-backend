@@ -33,7 +33,7 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
     List<User> findByName(String name);
 
     // Here, a JPQL query is used in order to leverage the Role enum in Java
-    @Query(value = "SELECT u FROM User u WHERE u.role = :#{#role.getValue()}", nativeQuery = false)
+    @Query(value = "SELECT u FROM User u WHERE u.role = :role", nativeQuery = false)
     List<User> findByRole(@Param("role") Role role);
 
     List<User> findByAddress(String address);

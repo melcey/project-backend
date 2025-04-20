@@ -91,7 +91,7 @@ public class OrderItem {
         builder.append("OrderItem [id=")
             .append(id)
             .append(", order=")
-            .append(order.toString())
+            .append(order)
             .append(", product=")
             .append(product)
             .append(", quantity=")

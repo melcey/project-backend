@@ -49,7 +49,9 @@ public class ProductController {
         List<ProductResponse> allProducts = new ArrayList<>();
 
         for (Product retrieved: allRetrieved) {
-            allProducts.add(new ProductResponse(retrieved.getId(), retrieved.getName(), retrieved.getModel(), retrieved.getSerialNumber(), retrieved.getDescription(), retrieved.getQuantityInStock(), retrieved.getPrice(), retrieved.getWarrantyStatus(), retrieved.getDistributorInfo(), retrieved.getIsActive(), retrieved.getImageUrl(), new CategoryResponse(retrieved.getCategory().getId(), retrieved.getCategory().getName(), retrieved.getCategory().getDescription())));
+            if (retrieved.getIsActive()) {
+                allProducts.add(new ProductResponse(retrieved.getId(), retrieved.getName(), retrieved.getModel(), retrieved.getSerialNumber(), retrieved.getDescription(), retrieved.getQuantityInStock(), retrieved.getPrice(), retrieved.getWarrantyStatus(), retrieved.getDistributorInfo(), retrieved.getIsActive(), retrieved.getImageUrl(), new CategoryResponse(retrieved.getCategory().getId(), retrieved.getCategory().getName(), retrieved.getCategory().getDescription())));
+            }
         }
 
         return ResponseEntity.ok(new ProductListResponse(allProducts));
@@ -85,26 +87,28 @@ public class ProductController {
         List<ProductResponse> responseProductList = new ArrayList<>();
 
         for (Product foundProduct: foundProducts) {
-            responseProductList.add(
-                new ProductResponse(
-                    foundProduct.getId(),
-                    foundProduct.getName(),
-                    foundProduct.getModel(),
-                    foundProduct.getSerialNumber(),
-                    foundProduct.getDescription(),
-                    foundProduct.getQuantityInStock(),
-                    foundProduct.getPrice(),
-                    foundProduct.getWarrantyStatus(),
-                    foundProduct.getDistributorInfo(),
-                    foundProduct.getIsActive(),
-                    foundProduct.getImageUrl(),
-                    new CategoryResponse(
-                        foundProduct.getCategory().getId(),
-                        foundProduct.getCategory().getName(),
-                        foundProduct.getCategory().getDescription()
+            if (foundProduct.getIsActive()) {
+                responseProductList.add(
+                    new ProductResponse(
+                        foundProduct.getId(),
+                        foundProduct.getName(),
+                        foundProduct.getModel(),
+                        foundProduct.getSerialNumber(),
+                        foundProduct.getDescription(),
+                        foundProduct.getQuantityInStock(),
+                        foundProduct.getPrice(),
+                        foundProduct.getWarrantyStatus(),
+                        foundProduct.getDistributorInfo(),
+                        foundProduct.getIsActive(),
+                        foundProduct.getImageUrl(),
+                        new CategoryResponse(
+                            foundProduct.getCategory().getId(),
+                            foundProduct.getCategory().getName(),
+                            foundProduct.getCategory().getDescription()
+                        )
                     )
-                )
-            );
+                );
+            }
         }
 
         return ResponseEntity.ok(new ProductListResponse(responseProductList));

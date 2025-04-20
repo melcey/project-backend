@@ -20,14 +20,14 @@ public class CommentService {
     }
 
     public void approveComment(Comment commentToApprove) {
-        if (!(commentToApprove.getIsApproved())) {
-            commentToApprove.setIsApproved(true);
+        if (!(commentToApprove.getApproved())) {
+            commentToApprove.setApproved(true);
         }
     }
 
     public void disapproveComment(Comment commentToDisapprove) {
-        if (commentToDisapprove.getIsApproved()) {
-            commentToDisapprove.setIsApproved(false);
+        if (commentToDisapprove.getApproved()) {
+            commentToDisapprove.setApproved(false);
         }
     }
     

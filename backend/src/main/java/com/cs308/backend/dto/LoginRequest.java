@@ -1,19 +1,13 @@
 package com.cs308.backend.dto;
 
-import com.cs308.backend.dao.Role;
-
 public class LoginRequest {
     private String email;
     private String password;
-    private Role role;
+    private String role;
 
-    public LoginRequest() {
-        this.email = null;
-        this.password = null;
-        this.role = null;
-    }
+    public LoginRequest() {}
 
-    public LoginRequest(String email, String password, Role role) {
+    public LoginRequest(String email, String password, String role) {
         this.email = email;
         this.password = password;
         this.role = role;
@@ -36,11 +30,59 @@ public class LoginRequest {
         this.password = password;
     }
 
-    public Role getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(String role) {
         this.role = role;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("LoginRequest [email=").append(email)
+            .append(", password=").append(password)
+            .append(", role=").append(role)
+            .append("]");
+
+        return builder.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((email == null) ? 0 : email.hashCode());
+        result = prime * result + ((password == null) ? 0 : password.hashCode());
+        result = prime * result + ((role == null) ? 0 : role.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        LoginRequest other = (LoginRequest) obj;
+        if (email == null) {
+            if (other.email != null)
+                return false;
+        } else if (!email.equals(other.email))
+            return false;
+        if (password == null) {
+            if (other.password != null)
+                return false;
+        } else if (!password.equals(other.password))
+            return false;
+        if (role == null) {
+            if (other.role != null)
+                return false;
+        } else if (!role.equals(other.role))
+            return false;
+        return true;
     }
 }

@@ -113,20 +113,13 @@ public class Delivery {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Delivery [id=")
-            .append(id)
-            .append(", order=")
-            .append(order.toString())
-            .append(", product=")
-            .append(product.toString())
-            .append(", quantity=")
-            .append(quantity)
-            .append(", totalPrice=")
-            .append(totalPrice)
-            .append(", deliveryAddress=")
-            .append(deliveryAddress)
-            .append(", deliveryStatus=")
-            .append(deliveryStatus)
+        builder.append("Delivery [id=").append(id)
+            .append(", order=").append(order)
+            .append(", product=").append(product)
+            .append(", quantity=").append(quantity)
+            .append(", totalPrice=").append(totalPrice)
+            .append(", deliveryAddress=").append(deliveryAddress)
+            .append(", deliveryStatus=").append(deliveryStatus)
             .append("]");
 
         return builder.toString();

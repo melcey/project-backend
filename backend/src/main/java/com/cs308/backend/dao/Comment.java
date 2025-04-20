@@ -74,11 +74,11 @@ public class Comment {
         this.commentingUser = commentingUser;
     }
 
-    public boolean getIsApproved() {
+    public boolean getApproved() {
         return approved;
     }
 
-    public void setIsApproved(boolean approved) {
+    public void setApproved(boolean approved) {
         this.approved = approved;
     }
 
@@ -96,6 +96,20 @@ public class Comment {
 
     public void setCommentDate(LocalDateTime commentDate) {
         this.commentDate = commentDate;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Comment [id=").append(id)
+            .append(", commentedProduct=").append(commentedProduct)
+            .append(", commentingUser=").append(commentingUser)
+            .append(", approved=").append(approved)
+            .append(", comment=").append(comment)
+            .append(", commentDate=").append(commentDate)
+            .append("]");
+
+        return builder.toString();
     }
 
     @Override

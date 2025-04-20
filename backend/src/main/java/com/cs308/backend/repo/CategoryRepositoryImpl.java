@@ -1,5 +1,7 @@
 package com.cs308.backend.repo;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,23 +22,27 @@ public class CategoryRepositoryImpl implements CategoryRepositoryObj {
     private EntityManager entityManager;
     
     @Override
-    public Category insertNewCategory(Category category) {
+    public Optional<Category> insertNewCategory(Category category) {
         // Creates the query command in SQL to insert the new record to the table and return the inserted data
         String sqlQuery = "INSERT INTO categories (name, description) VALUES (:name, :description) RETURNING *";
         
-        // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a Category object
-        Category newCategory = (Category)entityManager.createNativeQuery(sqlQuery, Category.class)
-            .setParameter("name", category.getName())
-            .setParameter("description", category.getDescription())
-            .getSingleResult();
+        try {
+            // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a Category object
+            Category newCategory = (Category)entityManager.createNativeQuery(sqlQuery, Category.class)
+                .setParameter("name", category.getName())
+                .setParameter("description", category.getDescription())
+                .getSingleResult();
 
-        // Pending changes are written to the database
-        entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
-        
-        // Returns the retrieved result
-        return newCategory;
+            // Pending changes are written to the database
+            entityManager.flush();
+            entityManager.refresh(newCategory);;
+            
+            // Returns the retrieved result
+            return Optional.of(newCategory);
+        }
+        catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -56,42 +62,50 @@ public class CategoryRepositoryImpl implements CategoryRepositoryObj {
     }
 
     @Override
-    public Category updateCategoryName(Category category, String newName) {
+    public Optional<Category> updateCategoryName(Category category, String newName) {
         // Creates the query command to update the name of the given category
         String sqlQuery = "UPDATE categories SET name = :new_name WHERE category_id = :id RETURNING *";
-        
-        // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a Category object
-        Category updatedCategory = (Category)entityManager.createNativeQuery(sqlQuery, Category.class)
-            .setParameter("new_name", newName)
-            .setParameter("id", category.getId())
-            .getSingleResult();
 
-        // Pending changes are written to the database
-        entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
-        
-        // Returns the retrieved result
-        return updatedCategory;
+        try {
+            // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a Category object
+            Category updatedCategory = (Category)entityManager.createNativeQuery(sqlQuery, Category.class)
+                .setParameter("new_name", newName)
+                .setParameter("id", category.getId())
+                .getSingleResult();
+
+            // Pending changes are written to the database
+            entityManager.flush();
+            entityManager.refresh(updatedCategory);
+            
+            // Returns the retrieved result
+            return Optional.of(updatedCategory);
+        }
+        catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public Category updateCategoryDescription(Category category, String newDescription) {
+    public Optional<Category> updateCategoryDescription(Category category, String newDescription) {
         // Creates the query command to update the description of the given category
         String sqlQuery = "UPDATE categories SET description = :new_description WHERE category_id = :id RETURNING *";
         
-        // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a Category object
-        Category updatedCategory = (Category)entityManager.createNativeQuery(sqlQuery, Category.class)
-            .setParameter("new_description", newDescription)
-            .setParameter("id", category.getId())
-            .getSingleResult();
+        try {
+            // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a Category object
+            Category updatedCategory = (Category)entityManager.createNativeQuery(sqlQuery, Category.class)
+                .setParameter("new_description", newDescription)
+                .setParameter("id", category.getId())
+                .getSingleResult();
 
-        // Pending changes are written to the database
-        entityManager.flush();
-        // The persistence context is cleared so that fresh data can be returned from the database in subsequent queries
-        entityManager.clear();
-        
-        // Returns the retrieved result
-        return updatedCategory;
+            // Pending changes are written to the database
+            entityManager.flush();
+            entityManager.refresh(updatedCategory);
+            
+            // Returns the retrieved result
+            return Optional.of(updatedCategory);
+        }
+        catch (Exception e) {
+            return Optional.empty();
+        }
     }
 }

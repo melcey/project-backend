@@ -2,14 +2,20 @@ package com.cs308.backend.dao;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -29,7 +35,8 @@ public class Order {
     private LocalDateTime orderDate;
 
     @Column(name = "status", length = 50, nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
     @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalPrice;
@@ -37,14 +44,20 @@ public class Order {
     @Column(name = "delivery_address")
     private String deliveryAddress;
 
-    public Order() {}
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems;
 
-    public Order(User user, LocalDateTime orderDate, String status, BigDecimal totalPrice, String deliveryAddress) {
+    public Order() {
+        this.orderItems = new ArrayList<>();
+    }
+
+    public Order(User user, OrderStatus status, BigDecimal totalPrice, String deliveryAddress, List<OrderItem> orderItems) {
         this.user = user;
-        this.orderDate = orderDate;
+        this.orderDate = LocalDateTime.now();
         this.status = status;
         this.totalPrice = totalPrice;
         this.deliveryAddress = deliveryAddress;
+        this.orderItems = orderItems;
     }
 
     public Long getId() {
@@ -71,11 +84,11 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-    public String getStatus() {
+    public OrderStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(OrderStatus status) {
         this.status = status;
     }
 
@@ -95,21 +108,24 @@ public class Order {
         this.deliveryAddress = deliveryAddress;
     }
 
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Order [id=")
-            .append(id)
-            .append(", user=")
-            .append(user.toString())
-            .append(", orderDate=")
-            .append(orderDate)
-            .append(", status=")
-            .append(status)
-            .append(", totalPrice=")
-            .append(totalPrice)
-            .append(", deliveryAddress=")
-            .append(deliveryAddress)
+        builder.append("Order [id=").append(id)
+            .append(", user=").append(user)
+            .append(", orderDate=").append(orderDate)
+            .append(", status=").append(status)
+            .append(", totalPrice=").append(totalPrice)
+            .append(", deliveryAddress=").append(deliveryAddress)
+            .append(", orderItems=").append(orderItems)
             .append("]");
 
         return builder.toString();

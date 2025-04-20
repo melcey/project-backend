@@ -21,16 +21,22 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cs308.backend.dao.Category;
+import com.cs308.backend.dao.Order;
+import com.cs308.backend.dao.OrderItem;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
 import com.cs308.backend.dto.CategoryResponse;
 import com.cs308.backend.dto.CreateProductRequest;
+import com.cs308.backend.dto.OrderItemResponse;
+import com.cs308.backend.dto.OrderListResponse;
+import com.cs308.backend.dto.OrderResponse;
 import com.cs308.backend.dto.ProductListResponse;
 import com.cs308.backend.dto.ProductManagerRequest;
 import com.cs308.backend.dto.ProductResponse;
 import com.cs308.backend.dto.UpdateProductRequest;
 import com.cs308.backend.security.UserPrincipal;
+import com.cs308.backend.service.OrderService;
 import com.cs308.backend.service.ProductManagerActionService;
 import com.cs308.backend.service.ProductService;
 import com.cs308.backend.service.UserService;
@@ -40,11 +46,13 @@ import com.cs308.backend.service.UserService;
 public class ProductManagerController {
     private final ProductService productService;
     private final UserService userService;
+    private final OrderService orderService;
     private final ProductManagerActionService actionService;
 
-    public ProductManagerController(ProductService productService, UserService userService, ProductManagerActionService actionService) {
+    public ProductManagerController(ProductService productService, UserService userService, OrderService orderService, ProductManagerActionService actionService) {
         this.productService = productService;
         this.userService = userService;
+        this.orderService = orderService;
         this.actionService = actionService;
     }
 
@@ -98,6 +106,9 @@ public class ProductManagerController {
         if (!(foundProduct.isPresent())) {
             // Automatically handled by Spring Boot; no need to implement an error controller
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There is no such product");
+        }
+        else if (!(foundProduct.get().getProductManager().equals(user))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by this product manager");
         }
 
         return ResponseEntity.ok(new ProductResponse(foundProduct.get().getId(), foundProduct.get().getName(), foundProduct.get().getModel(), foundProduct.get().getSerialNumber(), foundProduct.get().getDescription(), foundProduct.get().getQuantityInStock(), foundProduct.get().getPrice(), foundProduct.get().getWarrantyStatus(), foundProduct.get().getDistributorInfo(), foundProduct.get().getIsActive(), foundProduct.get().getImageUrl(), new CategoryResponse(foundProduct.get().getCategory().getId(), foundProduct.get().getCategory().getName(), foundProduct.get().getCategory().getDescription())));
@@ -174,6 +185,50 @@ public class ProductManagerController {
         return ResponseEntity.ok(new ProductListResponse(responseProductList));
     }
 
+    @GetMapping("/{id}/orders")
+    public ResponseEntity<?> getOrdersForManagedProduct(@RequestParam Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ((auth == null) || (!(auth.isAuthenticated()))) {
+            // Automatically handled by Spring Boot; no need to implement an error controller
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
+
+        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
+            
+        User user = userDetails.getUser();
+
+        if (user.getRole() != Role.product_manager) {
+            // Automatically handled by Spring Boot; no need to implement an error controller
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
+        }
+
+        Optional<Product> foundProduct = productService.findManagedProductById(id, user);
+        if (!(foundProduct.isPresent())) {
+            // Automatically handled by Spring Boot; no need to implement an error controller
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There is no such product");
+        }
+        else if (!(foundProduct.get().getProductManager().equals(user))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by this product manager");
+        }
+
+        List<Order> foundOrders = orderService.findAllOrdersIncludingProduct(foundProduct.get());
+
+        List<OrderResponse> responseOrders = new ArrayList<>();
+
+        for (Order foundOrder: foundOrders) {
+            List<OrderItemResponse> responseOrderItems = new ArrayList<>();
+
+            for (OrderItem foundOrderItem: foundOrder.getOrderItems()) {
+                responseOrderItems.add(new OrderItemResponse(foundOrderItem.getId(), foundOrderItem.getOrder().getId(), new ProductResponse(foundOrderItem.getProduct().getId(), foundOrderItem.getProduct().getName(), foundOrderItem.getProduct().getModel(), foundOrderItem.getProduct().getSerialNumber(), foundOrderItem.getProduct().getDescription(), foundOrderItem.getProduct().getQuantityInStock(), foundOrderItem.getProduct().getPrice(), foundOrderItem.getProduct().getWarrantyStatus(), foundOrderItem.getProduct().getDistributorInfo(), foundOrderItem.getProduct().getIsActive(), foundOrderItem.getProduct().getImageUrl(), new CategoryResponse(foundOrderItem.getProduct().getCategory().getId(), foundOrderItem.getProduct().getCategory().getName(), foundOrderItem.getProduct().getCategory().getDescription())), foundOrderItem.getQuantity(), foundOrderItem.getPrice()));
+            }
+
+            responseOrders.add(new OrderResponse(foundOrder.getId(), foundOrder.getUser().getId(), foundOrder.getOrderDate(), foundOrder.getStatus(), foundOrder.getTotalPrice(), foundOrder.getDeliveryAddress(), responseOrderItems));
+        }
+
+        return ResponseEntity.ok(new OrderListResponse(responseOrders));
+    }
+    
+
     // Create a new product
     @PostMapping
     public ResponseEntity<?> createProduct(@RequestBody CreateProductRequest createProductRequest) {
@@ -202,11 +257,15 @@ public class ProductManagerController {
 
         product.setCategory(category.get());
         product.setProductManager(user);
-        Product createdProduct = productService.createProduct(product);
+        Optional<Product> createdProduct = productService.createProduct(product);
 
-        actionService.logAction(user, "CREATE_PRODUCT", Long.toString(createdProduct.getId()));
+        if (!(createdProduct.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product creation failed");
+        }
 
-        return ResponseEntity.ok(new ProductResponse(createdProduct.getId(), createdProduct.getName(), createdProduct.getModel(), createdProduct.getSerialNumber(), createdProduct.getDescription(), createdProduct.getQuantityInStock(), createdProduct.getPrice(), createdProduct.getWarrantyStatus(), createdProduct.getDistributorInfo(), createdProduct.getIsActive(), createdProduct.getImageUrl(), new CategoryResponse(createdProduct.getCategory().getId(), createdProduct.getCategory().getName(), createdProduct.getCategory().getDescription())));
+        actionService.logAction(user, "CREATE_PRODUCT", Long.toString(createdProduct.get().getId()));
+
+        return ResponseEntity.ok(new ProductResponse(createdProduct.get().getId(), createdProduct.get().getName(), createdProduct.get().getModel(), createdProduct.get().getSerialNumber(), createdProduct.get().getDescription(), createdProduct.get().getQuantityInStock(), createdProduct.get().getPrice(), createdProduct.get().getWarrantyStatus(), createdProduct.get().getDistributorInfo(), createdProduct.get().getIsActive(), createdProduct.get().getImageUrl(), new CategoryResponse(createdProduct.get().getCategory().getId(), createdProduct.get().getCategory().getName(), createdProduct.get().getCategory().getDescription())));
     }
 
     // Delete a product by its ID
@@ -272,8 +331,6 @@ public class ProductManagerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
         }
 
-        Product product = foundProduct.get();
-
         if (updateProductRequest == null) {
             throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, "No updates to the product");
         }
@@ -282,72 +339,127 @@ public class ProductManagerController {
         }
 
         if (updateProductRequest.getName() != null) {
-            String oldName = product.getName();
-            product = productService.updateProductName(id, updateProductRequest.getName());
-            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldName, updateProductRequest.getName()));
+            String oldName = foundProduct.get().getName();
+            foundProduct = productService.updateProductName(id, updateProductRequest.getName());
+
+            if (!(foundProduct.isPresent())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            }
+
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", foundProduct.get().getId(), oldName, updateProductRequest.getName()));
         }
 
         if (updateProductRequest.getModel() != null) {
-            String oldModel = product.getModel();
-            product = productService.updateProductModel(id, updateProductRequest.getModel());
-            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldModel, updateProductRequest.getModel()));
+            String oldModel = foundProduct.get().getModel();
+            foundProduct = productService.updateProductModel(id, updateProductRequest.getModel());
+
+            if (!(foundProduct.isPresent())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            }
+
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", foundProduct.get().getId(), oldModel, updateProductRequest.getModel()));
         }
 
         if (updateProductRequest.getSerialNumber() != null) {
-            String oldSerialNumber = product.getSerialNumber();
-            product = productService.updateProductSerialNumber(id, updateProductRequest.getSerialNumber());
-            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldSerialNumber, updateProductRequest.getSerialNumber()));
+            String oldSerialNumber = foundProduct.get().getSerialNumber();
+            foundProduct = productService.updateProductSerialNumber(id, updateProductRequest.getSerialNumber());
+
+            if (!(foundProduct.isPresent())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            }
+
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", foundProduct.get().getId(), oldSerialNumber, updateProductRequest.getSerialNumber()));
         }
 
         if (updateProductRequest.getDescription() != null) {
-            String oldDescription = product.getDescription();
-            product = productService.updateProductDescription(id, updateProductRequest.getDescription());
-            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldDescription, updateProductRequest.getDescription()));
+            String oldDescription = foundProduct.get().getDescription();
+            foundProduct = productService.updateProductDescription(id, updateProductRequest.getDescription());
+
+            if (!(foundProduct.isPresent())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            }
+
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", foundProduct.get().getId(), oldDescription, updateProductRequest.getDescription()));
         }
 
         if (updateProductRequest.getQuantityInStock() != null) {
-            Integer oldQuantityInStock = product.getQuantityInStock();
-            product = productService.updateProductQuantityInStock(id, updateProductRequest.getQuantityInStock());
-            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %d -> %d", product.getId(), oldQuantityInStock.intValue(), updateProductRequest.getQuantityInStock().intValue()));
+            Integer oldQuantityInStock = foundProduct.get().getQuantityInStock();
+            foundProduct = productService.updateProductQuantityInStock(id, updateProductRequest.getQuantityInStock());
+
+            if (!(foundProduct.isPresent())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            }
+
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %d -> %d", foundProduct.get().getId(), oldQuantityInStock.intValue(), updateProductRequest.getQuantityInStock().intValue()));
         }
 
         if (updateProductRequest.getPrice() != null) {
-            BigDecimal oldPrice = product.getPrice();
-            product = productService.updateProductPrice(id, updateProductRequest.getPrice());
-            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldPrice.toString(), updateProductRequest.getPrice().toString()));
+            BigDecimal oldPrice = foundProduct.get().getPrice();
+            foundProduct = productService.updateProductPrice(id, updateProductRequest.getPrice());
+
+            if (!(foundProduct.isPresent())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            }
+
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", foundProduct.get().getId(), oldPrice.toString(), updateProductRequest.getPrice().toString()));
         }
 
         if (updateProductRequest.getWarrantyStatus() != null) {
-            String oldWarrantyStatus = product.getWarrantyStatus();
-            product = productService.updateProductWarrantyStatus(id, updateProductRequest.getWarrantyStatus());
-            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldWarrantyStatus, updateProductRequest.getWarrantyStatus()));
+            String oldWarrantyStatus = foundProduct.get().getWarrantyStatus();
+            foundProduct = productService.updateProductWarrantyStatus(id, updateProductRequest.getWarrantyStatus());
+
+            if (!(foundProduct.isPresent())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            }
+
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", foundProduct.get().getId(), oldWarrantyStatus, updateProductRequest.getWarrantyStatus()));
         }
 
         if (updateProductRequest.getDistributorInfo() != null) {
-            String oldDistributorInfo = product.getDistributorInfo();
-            product = productService.updateProductDistributorInfo(id, updateProductRequest.getDistributorInfo());
-            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldDistributorInfo, updateProductRequest.getDistributorInfo()));
+            String oldDistributorInfo = foundProduct.get().getDistributorInfo();
+            foundProduct = productService.updateProductDistributorInfo(id, updateProductRequest.getDistributorInfo());
+
+            if (!(foundProduct.isPresent())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            }
+
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", foundProduct.get().getId(), oldDistributorInfo, updateProductRequest.getDistributorInfo()));
         }
 
         if (updateProductRequest.getIsActive() != null) {
-            boolean oldIsActive = product.getIsActive();
-            product = productService.updateProductIsActive(id, updateProductRequest.getIsActive());
-            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %b -> %b", product.getId(), oldIsActive, updateProductRequest.getIsActive()));
+            boolean oldIsActive = foundProduct.get().getIsActive();
+            foundProduct = productService.updateProductIsActive(id, updateProductRequest.getIsActive());
+
+            if (!(foundProduct.isPresent())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            }
+
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %b -> %b", foundProduct.get().getId(), oldIsActive, updateProductRequest.getIsActive()));
         }
 
         if (updateProductRequest.getImageUrl() != null) {
-            String oldImageUrl = product.getImageUrl();
-            product = productService.updateProductImageUrl(id, updateProductRequest.getImageUrl());
-            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldImageUrl, updateProductRequest.getImageUrl()));
+            String oldImageUrl = foundProduct.get().getImageUrl();
+            foundProduct = productService.updateProductImageUrl(id, updateProductRequest.getImageUrl());
+
+            if (!(foundProduct.isPresent())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            }
+
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", foundProduct.get().getId(), oldImageUrl, updateProductRequest.getImageUrl()));
         }
 
         if (updateProductRequest.getCategoryId() != null) {
-            String oldCategory = product.getCategory().toString();
-            product = productService.updateProductCategory(id, updateProductRequest.getCategoryId());
-            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", product.getId(), oldCategory, product.getCategory().toString()));
+            String oldCategory = foundProduct.get().getCategory().toString();
+            foundProduct = productService.updateProductCategory(id, updateProductRequest.getCategoryId());
+
+            if (!(foundProduct.isPresent())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            }
+
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", foundProduct.get().getId(), oldCategory, foundProduct.get().getCategory().toString()));
         }
 
-        return ResponseEntity.ok(new ProductResponse(product.getId(), product.getName(), product.getModel(), product.getSerialNumber(), product.getDescription(), product.getQuantityInStock(), product.getPrice(), product.getWarrantyStatus(), product.getDistributorInfo(), product.getIsActive(), product.getImageUrl(), new CategoryResponse(product.getCategory().getId(), product.getCategory().getName(), product.getCategory().getDescription())));
+        return ResponseEntity.ok(new ProductResponse(foundProduct.get().getId(), foundProduct.get().getName(), foundProduct.get().getModel(), foundProduct.get().getSerialNumber(), foundProduct.get().getDescription(), foundProduct.get().getQuantityInStock(), foundProduct.get().getPrice(), foundProduct.get().getWarrantyStatus(), foundProduct.get().getDistributorInfo(), foundProduct.get().getIsActive(), foundProduct.get().getImageUrl(), new CategoryResponse(foundProduct.get().getCategory().getId(), foundProduct.get().getCategory().getName(), foundProduct.get().getCategory().getDescription())));
     }
 
     // Update product name
@@ -379,9 +491,14 @@ public class ProductManagerController {
         }
 
         String oldName = foundProduct.get().getName();
-        Product updatedProduct = productService.updateProductName(id, newName);
-        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldName, updatedProduct.getName()));
-        return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
+        Optional<Product> updatedProduct = productService.updateProductName(id, newName);
+
+        if (!(updatedProduct.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+        }
+
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.get().getId(), oldName, updatedProduct.get().getName()));
+        return ResponseEntity.ok(new ProductResponse(updatedProduct.get().getId(), updatedProduct.get().getName(), updatedProduct.get().getModel(), updatedProduct.get().getSerialNumber(), updatedProduct.get().getDescription(), updatedProduct.get().getQuantityInStock(), updatedProduct.get().getPrice(), updatedProduct.get().getWarrantyStatus(), updatedProduct.get().getDistributorInfo(), updatedProduct.get().getIsActive(), updatedProduct.get().getImageUrl(), new CategoryResponse(updatedProduct.get().getCategory().getId(), updatedProduct.get().getCategory().getName(), updatedProduct.get().getCategory().getDescription())));
     }
 
     // Update product model
@@ -413,9 +530,14 @@ public class ProductManagerController {
         }
 
         String oldModel = foundProduct.get().getModel();
-        Product updatedProduct = productService.updateProductModel(id, newModel);
-        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldModel, updatedProduct.getModel()));
-        return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
+        Optional<Product> updatedProduct = productService.updateProductModel(id, newModel);
+
+        if (!(updatedProduct.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+        }
+
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.get().getId(), oldModel, updatedProduct.get().getModel()));
+        return ResponseEntity.ok(new ProductResponse(updatedProduct.get().getId(), updatedProduct.get().getName(), updatedProduct.get().getModel(), updatedProduct.get().getSerialNumber(), updatedProduct.get().getDescription(), updatedProduct.get().getQuantityInStock(), updatedProduct.get().getPrice(), updatedProduct.get().getWarrantyStatus(), updatedProduct.get().getDistributorInfo(), updatedProduct.get().getIsActive(), updatedProduct.get().getImageUrl(), new CategoryResponse(updatedProduct.get().getCategory().getId(), updatedProduct.get().getCategory().getName(), updatedProduct.get().getCategory().getDescription())));
     }
 
     // Update product serial number
@@ -447,9 +569,14 @@ public class ProductManagerController {
         }
 
         String oldSerialNumber = foundProduct.get().getSerialNumber();
-        Product updatedProduct = productService.updateProductSerialNumber(id, newSerialNumber);
-        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldSerialNumber, updatedProduct.getSerialNumber()));
-        return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
+        Optional<Product> updatedProduct = productService.updateProductSerialNumber(id, newSerialNumber);
+
+        if (!(updatedProduct.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+        }
+
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.get().getId(), oldSerialNumber, updatedProduct.get().getSerialNumber()));
+        return ResponseEntity.ok(new ProductResponse(updatedProduct.get().getId(), updatedProduct.get().getName(), updatedProduct.get().getModel(), updatedProduct.get().getSerialNumber(), updatedProduct.get().getDescription(), updatedProduct.get().getQuantityInStock(), updatedProduct.get().getPrice(), updatedProduct.get().getWarrantyStatus(), updatedProduct.get().getDistributorInfo(), updatedProduct.get().getIsActive(), updatedProduct.get().getImageUrl(), new CategoryResponse(updatedProduct.get().getCategory().getId(), updatedProduct.get().getCategory().getName(), updatedProduct.get().getCategory().getDescription())));
     }
 
     // Update product description
@@ -481,9 +608,14 @@ public class ProductManagerController {
         }
 
         String oldDescription = foundProduct.get().getDescription();
-        Product updatedProduct = productService.updateProductDescription(id, newDescription);
-        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldDescription, updatedProduct.getDescription()));
-        return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
+        Optional<Product> updatedProduct = productService.updateProductDescription(id, newDescription);
+
+        if (!(updatedProduct.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+        }
+
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.get().getId(), oldDescription, updatedProduct.get().getDescription()));
+        return ResponseEntity.ok(new ProductResponse(updatedProduct.get().getId(), updatedProduct.get().getName(), updatedProduct.get().getModel(), updatedProduct.get().getSerialNumber(), updatedProduct.get().getDescription(), updatedProduct.get().getQuantityInStock(), updatedProduct.get().getPrice(), updatedProduct.get().getWarrantyStatus(), updatedProduct.get().getDistributorInfo(), updatedProduct.get().getIsActive(), updatedProduct.get().getImageUrl(), new CategoryResponse(updatedProduct.get().getCategory().getId(), updatedProduct.get().getCategory().getName(), updatedProduct.get().getCategory().getDescription())));
     }
 
     // Update product stock quantity
@@ -515,9 +647,14 @@ public class ProductManagerController {
         }
         
         Integer oldQuantityInStock = foundProduct.get().getQuantityInStock();
-        Product updatedProduct = productService.updateProductQuantityInStock(id, newQuantity);
-        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %d -> %d", updatedProduct.getId(), oldQuantityInStock.intValue(), updatedProduct.getQuantityInStock()));
-        return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
+        Optional<Product> updatedProduct = productService.updateProductQuantityInStock(id, newQuantity);
+
+        if (!(updatedProduct.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+        }
+
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %d -> %d", updatedProduct.get().getId(), oldQuantityInStock.intValue(), updatedProduct.get().getQuantityInStock()));
+        return ResponseEntity.ok(new ProductResponse(updatedProduct.get().getId(), updatedProduct.get().getName(), updatedProduct.get().getModel(), updatedProduct.get().getSerialNumber(), updatedProduct.get().getDescription(), updatedProduct.get().getQuantityInStock(), updatedProduct.get().getPrice(), updatedProduct.get().getWarrantyStatus(), updatedProduct.get().getDistributorInfo(), updatedProduct.get().getIsActive(), updatedProduct.get().getImageUrl(), new CategoryResponse(updatedProduct.get().getCategory().getId(), updatedProduct.get().getCategory().getName(), updatedProduct.get().getCategory().getDescription())));
     }
 
     // Update product price
@@ -549,9 +686,14 @@ public class ProductManagerController {
         }
 
         BigDecimal oldPrice = foundProduct.get().getPrice();
-        Product updatedProduct = productService.updateProductPrice(id, newPrice);
-        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldPrice.toString(), updatedProduct.getPrice().toString()));
-        return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
+        Optional<Product> updatedProduct = productService.updateProductPrice(id, newPrice);
+
+        if (!(updatedProduct.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+        }
+
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.get().getId(), oldPrice.toString(), updatedProduct.get().getPrice().toString()));
+        return ResponseEntity.ok(new ProductResponse(updatedProduct.get().getId(), updatedProduct.get().getName(), updatedProduct.get().getModel(), updatedProduct.get().getSerialNumber(), updatedProduct.get().getDescription(), updatedProduct.get().getQuantityInStock(), updatedProduct.get().getPrice(), updatedProduct.get().getWarrantyStatus(), updatedProduct.get().getDistributorInfo(), updatedProduct.get().getIsActive(), updatedProduct.get().getImageUrl(), new CategoryResponse(updatedProduct.get().getCategory().getId(), updatedProduct.get().getCategory().getName(), updatedProduct.get().getCategory().getDescription())));
     }
 
     // Update warranty status
@@ -583,9 +725,14 @@ public class ProductManagerController {
         }
 
         String oldWarrantyStatus = foundProduct.get().getWarrantyStatus();
-        Product updatedProduct = productService.updateProductWarrantyStatus(id, newWarrantyStatus);
-        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldWarrantyStatus, updatedProduct.getWarrantyStatus()));
-        return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
+        Optional<Product> updatedProduct = productService.updateProductWarrantyStatus(id, newWarrantyStatus);
+
+        if (!(updatedProduct.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+        }
+
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.get().getId(), oldWarrantyStatus, updatedProduct.get().getWarrantyStatus()));
+        return ResponseEntity.ok(new ProductResponse(updatedProduct.get().getId(), updatedProduct.get().getName(), updatedProduct.get().getModel(), updatedProduct.get().getSerialNumber(), updatedProduct.get().getDescription(), updatedProduct.get().getQuantityInStock(), updatedProduct.get().getPrice(), updatedProduct.get().getWarrantyStatus(), updatedProduct.get().getDistributorInfo(), updatedProduct.get().getIsActive(), updatedProduct.get().getImageUrl(), new CategoryResponse(updatedProduct.get().getCategory().getId(), updatedProduct.get().getCategory().getName(), updatedProduct.get().getCategory().getDescription())));
     }
     
     // Update distributor info
@@ -617,9 +764,14 @@ public class ProductManagerController {
         }
 
         String oldDistributorInfo = foundProduct.get().getDistributorInfo();
-        Product updatedProduct = productService.updateProductDistributorInfo(id, newDistributorInfo);
-        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldDistributorInfo, updatedProduct.getDistributorInfo()));
-        return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
+        Optional<Product> updatedProduct = productService.updateProductDistributorInfo(id, newDistributorInfo);
+
+        if (!(updatedProduct.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+        }
+
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.get().getId(), oldDistributorInfo, updatedProduct.get().getDistributorInfo()));
+        return ResponseEntity.ok(new ProductResponse(updatedProduct.get().getId(), updatedProduct.get().getName(), updatedProduct.get().getModel(), updatedProduct.get().getSerialNumber(), updatedProduct.get().getDescription(), updatedProduct.get().getQuantityInStock(), updatedProduct.get().getPrice(), updatedProduct.get().getWarrantyStatus(), updatedProduct.get().getDistributorInfo(), updatedProduct.get().getIsActive(), updatedProduct.get().getImageUrl(), new CategoryResponse(updatedProduct.get().getCategory().getId(), updatedProduct.get().getCategory().getName(), updatedProduct.get().getCategory().getDescription())));
     }
     
     // Activate the product
@@ -654,9 +806,14 @@ public class ProductManagerController {
         }
 
         boolean oldIsActive = foundProduct.get().getIsActive();
-        Product updatedProduct = productService.updateProductIsActive(id, true);
-        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %b -> %b", updatedProduct.getId(), oldIsActive, updatedProduct.getIsActive()));
-        return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
+        Optional<Product> updatedProduct = productService.updateProductIsActive(id, true);
+
+        if (!(updatedProduct.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+        }
+
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %b -> %b", updatedProduct.get().getId(), oldIsActive, updatedProduct.get().getIsActive()));
+        return ResponseEntity.ok(new ProductResponse(updatedProduct.get().getId(), updatedProduct.get().getName(), updatedProduct.get().getModel(), updatedProduct.get().getSerialNumber(), updatedProduct.get().getDescription(), updatedProduct.get().getQuantityInStock(), updatedProduct.get().getPrice(), updatedProduct.get().getWarrantyStatus(), updatedProduct.get().getDistributorInfo(), updatedProduct.get().getIsActive(), updatedProduct.get().getImageUrl(), new CategoryResponse(updatedProduct.get().getCategory().getId(), updatedProduct.get().getCategory().getName(), updatedProduct.get().getCategory().getDescription())));
     }
 
     // Deactivate the product
@@ -691,9 +848,14 @@ public class ProductManagerController {
         }
 
         boolean oldIsActive = foundProduct.get().getIsActive();
-        Product updatedProduct = productService.updateProductIsActive(id, false);
-        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %b -> %b", updatedProduct.getId(), oldIsActive, updatedProduct.getIsActive()));
-        return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
+        Optional<Product> updatedProduct = productService.updateProductIsActive(id, false);
+
+        if (!(updatedProduct.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+        }
+
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %b -> %b", updatedProduct.get().getId(), oldIsActive, updatedProduct.get().getIsActive()));
+        return ResponseEntity.ok(new ProductResponse(updatedProduct.get().getId(), updatedProduct.get().getName(), updatedProduct.get().getModel(), updatedProduct.get().getSerialNumber(), updatedProduct.get().getDescription(), updatedProduct.get().getQuantityInStock(), updatedProduct.get().getPrice(), updatedProduct.get().getWarrantyStatus(), updatedProduct.get().getDistributorInfo(), updatedProduct.get().getIsActive(), updatedProduct.get().getImageUrl(), new CategoryResponse(updatedProduct.get().getCategory().getId(), updatedProduct.get().getCategory().getName(), updatedProduct.get().getCategory().getDescription())));
     }
 
     // Update image URL
@@ -725,9 +887,14 @@ public class ProductManagerController {
         }
 
         String oldImageUrl = foundProduct.get().getImageUrl();
-        Product updatedProduct = productService.updateProductImageUrl(id, newImageUrl);
-        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldImageUrl, updatedProduct.getImageUrl()));
-        return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
+        Optional<Product> updatedProduct = productService.updateProductImageUrl(id, newImageUrl);
+
+        if (!(updatedProduct.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+        }
+
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.get().getId(), oldImageUrl, updatedProduct.get().getImageUrl()));
+        return ResponseEntity.ok(new ProductResponse(updatedProduct.get().getId(), updatedProduct.get().getName(), updatedProduct.get().getModel(), updatedProduct.get().getSerialNumber(), updatedProduct.get().getDescription(), updatedProduct.get().getQuantityInStock(), updatedProduct.get().getPrice(), updatedProduct.get().getWarrantyStatus(), updatedProduct.get().getDistributorInfo(), updatedProduct.get().getIsActive(), updatedProduct.get().getImageUrl(), new CategoryResponse(updatedProduct.get().getCategory().getId(), updatedProduct.get().getCategory().getName(), updatedProduct.get().getCategory().getDescription())));
     }
 
     
@@ -760,9 +927,14 @@ public class ProductManagerController {
         }
 
         String oldCategory = foundProduct.get().getCategory().toString();
-        Product updatedProduct = productService.updateProductCategory(id, newCategoryId);
-        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.getId(), oldCategory, updatedProduct.getCategory().toString()));
-        return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
+        Optional<Product> updatedProduct = productService.updateProductCategory(id, newCategoryId);
+
+        if (!(updatedProduct.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+        }
+
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.get().getId(), oldCategory, updatedProduct.get().getCategory().toString()));
+        return ResponseEntity.ok(new ProductResponse(updatedProduct.get().getId(), updatedProduct.get().getName(), updatedProduct.get().getModel(), updatedProduct.get().getSerialNumber(), updatedProduct.get().getDescription(), updatedProduct.get().getQuantityInStock(), updatedProduct.get().getPrice(), updatedProduct.get().getWarrantyStatus(), updatedProduct.get().getDistributorInfo(), updatedProduct.get().getIsActive(), updatedProduct.get().getImageUrl(), new CategoryResponse(updatedProduct.get().getCategory().getId(), updatedProduct.get().getCategory().getName(), updatedProduct.get().getCategory().getDescription())));
     }
     
     // Update product manager
@@ -802,8 +974,13 @@ public class ProductManagerController {
         }
 
         String oldProductManager = foundProduct.get().getProductManager().toString();
-        Product updatedProduct = productService.updateProductManager(id, newProductManager);
-        actionService.logAction(user, "CHANGE_PRODUCTMANAGER", String.format("%d: %s -> %s", updatedProduct.getId(), oldProductManager, updatedProduct.getProductManager().toString()));
-        return ResponseEntity.ok(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
+        Optional<Product> updatedProduct = productService.updateProductManager(id, newProductManager);
+
+        if (!(updatedProduct.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+        }
+
+        actionService.logAction(user, "CHANGE_PRODUCTMANAGER", String.format("%d: %s -> %s", updatedProduct.get().getId(), oldProductManager, updatedProduct.get().getProductManager().toString()));
+        return ResponseEntity.ok(new ProductResponse(updatedProduct.get().getId(), updatedProduct.get().getName(), updatedProduct.get().getModel(), updatedProduct.get().getSerialNumber(), updatedProduct.get().getDescription(), updatedProduct.get().getQuantityInStock(), updatedProduct.get().getPrice(), updatedProduct.get().getWarrantyStatus(), updatedProduct.get().getDistributorInfo(), updatedProduct.get().getIsActive(), updatedProduct.get().getImageUrl(), new CategoryResponse(updatedProduct.get().getCategory().getId(), updatedProduct.get().getCategory().getName(), updatedProduct.get().getCategory().getDescription())));
     }
 }

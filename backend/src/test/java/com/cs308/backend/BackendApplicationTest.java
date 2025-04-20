@@ -32,7 +32,7 @@ import com.cs308.backend.repo.UserRepository;
 @SpringBootTest(classes = BackendApplication.class)
 // Testcontainers will be used in order to test the database-related stuff
 @Testcontainers
-class BackendApplicationTests {
+class BackendApplicationTest {
 
 	@SuppressWarnings("resource")
 	@Container
@@ -91,17 +91,17 @@ class BackendApplicationTests {
 		testUser.setName("Test User");
 		testUser.setAddress("123 Test St");
 		testUser.setRole(Role.product_manager);
-		User inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
+		Optional<User> inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
 
-		Assertions.assertNotNull(inserted);
-		Assertions.assertNotNull(inserted.getId());
-		Assertions.assertEquals(testUser.getName(), inserted.getName());
-		Assertions.assertEquals(testUser.getAddress(), inserted.getAddress());
-		Assertions.assertEquals(testUser.getRole(), inserted.getRole());
+		Assertions.assertTrue(inserted.isPresent());
+		Assertions.assertNotNull(inserted.get().getId());
+		Assertions.assertEquals(testUser.getName(), inserted.get().getName());
+		Assertions.assertEquals(testUser.getAddress(), inserted.get().getAddress());
+		Assertions.assertEquals(testUser.getRole(), inserted.get().getRole());
 		
 		// Verify that email and password are stored encrypted/hashed
-		byte[] encryptedEmail = inserted.getEncryptedEmail();
-		byte[] passwordHash = inserted.getPasswordHashed();
+		byte[] encryptedEmail = inserted.get().getEncryptedEmail();
+		byte[] passwordHash = inserted.get().getPasswordHashed();
 		Assertions.assertNotNull(encryptedEmail, "Encrypted email should not be null");
 		Assertions.assertNotNull(passwordHash, "Password hash should not be null");
 		Assertions.assertNotEquals("test@example.com", new String(encryptedEmail));
@@ -114,11 +114,11 @@ class BackendApplicationTests {
 		testUser.setName("Test User");
 		testUser.setAddress("123 Test St");
 		testUser.setRole(Role.product_manager);
-		User inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
+		Optional<User> inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
 
-		Optional<User> found = userRepository.findById(inserted.getId());
+		Optional<User> found = userRepository.findById(inserted.get().getId());
 		Assertions.assertTrue(found.isPresent(), "User should be retrievable by ID");
-		Assertions.assertEquals(inserted.getName(), found.get().getName());
+		Assertions.assertEquals(inserted.get().getName(), found.get().getName());
 	}
 
 	@Test
@@ -127,11 +127,11 @@ class BackendApplicationTests {
 		testUser.setName("Test User");
 		testUser.setAddress("123 Test St");
 		testUser.setRole(Role.product_manager);
-		User inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
+		Optional<User> inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
 		
 		Optional<User> found = userRepository.findByEmail("test@example.com");
 		Assertions.assertTrue(found.isPresent(), "User should be retrievable by email");
-		Assertions.assertEquals(inserted.getName(), found.get().getName());
+		Assertions.assertEquals(inserted.get().getName(), found.get().getName());
 	}
 
 	@Test
@@ -164,11 +164,11 @@ class BackendApplicationTests {
 		testUser.setName("Test User");
 		testUser.setAddress("123 Test St");
 		testUser.setRole(Role.product_manager);
-		User inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
+		Optional<User> inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
 
 		Optional<User> found = userRepository.findByEmailAndPasswordAndRole("test@example.com", "test123", testUser.getRole().toString());
 		Assertions.assertTrue(found.isPresent(), "User should be retrievable by credentials");
-		Assertions.assertEquals(inserted.getName(), found.get().getName());
+		Assertions.assertEquals(inserted.get().getName(), found.get().getName());
 	}
 
 	@Test
@@ -177,10 +177,10 @@ class BackendApplicationTests {
 		testUser.setName("Test User");
 		testUser.setAddress("123 Test St");
 		testUser.setRole(Role.product_manager);
-		User inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
+		Optional<User> inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
 
-		User updated = userRepository.updateUserName(inserted, "Updated Name");
-		Assertions.assertEquals("Updated Name", updated.getName(), "User name should be updated");
+		Optional<User> updated = userRepository.updateUserName(inserted.get(), "Updated Name");
+		Assertions.assertEquals("Updated Name", updated.get().getName(), "User name should be updated");
 	}
 
 	@Test
@@ -189,11 +189,11 @@ class BackendApplicationTests {
 		testUser.setName("Test User");
 		testUser.setAddress("123 Test St");
 		testUser.setRole(Role.product_manager);
-		User inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
+		Optional<User> inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
 
-		User updated = userRepository.updateUserEmail(inserted, "newtest@example.com");
+		Optional<User> updated = userRepository.updateUserEmail(inserted.get(), "newtest@example.com");
 		// Verify that the stored encrypted email does not match the plain text
-		Assertions.assertNotEquals("newtest@example.com", new String(updated.getEncryptedEmail()));
+		Assertions.assertNotEquals("newtest@example.com", new String(updated.get().getEncryptedEmail()));
 	}
 
 	@Test
@@ -202,10 +202,10 @@ class BackendApplicationTests {
 		testUser.setName("Test User");
 		testUser.setAddress("123 Test St");
 		testUser.setRole(Role.product_manager);
-		User inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
+		Optional<User> inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
 
-		User updated = userRepository.updateUserAddress(inserted, "456 New Address");
-		Assertions.assertEquals("456 New Address", updated.getAddress(), "User address should be updated");
+		Optional<User> updated = userRepository.updateUserAddress(inserted.get(), "456 New Address");
+		Assertions.assertEquals("456 New Address", updated.get().getAddress(), "User address should be updated");
 	}
 
 	@Test
@@ -214,11 +214,11 @@ class BackendApplicationTests {
 		testUser.setName("Test User");
 		testUser.setAddress("123 Test St");
 		testUser.setRole(Role.product_manager);
-		User inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
+		Optional<User> inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
 
-		User updated = userRepository.updateUserPassword(inserted, "newPassword456");
+		Optional<User> updated = userRepository.updateUserPassword(inserted.get(), "newPassword456");
 		// Verify that the new password is stored hashed/encrypted
-		Assertions.assertNotEquals("newPassword456", new String(updated.getPasswordHashed()));
+		Assertions.assertNotEquals("newPassword456", new String(updated.get().getPasswordHashed()));
 	}
 
 	@Test
@@ -227,10 +227,10 @@ class BackendApplicationTests {
 		testUser.setName("Test User");
 		testUser.setAddress("123 Test St");
 		testUser.setRole(Role.product_manager);
-		User inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
+		Optional<User> inserted = userRepository.insertNewUser(testUser, "test@example.com", "test123");
 
-		userRepository.deleteUserById(inserted);
-		Optional<User> found = userRepository.findById(inserted.getId());
+		userRepository.deleteUserById(inserted.get());
+		Optional<User> found = userRepository.findById(inserted.get().getId());
 		Assertions.assertFalse(found.isPresent(), "User should be deleted");
 	}
 
@@ -240,9 +240,9 @@ class BackendApplicationTests {
 		category.setName("Electronics");
 		category.setDescription("Electronic gadgets and devices");
 
-		Category inserted = categoryRepository.insertNewCategory(category);
+		Optional<Category> inserted = categoryRepository.insertNewCategory(category);
 		Assertions.assertNotNull(inserted);
-		Assertions.assertNotNull(inserted.getId());
+		Assertions.assertNotNull(inserted.get().getId());
 	}
 
 	@Test
@@ -250,9 +250,9 @@ class BackendApplicationTests {
 		Category category = new Category();
 		category.setName("Home");
 		category.setDescription("Home appliances");
-		Category inserted = categoryRepository.insertNewCategory(category);
+		Optional<Category> inserted = categoryRepository.insertNewCategory(category);
 
-		Optional<Category> found = categoryRepository.findById(inserted.getId());
+		Optional<Category> found = categoryRepository.findById(inserted.get().getId());
 		Assertions.assertTrue(found.isPresent());
 		Assertions.assertEquals("Home", found.get().getName());
 	}
@@ -273,10 +273,10 @@ class BackendApplicationTests {
 		Category category = new Category();
 		category.setName("Books");
 		category.setDescription("Book category");
-		Category inserted = categoryRepository.insertNewCategory(category);
+		Optional<Category> inserted = categoryRepository.insertNewCategory(category);
 
-		Category updated = categoryRepository.updateCategoryName(inserted, "Literature");
-		Assertions.assertEquals("Literature", updated.getName());
+		Optional<Category> updated = categoryRepository.updateCategoryName(inserted.get(), "Literature");
+		Assertions.assertEquals("Literature", updated.get().getName());
 	}
 
 	@Test
@@ -284,10 +284,10 @@ class BackendApplicationTests {
 		Category category = new Category();
 		category.setName("Clothing");
 		category.setDescription("All kinds of clothing");
-		Category inserted = categoryRepository.insertNewCategory(category);
+		Optional<Category> inserted = categoryRepository.insertNewCategory(category);
 
-		Category updated = categoryRepository.updateCategoryDescription(inserted, "Men and Women Clothing");
-		Assertions.assertEquals("Men and Women Clothing", updated.getDescription());
+		Optional<Category> updated = categoryRepository.updateCategoryDescription(inserted.get(), "Men and Women Clothing");
+		Assertions.assertEquals("Men and Women Clothing", updated.get().getDescription());
 	}
 
 	@Test
@@ -295,10 +295,10 @@ class BackendApplicationTests {
 		Category category = new Category();
 		category.setName("Automotive");
 		category.setDescription("Automotive parts");
-		Category inserted = categoryRepository.insertNewCategory(category);
+		Optional<Category> inserted = categoryRepository.insertNewCategory(category);
 
-		categoryRepository.deleteCategory(inserted);
-		Optional<Category> found = categoryRepository.findById(inserted.getId());
+		categoryRepository.deleteCategory(inserted.get());
+		Optional<Category> found = categoryRepository.findById(inserted.get().getId());
 		Assertions.assertFalse(found.isPresent(), "Category should be deleted");
 	}
 
@@ -312,7 +312,7 @@ class BackendApplicationTests {
 		Category category = new Category();
 		category.setName("Books");
 		category.setDescription("Books category");
-		Category savedCategory = categoryRepository.insertNewCategory(category);
+		Optional<Category> savedCategory = categoryRepository.insertNewCategory(category);
 		
 		Product product = new Product();
 		product.setName("Effective Java");
@@ -321,12 +321,12 @@ class BackendApplicationTests {
 		product.setDescription("Programming guide");
 		product.setPrice(new BigDecimal("45.00"));
 		product.setQuantityInStock(12);
-		product.setCategory(savedCategory);
+		product.setCategory(savedCategory.get());
 		product.setProductManager(testUser);
 
-		Product inserted = productRepository.insertNewProduct(product);
-		Assertions.assertNotNull(inserted);
-		Assertions.assertNotNull(inserted.getId());
+		Optional<Product> inserted = productRepository.insertNewProduct(product);
+		Assertions.assertTrue(inserted.isPresent());
+		Assertions.assertNotNull(inserted.get().getId());
 	}
 
 	@Test
@@ -339,7 +339,7 @@ class BackendApplicationTests {
 		Category category = new Category();
 		category.setName("Music");
 		category.setDescription("Musical instruments");
-		Category savedCategory = categoryRepository.insertNewCategory(category);
+		Optional<Category> savedCategory = categoryRepository.insertNewCategory(category);
 		
 		Product product = new Product();
 		product.setName("Piano");
@@ -348,11 +348,11 @@ class BackendApplicationTests {
 		product.setDescription("Grand piano");
 		product.setPrice(new BigDecimal("5000.00"));
 		product.setQuantityInStock(3);
-		product.setCategory(savedCategory);
+		product.setCategory(savedCategory.get());
 		product.setProductManager(testUser);
-		Product inserted = productRepository.insertNewProduct(product);
+		Optional<Product> inserted = productRepository.insertNewProduct(product);
 		
-		Optional<Product> found = productRepository.findById(inserted.getId());
+		Optional<Product> found = productRepository.findById(inserted.get().getId());
 		Assertions.assertTrue(found.isPresent());
 		Assertions.assertEquals("Piano", found.get().getName());
 	}
@@ -367,7 +367,7 @@ class BackendApplicationTests {
 		Category category = new Category();
 		category.setName("Gadgets");
 		category.setDescription("Gadgets and accessories");
-		Category savedCategory = categoryRepository.insertNewCategory(category);
+		Optional<Category> savedCategory = categoryRepository.insertNewCategory(category);
 		
 		Product product = new Product();
 		product.setName("Old Gadget");
@@ -376,12 +376,12 @@ class BackendApplicationTests {
 		product.setDescription("Old description");
 		product.setPrice(new BigDecimal("99.99"));
 		product.setQuantityInStock(20);
-		product.setCategory(savedCategory);
+		product.setCategory(savedCategory.get());
 		product.setProductManager(testUser);
-		Product inserted = productRepository.insertNewProduct(product);
+		Optional<Product> inserted = productRepository.insertNewProduct(product);
 		
-		Product updated = productRepository.updateProductName(inserted, "New Gadget");
-		Assertions.assertEquals("New Gadget", updated.getName());
+		Optional<Product> updated = productRepository.updateProductName(inserted.get(), "New Gadget");
+		Assertions.assertEquals("New Gadget", updated.get().getName());
 	}
 
 	@Test
@@ -394,7 +394,7 @@ class BackendApplicationTests {
 		Category category = new Category();
 		category.setName("Gadgets");
 		category.setDescription("Tech gadgets");
-		Category savedCategory = categoryRepository.insertNewCategory(category);
+		Optional<Category> savedCategory = categoryRepository.insertNewCategory(category);
 		
 		Product product = new Product();
 		product.setName("Smartphone");
@@ -403,12 +403,12 @@ class BackendApplicationTests {
 		product.setDescription("Latest smartphone");
 		product.setPrice(new BigDecimal("699.99"));
 		product.setQuantityInStock(50);
-		product.setCategory(savedCategory);
+		product.setCategory(savedCategory.get());
 		product.setProductManager(testUser);
-		Product inserted = productRepository.insertNewProduct(product);
+		Optional<Product> inserted = productRepository.insertNewProduct(product);
 		
-		Product updated = productRepository.updateProductModel(inserted, "Model Y");
-		Assertions.assertEquals("Model Y", updated.getModel());
+		Optional<Product> updated = productRepository.updateProductModel(inserted.get(), "Model Y");
+		Assertions.assertEquals("Model Y", updated.get().getModel());
 	}
 
 	@Test
@@ -421,7 +421,7 @@ class BackendApplicationTests {
 		Category category = new Category();
 		category.setName("Appliances");
 		category.setDescription("Home appliances");
-		Category savedCategory = categoryRepository.insertNewCategory(category);
+		Optional<Category> savedCategory = categoryRepository.insertNewCategory(category);
 		
 		Product product = new Product();
 		product.setName("Refrigerator");
@@ -430,12 +430,12 @@ class BackendApplicationTests {
 		product.setDescription("Double door refrigerator");
 		product.setPrice(new BigDecimal("899.99"));
 		product.setQuantityInStock(10);
-		product.setCategory(savedCategory);
+		product.setCategory(savedCategory.get());
 		product.setProductManager(testUser);
-		Product inserted = productRepository.insertNewProduct(product);
+		Optional<Product> inserted = productRepository.insertNewProduct(product);
 		
-		Product updated = productRepository.updateProductSerialNumber(inserted, "RF-501");
-		Assertions.assertEquals("RF-501", updated.getSerialNumber());
+		Optional<Product> updated = productRepository.updateProductSerialNumber(inserted.get(), "RF-501");
+		Assertions.assertEquals("RF-501", updated.get().getSerialNumber());
 	}
 
 	@Test
@@ -448,7 +448,7 @@ class BackendApplicationTests {
 		Category category = new Category();
 		category.setName("Furniture");
 		category.setDescription("Home furniture");
-		Category savedCategory = categoryRepository.insertNewCategory(category);
+		Optional<Category> savedCategory = categoryRepository.insertNewCategory(category);
 		
 		Product product = new Product();
 		product.setName("Sofa");
@@ -457,12 +457,12 @@ class BackendApplicationTests {
 		product.setDescription("Old description");
 		product.setPrice(new BigDecimal("299.99"));
 		product.setQuantityInStock(8);
-		product.setCategory(savedCategory);
+		product.setCategory(savedCategory.get());
 		product.setProductManager(testUser);
-		Product inserted = productRepository.insertNewProduct(product);
+		Optional<Product> inserted = productRepository.insertNewProduct(product);
 		
-		Product updated = productRepository.updateProductDescription(inserted, "Updated comfy sofa");
-		Assertions.assertEquals("Updated comfy sofa", updated.getDescription());
+		Optional<Product> updated = productRepository.updateProductDescription(inserted.get(), "Updated comfy sofa");
+		Assertions.assertEquals("Updated comfy sofa", updated.get().getDescription());
 	}
 
 	@Test
@@ -475,7 +475,7 @@ class BackendApplicationTests {
 		Category category = new Category();
 		category.setName("Books");
 		category.setDescription("Books category");
-		Category savedCategory = categoryRepository.insertNewCategory(category);
+		Optional<Category> savedCategory = categoryRepository.insertNewCategory(category);
 		
 		Product product = new Product();
 		product.setName("Clean Code");
@@ -484,12 +484,12 @@ class BackendApplicationTests {
 		product.setDescription("Software craftsmanship guide");
 		product.setPrice(new BigDecimal("39.99"));
 		product.setQuantityInStock(5);
-		product.setCategory(savedCategory);
+		product.setCategory(savedCategory.get());
 		product.setProductManager(testUser);
-		Product inserted = productRepository.insertNewProduct(product);
+		Optional<Product> inserted = productRepository.insertNewProduct(product);
 		
-		Product updated = productRepository.updateProductQuantityInStock(inserted, 10);
-		Assertions.assertEquals(10, updated.getQuantityInStock());
+		Optional<Product> updated = productRepository.updateProductQuantityInStock(inserted.get(), 10);
+		Assertions.assertEquals(10, updated.get().getQuantityInStock());
 	}
 
 	@Test
@@ -502,7 +502,7 @@ class BackendApplicationTests {
 		Category category = new Category();
 		category.setName("Software");
 		category.setDescription("Software products");
-		Category savedCategory = categoryRepository.insertNewCategory(category);
+		Optional<Category> savedCategory = categoryRepository.insertNewCategory(category);
 		
 		Product product = new Product();
 		product.setName("IntelliJ IDEA");
@@ -511,12 +511,12 @@ class BackendApplicationTests {
 		product.setDescription("IDE for JVM languages");
 		product.setPrice(new BigDecimal("199.99"));
 		product.setQuantityInStock(25);
-		product.setCategory(savedCategory);
+		product.setCategory(savedCategory.get());
 		product.setProductManager(testUser);
-		Product inserted = productRepository.insertNewProduct(product);
+		Optional<Product> inserted = productRepository.insertNewProduct(product);
 		
-		Product updated = productRepository.updateProductPrice(inserted, new BigDecimal("249.99"));
-		Assertions.assertEquals(new BigDecimal("249.99"), updated.getPrice());
+		Optional<Product> updated = productRepository.updateProductPrice(inserted.get(), new BigDecimal("249.99"));
+		Assertions.assertEquals(new BigDecimal("249.99"), updated.get().getPrice());
 	}
 
 	@Test
@@ -529,7 +529,7 @@ class BackendApplicationTests {
 		Category category = new Category();
 		category.setName("Toys");
 		category.setDescription("Kids' toys");
-		Category savedCategory = categoryRepository.insertNewCategory(category);
+		Optional<Category> savedCategory = categoryRepository.insertNewCategory(category);
 		
 		Product product = new Product();
 		product.setName("Lego Set");
@@ -538,12 +538,12 @@ class BackendApplicationTests {
 		product.setDescription("Lego Star Wars set");
 		product.setPrice(new BigDecimal("59.99"));
 		product.setQuantityInStock(40);
-		product.setCategory(savedCategory);
+		product.setCategory(savedCategory.get());
 		product.setProductManager(testUser);
-		Product inserted = productRepository.insertNewProduct(product);
+		Optional<Product> inserted = productRepository.insertNewProduct(product);
 		
-		productRepository.deleteProduct(inserted);
-		Optional<Product> found = productRepository.findById(inserted.getId());
+		productRepository.deleteProduct(inserted.get());
+		Optional<Product> found = productRepository.findById(inserted.get().getId());
 		Assertions.assertFalse(found.isPresent(), "Product should be deleted");
 	}
 

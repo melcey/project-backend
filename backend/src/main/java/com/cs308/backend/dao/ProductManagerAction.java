@@ -16,6 +16,7 @@ import jakarta.persistence.Table;
 public class ProductManagerAction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "action_id")
     private Long actionId;
 
     // Many-to-one association
@@ -85,16 +86,11 @@ public class ProductManagerAction {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("ProductManagerAction [actionId=")
-            .append(actionId)
-            .append(", productManager=")
-            .append(productManager.toString())
-            .append(", actionType=")
-            .append(actionType)
-            .append(", actionDate=")
-            .append(actionDate.toString())
-            .append(", details=")
-            .append(details)
+        builder.append("ProductManagerAction [actionId=").append(actionId)
+            .append(", productManager=").append(productManager)
+            .append(", actionType=").append(actionType)
+            .append(", actionDate=").append(actionDate)
+            .append(", details=").append(details)
             .append("]");
 
         return builder.toString();
@@ -124,6 +120,4 @@ public class ProductManagerAction {
             return false;
         return true;
     }
-
-    
 }
