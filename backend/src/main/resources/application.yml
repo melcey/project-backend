@@ -22,6 +22,22 @@ spring:
     locations: classpath:db/migration
     # The schema on which the migrations will be run
     default-schema: public
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: group23cs308@gmail.com
+    password: dndwzumcxpffsjld
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+        
 
 app:
   jwt:
