@@ -30,7 +30,8 @@ public class Cart {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public Cart() {}
+    public Cart() {
+    }
 
     public Cart(User user, BigDecimal totalPrice, List<CartItem> items) {
         this.user = user;

@@ -13,8 +13,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class InvoiceService {
@@ -48,6 +51,11 @@ public class InvoiceService {
 
     private String generateInvoiceNumber() {
         return "INV-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    }
+
+    public Optional<Invoice> findByInvoiceNumber(String invoiceNumber) {
+        // Replace this with the actual logic to find an invoice by its number
+        return Optional.empty();
     }
 
     private byte[] generatePDF(Invoice invoice) {

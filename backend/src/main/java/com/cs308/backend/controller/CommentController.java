@@ -9,9 +9,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-
-
-
 @RestController
 @RequestMapping("/api/comments")
 public class CommentController {
@@ -27,7 +24,8 @@ public class CommentController {
     public ResponseEntity<?> submitComment(@RequestBody Comment comment) {
         // Get authenticated user if needed:
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        // UserPrincipal user = (UserPrincipal) auth.getPrincipal(); // If using a custom UserPrincipal
+        // UserPrincipal user = (UserPrincipal) auth.getPrincipal(); // If using a
+        // custom UserPrincipal
 
         Comment submitted = commentService.submitComment(comment);
         return ResponseEntity.ok(submitted);
@@ -40,13 +38,13 @@ public class CommentController {
     }
 
     @PostMapping("/disapprove")
-    public ResponseEntity<?> disapproveComment( @RequestBody Comment comment) {
+    public ResponseEntity<?> disapproveComment(@RequestBody Comment comment) {
         commentService.disapproveComment(comment);
         return ResponseEntity.ok(new MessageResponse("Comment disapproved successfully."));
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteComment( @RequestBody Comment comment) {
+    public ResponseEntity<?> deleteComment(@RequestBody Comment comment) {
         commentService.deleteComment(comment);
         return ResponseEntity.ok(new MessageResponse("Comment deleted successfully."));
     }
