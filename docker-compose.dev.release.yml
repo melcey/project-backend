@@ -7,7 +7,7 @@ services:
       context: ./backend
       dockerfile: release.Dockerfile
     # Name of the container
-    container_name: backend-dev
+    container_name: backend
     # The container will always be restarted
     restart: always
     ports:
