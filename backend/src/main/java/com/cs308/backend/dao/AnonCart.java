@@ -7,22 +7,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "carts", schema = "public")
-public class Cart {
+@Table(name = "anon_carts", schema = "public")
+public class AnonCart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cart_id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
     @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalPrice = BigDecimal.ZERO;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CartItem> items = new ArrayList<>();
+    private List<AnonCartItem> items = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -30,13 +26,12 @@ public class Cart {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public Cart() {
+    public AnonCart() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Cart(User user, BigDecimal totalPrice, List<CartItem> items) {
-        this.user = user;
+    public AnonCart(BigDecimal totalPrice, List<AnonCartItem> items) {
         this.totalPrice = totalPrice;
         this.items = items;
         this.createdAt = LocalDateTime.now();
@@ -52,14 +47,6 @@ public class Cart {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public BigDecimal getTotalPrice() {
         return totalPrice;
     }
@@ -68,11 +55,11 @@ public class Cart {
         this.totalPrice = totalPrice;
     }
 
-    public List<CartItem> getItems() {
+    public List<AnonCartItem> getItems() {
         return items;
     }
 
-    public void setItems(List<CartItem> items) {
+    public void setItems(List<AnonCartItem> items) {
         this.items = items;
     }
 
@@ -95,8 +82,7 @@ public class Cart {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Cart [id=").append(id)
-            .append(", user=").append(user)
+        builder.append("AnonCart [id=").append(id)
             .append(", totalPrice=").append(totalPrice)
             .append(", items=").append(items)
             .append(", createdAt=").append(createdAt)
@@ -122,7 +108,7 @@ public class Cart {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Cart other = (Cart) obj;
+        AnonCart other = (AnonCart) obj;
         if (id == null) {
             if (other.id != null)
                 return false;

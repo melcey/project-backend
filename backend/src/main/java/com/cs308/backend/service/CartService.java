@@ -24,7 +24,7 @@ public class CartService {
     public Cart getOrCreateCart(Long userId) {
         return cartRepository.findByUserId(userId).orElseGet(() -> {
             Cart cart = new Cart();
-            cart.setUser(userRepository.findById(userId).get()); // Assuming User entity exists
+            cart.setUser(userRepository.findById(userId).get());
             return cartRepository.save(cart);
         });
     }

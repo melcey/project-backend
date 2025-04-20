@@ -1,36 +1,37 @@
 package com.cs308.backend.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Optional;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cs308.backend.dao.Order;
 import com.cs308.backend.dao.Payment;
+import com.cs308.backend.dto.PaymentRequest;
 import com.cs308.backend.repo.OrderRepository;
 import com.cs308.backend.repo.PaymentRepository;
-import com.cs308.backend.dto.PaymentRequest;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
-import java.util.Base64;
-import java.util.Optional;
 
 @Service
 public class PaymentService {
+    private final PaymentRepository paymentRepository;
+    
+    private final OrderRepository orderRepository;
 
-    @Autowired
-    private PaymentRepository paymentRepository;
-
-    @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
-    private InvoiceService invoiceService;
+    private final InvoiceService invoiceService;
 
     private static final String ENCRYPTION_KEY = "zQUBdFwXE4a5PwzGL1XM14807r53Bd4RyoctkjNqIus=";
 
+    public PaymentService(PaymentRepository paymentRepository, OrderRepository orderRepository, InvoiceService invoiceService) {
+        this.paymentRepository = paymentRepository;
+        this.orderRepository = orderRepository;
+        this.invoiceService = invoiceService;
+    }
+
     @Transactional
-    public Payment processPayment(PaymentRequest paymentRequest) {
+    public Optional<Payment> processPayment(PaymentRequest paymentRequest) {
         // Find order
         Order order = orderRepository.findById(paymentRequest.getOrderId())
                 .orElseThrow(() -> new RuntimeException("Order not found"));
@@ -63,14 +64,14 @@ public class PaymentService {
                 // Generate invoice
                 invoiceService.generateInvoice(payment);
 
-                return payment;
+                return Optional.of(payment);
             } else {
                 payment.setPaymentStatus("FAILED");
-                return paymentRepository.save(payment);
+                return Optional.of(paymentRepository.save(payment));
             }
         } catch (Exception e) {
             payment.setPaymentStatus("FAILED");
-            return paymentRepository.save(payment);
+            return Optional.of(paymentRepository.save(payment));
         }
     }
 
