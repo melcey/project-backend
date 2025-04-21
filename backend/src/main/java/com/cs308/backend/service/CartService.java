@@ -71,11 +71,11 @@ public class CartService {
     }
 
     public Optional<Cart> getCartOfUser(User user) {
-        return cartRepository.findByUserId(user.getId());
+        return cartRepository.findByUser(user);
     }
 
     public Optional<Cart> addItemToCart(User user, Long productId, int quantity) {
-        Optional<Cart> cart = cartRepository.findByUserId(user.getId());
+        Optional<Cart> cart = cartRepository.findByUser(user);
 
         if (!(cart.isPresent())) {
             return Optional.empty();

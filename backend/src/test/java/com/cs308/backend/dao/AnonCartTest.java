@@ -11,14 +11,12 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-class CartTest {
+class AnonCartTest {
     @Test
-    void testCartCreation() {
-        User user = new User();
-        List<CartItem> items = new ArrayList<>();
-        Cart cart = new Cart(user, BigDecimal.valueOf(100.50), items);
+    void testAnonCartCreation() {
+        List<AnonCartItem> items = new ArrayList<>();
+        AnonCart cart = new AnonCart(BigDecimal.valueOf(100.50), items);
 
-        assertEquals(user, cart.getUser());
         assertEquals(BigDecimal.valueOf(100.50), cart.getTotalPrice());
         assertEquals(items, cart.getItems());
         assertNotNull(cart.getCreatedAt());
@@ -26,12 +24,12 @@ class CartTest {
     }
 
     @Test
-    void testAddItemsToCart() {
-        Cart cart = new Cart();
-        CartItem item1 = new CartItem();
-        CartItem item2 = new CartItem();
+    void testAddItemsToAnonCart() {
+        AnonCart cart = new AnonCart();
+        AnonCartItem item1 = new AnonCartItem();
+        AnonCartItem item2 = new AnonCartItem();
 
-        List<CartItem> items = new ArrayList<>();
+        List<AnonCartItem> items = new ArrayList<>();
         items.add(item1);
         items.add(item2);
 
@@ -44,46 +42,38 @@ class CartTest {
 
     @Test
     void testSettersAndGetters() {
-        User user = new User();
-        List<CartItem> items = new ArrayList<>();
-        Cart cart = new Cart();
+        List<AnonCartItem> items = new ArrayList<>();
+        AnonCart cart = new AnonCart();
 
         cart.setId(1L);
-        cart.setUser(user);
         cart.setTotalPrice(BigDecimal.valueOf(200.00));
         cart.setItems(items);
 
         assertEquals(1L, cart.getId());
-        assertEquals(user, cart.getUser());
         assertEquals(BigDecimal.valueOf(200.00), cart.getTotalPrice());
         assertEquals(items, cart.getItems());
     }
 
     @Test
     void testToString() {
-        User user = new User();
-        user.setName("John Doe");
-        user.setRole(Role.customer);
         LocalDateTime createdAt = LocalDateTime.of(2025, 4, 19, 12, 0);
         LocalDateTime updatedAt = LocalDateTime.of(2025, 4, 20, 12, 0);
-        Cart cart = new Cart(user, BigDecimal.valueOf(100.50), new ArrayList<>());
+        AnonCart cart = new AnonCart(BigDecimal.valueOf(100.50), new ArrayList<>());
         cart.setCreatedAt(createdAt);
         cart.setUpdatedAt(updatedAt);
 
-        String expected = "Cart [id=null, user=User [id=null, name=John Doe, address=null, role=customer], totalPrice=100.5, items=[], createdAt=2025-04-19T12:00, updatedAt=2025-04-20T12:00]";
+        String expected = "AnonCart [id=null, totalPrice=100.5, items=[], createdAt=2025-04-19T12:00, updatedAt=2025-04-20T12:00]";
         assertEquals(expected, cart.toString());
     }
 
     @SuppressWarnings("unlikely-arg-type")
     @Test
     void testHashCodeAndEquals() {
-        User user1 = new User();
-        User user2 = new User();
 
-        Cart cart1 = new Cart(user1, BigDecimal.valueOf(100.50), new ArrayList<>());
-        Cart cart2 = new Cart(user1, BigDecimal.valueOf(100.50), new ArrayList<>());
-        Cart cart3 = new Cart(user2, BigDecimal.valueOf(200.00), new ArrayList<>());
-        Cart cartNull = new Cart();
+        AnonCart cart1 = new AnonCart(BigDecimal.valueOf(100.50), new ArrayList<>());
+        AnonCart cart2 = new AnonCart(BigDecimal.valueOf(100.50), new ArrayList<>());
+        AnonCart cart3 = new AnonCart(BigDecimal.valueOf(200.00), new ArrayList<>());
+        AnonCart cartNull = new AnonCart();
 
         // Test equality for objects with the same fields
         cart1.setId(1L);
@@ -97,7 +87,7 @@ class CartTest {
         assertEquals(false, cart1.hashCode() == cart3.hashCode());
 
         // Test equality for objects with null fields
-        Cart cartNull2 = new Cart();
+        AnonCart cartNull2 = new AnonCart();
         assertEquals(cartNull, cartNull2);
         assertEquals(cartNull.hashCode(), cartNull2.hashCode());
 

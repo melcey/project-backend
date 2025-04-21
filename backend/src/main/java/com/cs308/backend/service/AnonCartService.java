@@ -1,16 +1,15 @@
 package com.cs308.backend.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
+
+import org.springframework.stereotype.Service;
 
 import com.cs308.backend.dao.AnonCart;
 import com.cs308.backend.dao.AnonCartItem;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.repo.AnonCartRepository;
-import com.cs308.backend.repo.UserRepository;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Service
 public class AnonCartService {

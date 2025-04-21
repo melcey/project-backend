@@ -1,6 +1,3 @@
-ALTER TABLE comments
-DROP COLUMN rating;
-
 CREATE TABLE ratings (
     rating_id SERIAL PRIMARY KEY,
     product_id INT REFERENCES products(product_id),

@@ -18,5 +18,5 @@ CREATE TABLE anon_cart_items (
 );
 
 -- Indexes for performance
-CREATE INDEX idx_anon_cart_items_cart ON anonymous_cart_items(cart_id);
-CREATE INDEX idx_anon_cart_items_product ON anonymous_cart_items(product_id);
+CREATE INDEX idx_anon_cart_items_cart ON anon_cart_items(cart_id);
+CREATE INDEX idx_anon_cart_items_product ON anon_cart_items(product_id);

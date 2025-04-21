@@ -16,6 +16,6 @@ $$ LANGUAGE plpgsql;
 
 
 -- Add trigger
-CREATE TRIGGER trg_validate_cart_item
+CREATE TRIGGER trg_validate_anon_cart_item
 BEFORE INSERT OR UPDATE ON anon_cart_items
 FOR EACH ROW EXECUTE FUNCTION validate_anon_cart_item();

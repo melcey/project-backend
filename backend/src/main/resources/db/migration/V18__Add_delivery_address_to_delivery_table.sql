@@ -1,1 +1,0 @@
-ALTER TABLE delivery ADD COLUMN delivery_adress TEXT;

@@ -2,7 +2,7 @@ package com.cs308.backend.dto;
 
 import java.math.BigDecimal;
 
-public class CreateProductRequest {
+public class ProductRequest {
     // All the fields must be specified here
     private String name;
     private String model;
@@ -16,9 +16,9 @@ public class CreateProductRequest {
     private String imageUrl;
     private Long categoryId;
 
-    public CreateProductRequest() {}
+    public ProductRequest() {}
 
-    public CreateProductRequest(String name, String model, String serialNumber, String description, int quantityInStock,
+    public ProductRequest(String name, String model, String serialNumber, String description, int quantityInStock,
             BigDecimal price, String warrantyStatus, String distributorInfo, boolean isActive, String imageUrl,
             Long categoryId) {
         this.name = name;
@@ -125,7 +125,7 @@ public class CreateProductRequest {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("CreateProductRequest [name=").append(name)
+        builder.append("ProductRequest [name=").append(name)
             .append(", model=").append(model)
             .append(", serialNumber=").append(serialNumber)
             .append(", description=").append(description)
@@ -167,7 +167,7 @@ public class CreateProductRequest {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        CreateProductRequest other = (CreateProductRequest) obj;
+        ProductRequest other = (ProductRequest) obj;
         if (name == null) {
             if (other.name != null)
                 return false;

@@ -70,10 +70,9 @@ public class JwtSecurityConfig {
                         .requestMatchers("/prodman/**").hasRole("PRODUCT_MANAGER")
                         .requestMatchers("/cart/**").hasRole("CUSTOMER")
                         .requestMatchers("/comment/submit").hasRole("CUSTOMER")
-                        .requestMatchers("/comment/delete").hasRole("CUSTOMER")
                         .requestMatchers("/comment/approve").hasRole("PRODUCT_MANAGER")
                         .requestMatchers("/comment/disapprove").hasRole("PRODUCT_MANAGER")
-                        .requestMatchers("/rating/submit").hasRole("CUSTOMER")
+                        .requestMatchers("/rating/**").hasRole("CUSTOMER")
                         .anyRequest().authenticated())
 
                 .authenticationProvider(authenticationProvider);

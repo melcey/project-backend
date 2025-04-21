@@ -8,12 +8,12 @@ import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
 
-class CartItemTest {
+class AnonCartItemTest {
     @Test
-    void testCartItemCreation() {
-        Cart cart = new Cart();
+    void testAnonCartItemCreation() {
+        AnonCart cart = new AnonCart();
         Product product = new Product();
-        CartItem cartItem = new CartItem(cart, product, 2, BigDecimal.valueOf(50.25));
+        AnonCartItem cartItem = new AnonCartItem(cart, product, 2, BigDecimal.valueOf(50.25));
 
         assertEquals(cart, cartItem.getCart());
         assertEquals(product, cartItem.getProduct());
@@ -24,9 +24,9 @@ class CartItemTest {
 
     @Test
     void testSettersAndGetters() {
-        Cart cart = new Cart();
+        AnonCart cart = new AnonCart();
         Product product = new Product();
-        CartItem cartItem = new CartItem();
+        AnonCartItem cartItem = new AnonCartItem();
 
         cartItem.setId(1L);
         cartItem.setCart(cart);
@@ -43,31 +43,32 @@ class CartItemTest {
 
     @Test
     void testToString() {
-        Cart cart = new Cart();
+        AnonCart cart = new AnonCart();
         Product product = new Product();
         product.setName("Laptop");
-        CartItem cartItem = new CartItem(cart, product, 2, BigDecimal.valueOf(50.25));
+        AnonCartItem cartItem = new AnonCartItem(cart, product, 2, BigDecimal.valueOf(50.25));
         LocalDateTime createdAt = LocalDateTime.of(2025, 4, 19, 12, 0);
         cartItem.setCreatedAt(createdAt);
         cart.setCreatedAt(LocalDateTime.of(2025, 4, 19, 11, 0));
         cart.setUpdatedAt(LocalDateTime.of(2025, 4, 19, 13, 0));
 
-        String expected = "CartItem [id=null, cart=Cart [id=null, user=null, totalPrice=0, items=[], createdAt=2025-04-19T11:00, updatedAt=2025-04-19T13:00], product=Product [id=null, name=Laptop, model=null, serialNumber=null, description=null, quantityInStock=0, price=null, warrantyStatus=null, distributorInfo=null, isActive=true, imageUrl=null, category=null, productManager=null], quantity=2, priceAtAddition=50.25, createdAt=2025-04-19T12:00]";
+        String expected = "AnonCartItem [id=null, cart=AnonCart [id=null, totalPrice=0, items=[], createdAt=2025-04-19T11:00, updatedAt=2025-04-19T13:00], product=Product [id=null, name=Laptop, model=null, serialNumber=null, description=null, quantityInStock=0, price=null, warrantyStatus=null, distributorInfo=null, isActive=true, imageUrl=null, category=null, productManager=null], quantity=2, priceAtAddition=50.25, createdAt=2025-04-19T12:00]";
+
         assertEquals(expected, cartItem.toString());
     }
 
     @SuppressWarnings("unlikely-arg-type")
     @Test
     void testHashCodeAndEquals() {
-        Cart cart1 = new Cart();
-        Cart cart2 = new Cart();
+        AnonCart cart1 = new AnonCart();
+        AnonCart cart2 = new AnonCart();
         Product product1 = new Product();
         Product product2 = new Product();
 
-        CartItem cartItem1 = new CartItem(cart1, product1, 2, BigDecimal.valueOf(50.25));
-        CartItem cartItem2 = new CartItem(cart1, product1, 2, BigDecimal.valueOf(50.25));
-        CartItem cartItem3 = new CartItem(cart2, product2, 3, BigDecimal.valueOf(75.50));
-        CartItem cartItemNull = new CartItem();
+        AnonCartItem cartItem1 = new AnonCartItem(cart1, product1, 2, BigDecimal.valueOf(50.25));
+        AnonCartItem cartItem2 = new AnonCartItem(cart1, product1, 2, BigDecimal.valueOf(50.25));
+        AnonCartItem cartItem3 = new AnonCartItem(cart2, product2, 3, BigDecimal.valueOf(75.50));
+        AnonCartItem cartItemNull = new AnonCartItem();
 
         // Test equality for objects with the same fields
         cartItem1.setId(1L);
@@ -81,7 +82,7 @@ class CartItemTest {
         assertEquals(false, cartItem1.hashCode() == cartItem3.hashCode());
 
         // Test equality for objects with null fields
-        CartItem cartItemNull2 = new CartItem();
+        AnonCartItem cartItemNull2 = new AnonCartItem();
         assertEquals(cartItemNull, cartItemNull2);
         assertEquals(cartItemNull.hashCode(), cartItemNull2.hashCode());
 
