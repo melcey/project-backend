@@ -58,17 +58,22 @@ public class JwtSecurityConfig {
                 // Set session management to stateless
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 
-                // Need to revise this
+                // Need to add the new controllers
                 // Set permissions on endpoints
                 .authorizeHttpRequests(auth -> auth
-                        // Our public endpoints
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/products/**").permitAll()
-                        // Our private endpoints
-                        .requestMatchers("/order/**").hasRole("CUSTOMER")
-                        .requestMatchers("/order/**").hasRole("PRODUCT_MANAGER")
+                        .requestMatchers("/anoncart/**").permitAll()
+                        .requestMatchers("/order/customer/**").hasRole("CUSTOMER")
+                        .requestMatchers("/order/manager/**").hasRole("PRODUCT_MANAGER")
                         .requestMatchers("/sales/**").hasRole("SALES_MANAGER")
                         .requestMatchers("/prodman/**").hasRole("PRODUCT_MANAGER")
+                        .requestMatchers("/cart/**").hasRole("CUSTOMER")
+                        .requestMatchers("/comment/submit").hasRole("CUSTOMER")
+                        .requestMatchers("/comment/delete").hasRole("CUSTOMER")
+                        .requestMatchers("/comment/approve").hasRole("PRODUCT_MANAGER")
+                        .requestMatchers("/comment/disapprove").hasRole("PRODUCT_MANAGER")
+                        .requestMatchers("/rating/submit").hasRole("CUSTOMER")
                         .anyRequest().authenticated())
 
                 .authenticationProvider(authenticationProvider);

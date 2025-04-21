@@ -1,5 +1,13 @@
 package com.cs308.backend.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
 import com.cs308.backend.dao.AnonCart;
 import com.cs308.backend.dao.AnonCartItem;
 import com.cs308.backend.dao.Cart;
@@ -8,25 +16,17 @@ import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.User;
 import com.cs308.backend.repo.AnonCartRepository;
 import com.cs308.backend.repo.CartRepository;
-import com.cs308.backend.repo.UserRepository;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import com.cs308.backend.repo.ProductRepository;
 
 @Service
 public class CartService {
     private final CartRepository cartRepository;
-    private final ProductService productService;
-    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
     private final AnonCartRepository anonCartRepository;
 
-    public CartService(CartRepository cartRepository, ProductService productService, UserRepository userRepository, AnonCartRepository anonCartRepository) {
+    public CartService(CartRepository cartRepository, ProductRepository productRepository, AnonCartRepository anonCartRepository) {
         this.cartRepository = cartRepository;
-        this.productService = productService;
-        this.userRepository = userRepository;
+        this.productRepository = productRepository;
         this.anonCartRepository = anonCartRepository;
     }
 
@@ -34,7 +34,7 @@ public class CartService {
         Optional<AnonCart> anonCart = anonCartRepository.findById(anonCartId);
 
         if (!(anonCart.isPresent())) {
-            return Optional.empty();
+            return Optional.of(cartRepository.save(new Cart(user)));
         }
 
         AnonCart foundAnonCart = anonCart.get();
@@ -54,13 +54,12 @@ public class CartService {
             return Optional.of(createdCart);
         }
         catch (Exception e) {
-            return Optional.empty();
+            return Optional.of(cartRepository.save(new Cart(user)));
         }
     }
 
-    public Optional<Cart> createCart(User user) {
-        Cart cart = new Cart();
-        cart.setUser(user);
+    public Optional<Cart> createEmptyCart(User user) {
+        Cart cart = new Cart(user);
 
         try {
             Cart createdCart = cartRepository.save(cart);
@@ -71,12 +70,12 @@ public class CartService {
         }
     }
 
-    public Optional<Cart> getCartOfUser(Long userId) {
-        return cartRepository.findByUserId(userId);
+    public Optional<Cart> getCartOfUser(User user) {
+        return cartRepository.findByUserId(user.getId());
     }
 
-    public Optional<Cart> addItemToCart(Long userId, Long productId, int quantity) {
-        Optional<Cart> cart = cartRepository.findByUserId(userId);
+    public Optional<Cart> addItemToCart(User user, Long productId, int quantity) {
+        Optional<Cart> cart = cartRepository.findByUserId(user.getId());
 
         if (!(cart.isPresent())) {
             return Optional.empty();
@@ -84,7 +83,7 @@ public class CartService {
 
         Cart foundCart = cart.get();
 
-        Optional<Product> product = productService.findProductById(productId);
+        Optional<Product> product = productRepository.findById(productId);
 
         if (!(product.isPresent())) {
             return cart;
@@ -109,6 +108,7 @@ public class CartService {
         foundCart.setTotalPrice(foundCart.getItems().stream()
             .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
             .reduce(BigDecimal.ZERO, BigDecimal::add));
+        foundCart.setUpdatedAt(LocalDateTime.now());
 
         try {
             Cart updatedCart = cartRepository.save(foundCart);

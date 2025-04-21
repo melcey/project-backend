@@ -22,7 +22,7 @@ import com.cs308.backend.repo.RatingRepository;
 import com.cs308.backend.security.UserPrincipal;
 
 @RestController
-@RequestMapping("/ratings")
+@RequestMapping("/rating")
 public class RatingController {
 
     private final RatingRepository ratingRepository;

@@ -10,6 +10,7 @@ import com.cs308.backend.repo.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Service
 public class AnonCartService {
@@ -72,6 +73,7 @@ public class AnonCartService {
         foundAnonCart.setTotalPrice(foundAnonCart.getItems().stream()
             .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
             .reduce(BigDecimal.ZERO, BigDecimal::add));
+        foundAnonCart.setUpdatedAt(LocalDateTime.now());
 
         try {
             AnonCart updatedAnonCart = anonCartRepository.save(foundAnonCart);
