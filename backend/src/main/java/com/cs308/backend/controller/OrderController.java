@@ -113,7 +113,7 @@ public class OrderController {
         return ResponseEntity.ok(new OrderResponse(retrievedOrder.get().getId(), user.getId(), retrievedOrder.get().getOrderDate(), retrievedOrder.get().getStatus(), retrievedOrder.get().getTotalPrice(), retrievedOrder.get().getDeliveryAddress(), orderItems));
     }
     
-    @PostMapping
+    @PostMapping("/customer")
     public ResponseEntity<?> createNewOrder(@RequestBody CreateOrderRequest orderToCreate) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if ((auth == null) || (!(auth.isAuthenticated()))) {
