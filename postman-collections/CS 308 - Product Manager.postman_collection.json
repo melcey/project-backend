@@ -422,6 +422,125 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Get Managed Product 1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1MDkwMjc4LCJleHAiOjE3NDUxNzY2Nzh9.YHW5lvrZ3OPb6sMm9VPftEckKMbHMDLK7QOx41uYlOWbdVQVuEKDFM8sFjos8emXvyLH28Vg5VGbqIAYy_V06g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/prodman/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Managed Product 1 Orders",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1MDkwMjc4LCJleHAiOjE3NDUxNzY2Nzh9.YHW5lvrZ3OPb6sMm9VPftEckKMbHMDLK7QOx41uYlOWbdVQVuEKDFM8sFjos8emXvyLH28Vg5VGbqIAYy_V06g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/prodman/1/orders",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"1",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Managed Product 1 Comments",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1MDkwMjc4LCJleHAiOjE3NDUxNzY2Nzh9.YHW5lvrZ3OPb6sMm9VPftEckKMbHMDLK7QOx41uYlOWbdVQVuEKDFM8sFjos8emXvyLH28Vg5VGbqIAYy_V06g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/prodman/1/comments",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"1",
+						"comments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Managed Product 1 Ratings",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1MDkwMjc4LCJleHAiOjE3NDUxNzY2Nzh9.YHW5lvrZ3OPb6sMm9VPftEckKMbHMDLK7QOx41uYlOWbdVQVuEKDFM8sFjos8emXvyLH28Vg5VGbqIAYy_V06g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/prodman/1/ratings",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"1",
+						"ratings"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

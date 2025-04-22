@@ -1,0 +1,160 @@
+{
+	"info": {
+		"_postman_id": "0b596a38-c3cc-48d1-895a-70693071f207",
+		"name": "CS 308 - Product Controller (anonymous)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44198589"
+	},
+	"item": [
+		{
+			"name": "Get All Products",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/products/all",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Example Product Search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/products?name=examplename&model=examplemodel&serialNumber=exampleserialnumber&description=somedescription&distributorInfo=sampledistributor&isActive=true&minPrice=999.99&maxPrice=2999.99&minQuantity=1&maxQuantity=10000&categoryId=1&categoryId=2",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "examplename",
+							"description": "All parameters are optional"
+						},
+						{
+							"key": "model",
+							"value": "examplemodel",
+							"description": "This is a sample request with toy parameters"
+						},
+						{
+							"key": "serialNumber",
+							"value": "exampleserialnumber"
+						},
+						{
+							"key": "description",
+							"value": "somedescription"
+						},
+						{
+							"key": "distributorInfo",
+							"value": "sampledistributor"
+						},
+						{
+							"key": "isActive",
+							"value": "true",
+							"description": "I do not know whether the false setting will be used at all for this parameter in real-life, let's see"
+						},
+						{
+							"key": "minPrice",
+							"value": "999.99"
+						},
+						{
+							"key": "maxPrice",
+							"value": "2999.99"
+						},
+						{
+							"key": "minQuantity",
+							"value": "1"
+						},
+						{
+							"key": "maxQuantity",
+							"value": "10000"
+						},
+						{
+							"key": "categoryId",
+							"value": "1",
+							"description": "This must be repeated if multiple categories are going to be searched"
+						},
+						{
+							"key": "categoryId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Product 1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/products/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Product 1 Comments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/products/1/comments",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products",
+						"1",
+						"comments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Product 1 Ratings",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/products/1/ratings",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products",
+						"1",
+						"ratings"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
