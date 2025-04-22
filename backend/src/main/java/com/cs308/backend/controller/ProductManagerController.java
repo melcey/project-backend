@@ -194,7 +194,7 @@ public class ProductManagerController {
     }
 
     @GetMapping("/{id}/orders")
-    public ResponseEntity<?> getOrdersForManagedProduct(@RequestParam Long id) {
+    public ResponseEntity<?> getOrdersForManagedProduct(@PathVariable Long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if ((auth == null) || (!(auth.isAuthenticated()))) {
             // Automatically handled by Spring Boot; no need to implement an error controller
