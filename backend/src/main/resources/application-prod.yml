@@ -1,4 +1,4 @@
-# Enable logging for the dev environment
+# Enable logging for the prod environment
 logging:
     level:
         # All logs have a minimum level of INFO
