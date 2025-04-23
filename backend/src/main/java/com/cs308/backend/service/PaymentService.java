@@ -1,37 +1,37 @@
 package com.cs308.backend.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Optional;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cs308.backend.dao.Order;
 import com.cs308.backend.dao.Payment;
+import com.cs308.backend.dto.PaymentRequest;
 import com.cs308.backend.repo.OrderRepository;
 import com.cs308.backend.repo.PaymentRepository;
-import com.cs308.backend.dto.PaymentRequest;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
-import java.util.Base64;
-import java.util.Optional;
 
 @Service
 public class PaymentService {
+    private final PaymentRepository paymentRepository;
+    
+    private final OrderRepository orderRepository;
 
-    @Autowired
-    private PaymentRepository paymentRepository;
+    private final InvoiceService invoiceService;
 
-    @Autowired
-    private OrderRepository orderRepository;
+    private static final String ENCRYPTION_KEY = "zQUBdFwXE4a5PwzGL1XM14807r53Bd4RyoctkjNqIus=";
 
-    @Autowired
-    private InvoiceService invoiceService;
-
-    private static final String ENCRYPTION_KEY = "your-32-byte-encryption-key-here"; // In production, use proper key
-                                                                                     // management
+    public PaymentService(PaymentRepository paymentRepository, OrderRepository orderRepository, InvoiceService invoiceService) {
+        this.paymentRepository = paymentRepository;
+        this.orderRepository = orderRepository;
+        this.invoiceService = invoiceService;
+    }
 
     @Transactional
-    public Payment processPayment(PaymentRequest paymentRequest) {
+    public Optional<Payment> processPayment(PaymentRequest paymentRequest) {
         // Find order
         Order order = orderRepository.findById(paymentRequest.getOrderId())
                 .orElseThrow(() -> new RuntimeException("Order not found"));
@@ -64,14 +64,14 @@ public class PaymentService {
                 // Generate invoice
                 invoiceService.generateInvoice(payment);
 
-                return payment;
+                return Optional.of(payment);
             } else {
                 payment.setPaymentStatus("FAILED");
-                return paymentRepository.save(payment);
+                return Optional.of(paymentRepository.save(payment));
             }
         } catch (Exception e) {
             payment.setPaymentStatus("FAILED");
-            return paymentRepository.save(payment);
+            return Optional.of(paymentRepository.save(payment));
         }
     }
 
@@ -97,5 +97,16 @@ public class PaymentService {
         // Mock payment gateway integration
         // In production, integrate with actual payment gateway
         return true;
+    }
+
+    public Optional<Payment> findByOrderId(Long orderId) {
+        Optional<Order> retrievedOrder = orderRepository.findById(orderId);
+
+        // If there is no Order object in the Optional<> wrapper
+        if (!(retrievedOrder.isPresent())) {
+            return Optional.empty();
+        }
+
+        return paymentRepository.findByOrder(retrievedOrder.get());
     }
 }

@@ -15,7 +15,7 @@ class RatingTest {
         Rating rating = new Rating(product, user, 5);
 
         assertEquals(product, rating.getRatedProduct());
-        assertEquals(user, rating.getRatedUser());
+        assertEquals(user, rating.getRatingUser());
         assertEquals(5, rating.getRating());
         assertNotNull(rating.getRatingDate());
     }
@@ -34,11 +34,12 @@ class RatingTest {
         product.setName("Laptop");
         User user = new User();
         user.setName("John Doe");
+        user.setRole(Role.customer);
         LocalDateTime ratingDate = LocalDateTime.of(2025, 4, 19, 12, 0);
         Rating rating = new Rating(product, user, 5);
         rating.setRatingDate(ratingDate);
 
-        String expected = "Rating [id=null, ratedProduct=Product [id=null, name=Laptop, model=null, serialNumber=null, description=null, quantityInStock=0, price=null, warrantyStatus=null, distributorInfo=null, isActive=true, imageUrl=null, category=null, productManager=null], ratedUser=User [id=null, name=John Doe, address=null, role=null], rating=5, ratingDate=2025-04-19T12:00]";
+        String expected = "Rating [id=null, ratedProduct=Product [id=null, name=Laptop, model=null, serialNumber=null, description=null, quantityInStock=0, price=null, warrantyStatus=null, distributorInfo=null, isActive=true, imageUrl=null, category=null, productManager=null], ratedUser=User [id=null, name=John Doe, address=null, role=customer], rating=5, ratingDate=2025-04-19T12:00]";
         assertEquals(expected, rating.toString());
     }
 

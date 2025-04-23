@@ -63,13 +63,14 @@ class CartTest {
     void testToString() {
         User user = new User();
         user.setName("John Doe");
+        user.setRole(Role.customer);
         LocalDateTime createdAt = LocalDateTime.of(2025, 4, 19, 12, 0);
         LocalDateTime updatedAt = LocalDateTime.of(2025, 4, 20, 12, 0);
         Cart cart = new Cart(user, BigDecimal.valueOf(100.50), new ArrayList<>());
         cart.setCreatedAt(createdAt);
         cart.setUpdatedAt(updatedAt);
 
-        String expected = "Cart [id=null, user=User [id=null, name=John Doe, address=null, role=null], totalPrice=100.5, items=[], createdAt=2025-04-19T12:00, updatedAt=2025-04-20T12:00]";
+        String expected = "Cart [id=null, user=User [id=null, name=John Doe, address=null, role=customer], totalPrice=100.5, items=[], createdAt=2025-04-19T12:00, updatedAt=2025-04-20T12:00]";
         assertEquals(expected, cart.toString());
     }
 

@@ -30,6 +30,11 @@ jobs:
       - name: Create external Docker network
         run: docker network create --driver bridge website-net
 
+      - name: Setup Testcontainers Cloud Client
+        uses: atomicjar/testcontainers-cloud-setup-action@v1
+        with:
+          token: ${{ secrets.TC_CLOUD_TOKEN }}
+
       # Disabled until the tests are fixed
       #- name: Run JUnit tests
       #  run: cd backend && ./mvnw test

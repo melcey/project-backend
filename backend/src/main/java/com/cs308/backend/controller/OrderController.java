@@ -48,7 +48,7 @@ public class OrderController {
         this.productService = productService;
     }
 
-    @GetMapping
+    @GetMapping("/customer")
     public ResponseEntity<?> getAllOrdersByUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if ((auth == null) || (!(auth.isAuthenticated()))) {
@@ -79,7 +79,7 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/customer/{id}")
     public ResponseEntity<?> getOrderByUser(@PathVariable Long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if ((auth == null) || (!(auth.isAuthenticated()))) {
@@ -113,7 +113,7 @@ public class OrderController {
         return ResponseEntity.ok(new OrderResponse(retrievedOrder.get().getId(), user.getId(), retrievedOrder.get().getOrderDate(), retrievedOrder.get().getStatus(), retrievedOrder.get().getTotalPrice(), retrievedOrder.get().getDeliveryAddress(), orderItems));
     }
     
-    @PostMapping
+    @PostMapping("/customer")
     public ResponseEntity<?> createNewOrder(@RequestBody CreateOrderRequest orderToCreate) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if ((auth == null) || (!(auth.isAuthenticated()))) {
@@ -173,7 +173,7 @@ public class OrderController {
     }
     
     // One of "pending", "processing", "shipped", "delivered"
-    @PutMapping("/{id}")
+    @PutMapping("/manager/{id}")
     public ResponseEntity<?> updateOrderStatus(@PathVariable Long id, @RequestBody UpdateOrderStateRequest newStateRequest) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if ((auth == null) || (!(auth.isAuthenticated()))) {
@@ -209,7 +209,7 @@ public class OrderController {
         return ResponseEntity.ok(new OrderResponse(updatedOrder.get().getId(), user.getId(), updatedOrder.get().getOrderDate(), updatedOrder.get().getStatus(), updatedOrder.get().getTotalPrice(), updatedOrder.get().getDeliveryAddress(), responseItems));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/customer/{id}")
     public ResponseEntity<?> deleteOrder(@PathVariable Long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if ((auth == null) || (!(auth.isAuthenticated()))) {

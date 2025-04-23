@@ -1,8 +1,13 @@
 package com.cs308.backend.service;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import com.cs308.backend.dao.Comment;
+import com.cs308.backend.dao.Product;
+import com.cs308.backend.dao.User;
 import com.cs308.backend.repo.CommentRepository;
 
 @Service
@@ -13,25 +18,61 @@ public class CommentService {
         this.commentRepository = commentRepository;
     }
 
-    public Comment submitComment(Comment commentToSubmit) {
-        Comment submittedComment = commentRepository.save(commentToSubmit);
-
-        return submittedComment;
+    public List<Comment> findAllCommentsForProduct(Product product) {
+        return commentRepository.findByCommentedProduct(product);
     }
 
-    public void approveComment(Comment commentToApprove) {
-        if (!(commentToApprove.getApproved())) {
-            commentToApprove.setApproved(true);
+    public List<Comment> findAllCommentsByUser(User user) {
+        return commentRepository.findByCommentingUser(user);
+    }
+
+    public List<Comment> findApprovedCommentsForProduct(Product product) {
+        return commentRepository.findByCommentedProductAndApproved(product, true);
+    }
+
+    public List<Comment> findApprovedCommentsByUser(User user) {
+        return commentRepository.findByCommentingUserAndApproved(user, true);
+    }
+
+    public Optional<Comment> findCommentById(Long id) {
+        return commentRepository.findById(id);
+    }
+
+    public Optional<Comment> findApprovedCommentById(Long id) {
+        return commentRepository.findByIdAndApproved(id, true);
+    }
+
+    public Optional<Comment> submitComment(Comment commentToSubmit) {
+        try {
+            Comment submittedComment = commentRepository.save(commentToSubmit);
+            return Optional.of(submittedComment);
+        }
+        catch (Exception e) {
+            return Optional.empty();
         }
     }
 
-    public void disapproveComment(Comment commentToDisapprove) {
-        if (commentToDisapprove.getApproved()) {
-            commentToDisapprove.setApproved(false);
+    public Optional<Comment> approveComment(Comment commentToApprove) {
+        commentToApprove.setApproved(true);
+
+        try {
+            Comment approvedComment = commentRepository.save(commentToApprove);
+            return Optional.of(approvedComment);
+        }
+        catch (Exception e) {
+            return Optional.empty();
         }
     }
-    
-    public void deleteComment(Comment commentToDelete){
-        commentRepository.delete(commentToDelete);
+
+    public Optional<Comment> disapproveComment(Comment commentToDisapprove) {
+        commentToDisapprove.setApproved(false);
+
+        try {
+            Comment disapprovedComment = commentRepository.save(commentToDisapprove);
+            return Optional.of(disapprovedComment);
+        }
+        catch (Exception e) {
+            return Optional.empty();
+        }
     }
 }

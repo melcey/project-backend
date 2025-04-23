@@ -26,7 +26,7 @@ public class Rating {
     // Many ratings-one user
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
-    private User ratedUser;
+    private User ratingUser;
 
     @Column(name = "rating")
     private int rating;
@@ -39,7 +39,7 @@ public class Rating {
 
     public Rating(Product ratedProduct, User ratedUser, int rating) {
         this.ratedProduct = ratedProduct;
-        this.ratedUser = ratedUser;
+        this.ratingUser = ratedUser;
         this.rating = rating;
         this.ratingDate = LocalDateTime.now();
     }
@@ -60,12 +60,12 @@ public class Rating {
         this.ratedProduct = ratedProduct;
     }
 
-    public User getRatedUser() {
-        return ratedUser;
+    public User getRatingUser() {
+        return ratingUser;
     }
 
-    public void setRatedUser(User ratedUser) {
-        this.ratedUser = ratedUser;
+    public void setRatingUser(User ratedUser) {
+        this.ratingUser = ratedUser;
     }
 
     public int getRating() {
@@ -89,7 +89,7 @@ public class Rating {
         StringBuilder builder = new StringBuilder();
         builder.append("Rating [id=").append(id)
             .append(", ratedProduct=").append(ratedProduct)
-            .append(", ratedUser=").append(ratedUser)
+            .append(", ratedUser=").append(ratingUser)
             .append(", rating=").append(rating)
             .append(", ratingDate=").append(ratingDate)
             .append("]");

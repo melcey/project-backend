@@ -1,20 +1,30 @@
 package com.cs308.backend.dao;
 
-import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+
 @Entity
 @Table(name = "carts", schema = "public")
-public class Cart {
+public class Cart implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cart_id")
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -31,6 +41,14 @@ public class Cart {
     private LocalDateTime updatedAt;
 
     public Cart() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public Cart(User user) {
+        this.user = user;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Cart(User user, BigDecimal totalPrice, List<CartItem> items) {
@@ -127,5 +145,24 @@ public class Cart {
         } else if (!id.equals(other.id))
             return false;
         return true;
+    }
+
+    @Override
+    public Cart clone() {
+        try {
+            Cart clonedCart = (Cart) super.clone();
+            // Deep copy the items list
+            List<CartItem> clonedItems = new ArrayList<>();
+            for (CartItem item : this.items) {
+                clonedItems.add(item.clone());
+            }
+            clonedCart.setItems(clonedItems);
+            for (CartItem clonedItem : clonedCart.items) {
+                clonedItem.setCart(clonedCart);
+            }
+            return clonedCart;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError("Cloning not supported", e);
+        }
     }
 }

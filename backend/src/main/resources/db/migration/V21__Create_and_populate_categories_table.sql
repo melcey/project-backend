@@ -1,10 +1,3 @@
--- Create the categories table if it doesn't exist
-CREATE TABLE IF NOT EXISTS categories (
-    category_id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description TEXT
-);
-
 -- Insert initial categories
 INSERT INTO categories (name, description)
 VALUES
@@ -18,4 +11,3 @@ VALUES
     ('Health & Beauty', 'Products for health, wellness, and beauty.'), -- category_id = 8
     ('Automotive', 'Parts and accessories for vehicles.'),         -- category_id = 9
     ('Garden', 'Tools and plants for gardening enthusiasts.');     -- category_id = 10
-    

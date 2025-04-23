@@ -1,0 +1,546 @@
+{
+	"info": {
+		"_postman_id": "b2fd3f9c-2e66-4a5d-95e5-14614ed66687",
+		"name": "CS 308 - Product Manager",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44198589"
+	},
+	"item": [
+		{
+			"name": "Sign Up Product Manager",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"user1\",\n    \"email\": \"user1@seller1.com\",\n    \"password\": \"password1\",\n    \"address\": \"address1\",\n    \"role\": \"product_manager\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/auth/signup",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Product Manager",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"user1@seller1.com\",\n    \"password\": \"password1\",\n    \"role\": \"product_manager\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/auth/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Product 1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1MDkwMjc4LCJleHAiOjE3NDUxNzY2Nzh9.YHW5lvrZ3OPb6sMm9VPftEckKMbHMDLK7QOx41uYlOWbdVQVuEKDFM8sFjos8emXvyLH28Vg5VGbqIAYy_V06g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1MDkwMjc4LCJleHAiOjE3NDUxNzY2Nzh9.YHW5lvrZ3OPb6sMm9VPftEckKMbHMDLK7QOx41uYlOWbdVQVuEKDFM8sFjos8emXvyLH28Vg5VGbqIAYy_V06g",
+						"name": "authorization",
+						"type": "text"
+					},
+					{
+						"key": "Cache-Control",
+						"value": "no-cache",
+						"name": "cache-control",
+						"type": "text"
+					},
+					{
+						"key": "Postman-Token",
+						"value": "<calculated when request is sent>",
+						"name": "postman-token",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"name": "content-type",
+						"type": "text"
+					},
+					{
+						"key": "Content-Length",
+						"value": "<calculated when request is sent>",
+						"name": "content-length",
+						"type": "text"
+					},
+					{
+						"key": "Host",
+						"value": "<calculated when request is sent>",
+						"name": "host",
+						"type": "text"
+					},
+					{
+						"key": "User-Agent",
+						"value": "PostmanRuntime/7.39.1",
+						"name": "user-agent",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"name": "accept",
+						"type": "text"
+					},
+					{
+						"key": "Accept-Encoding",
+						"value": "gzip, deflate, br",
+						"name": "accept-encoding",
+						"type": "text"
+					},
+					{
+						"key": "Connection",
+						"value": "keep-alive",
+						"name": "connection",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Smartphone X\",\n    \"model\": \"Model X-1000\",\n    \"serialNumber\": \"SN123456789\",\n    \"description\": \"This phone is so smart, it probably has a PhD. Comes with 128GB of storage and a 6.5-inch display that’s brighter than your future.\",\n    \"quantityInStock\": 50,\n    \"price\": 799.99,\n    \"warrantyStatus\": \"1 year\",\n    \"distributorInfo\": \"Tech Distributors Inc.\",\n    \"isActive\": false,\n    \"imageUrl\": \"https://images.unsplash.com/photo-1611791484670-ce19b801d192?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60\",\n    \"categoryId\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/prodman",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Product 2",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1MDkwMjc4LCJleHAiOjE3NDUxNzY2Nzh9.YHW5lvrZ3OPb6sMm9VPftEckKMbHMDLK7QOx41uYlOWbdVQVuEKDFM8sFjos8emXvyLH28Vg5VGbqIAYy_V06g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1MDkwMjc4LCJleHAiOjE3NDUxNzY2Nzh9.YHW5lvrZ3OPb6sMm9VPftEckKMbHMDLK7QOx41uYlOWbdVQVuEKDFM8sFjos8emXvyLH28Vg5VGbqIAYy_V06g",
+						"name": "authorization",
+						"type": "text"
+					},
+					{
+						"key": "Cache-Control",
+						"value": "no-cache",
+						"name": "cache-control",
+						"type": "text"
+					},
+					{
+						"key": "Postman-Token",
+						"value": "<calculated when request is sent>",
+						"name": "postman-token",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"name": "content-type",
+						"type": "text"
+					},
+					{
+						"key": "Content-Length",
+						"value": "<calculated when request is sent>",
+						"name": "content-length",
+						"type": "text"
+					},
+					{
+						"key": "Host",
+						"value": "<calculated when request is sent>",
+						"name": "host",
+						"type": "text"
+					},
+					{
+						"key": "User-Agent",
+						"value": "PostmanRuntime/7.39.1",
+						"name": "user-agent",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"name": "accept",
+						"type": "text"
+					},
+					{
+						"key": "Accept-Encoding",
+						"value": "gzip, deflate, br",
+						"name": "accept-encoding",
+						"type": "text"
+					},
+					{
+						"key": "Connection",
+						"value": "keep-alive",
+						"name": "connection",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Laptop Pro\",\n    \"model\": \"Model LP-2000\",\n    \"serialNumber\": \"SN987654321\",\n    \"description\": \"A laptop so powerful, it can run Crysis and your life at the same time. Features 16GB RAM and a 512GB SSD for all your cat videos.\",\n    \"quantityInStock\": 30,\n    \"price\": 1299.99,\n    \"warrantyStatus\": \"2 years\",\n    \"distributorInfo\": \"Computers R Us\",\n    \"categoryId\": 1,\n    \"imageUrl\": \"https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60\",\n    \"isActive\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/prodman",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Product",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQzNTE2Mjg3LCJleHAiOjE3NDM2MDI2ODd9.6MsHlWz8fkZ7rkV_LmnZp-95L0tbxqcVI9A4VyICAjaFARJD38RcDjRqUbMAxzl3h_41kydjsvvK6V1gcLc7qA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"price\": 899.99\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/prodman/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Managed Products",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1MDkwMjc4LCJleHAiOjE3NDUxNzY2Nzh9.YHW5lvrZ3OPb6sMm9VPftEckKMbHMDLK7QOx41uYlOWbdVQVuEKDFM8sFjos8emXvyLH28Vg5VGbqIAYy_V06g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/prodman/managed",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"managed"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Activate Product 1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1MDkwMjc4LCJleHAiOjE3NDUxNzY2Nzh9.YHW5lvrZ3OPb6sMm9VPftEckKMbHMDLK7QOx41uYlOWbdVQVuEKDFM8sFjos8emXvyLH28Vg5VGbqIAYy_V06g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/prodman/1/activate",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"1",
+						"activate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deactivate Product 2",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1MDkwMjc4LCJleHAiOjE3NDUxNzY2Nzh9.YHW5lvrZ3OPb6sMm9VPftEckKMbHMDLK7QOx41uYlOWbdVQVuEKDFM8sFjos8emXvyLH28Vg5VGbqIAYy_V06g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/prodman/2/deactivate",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"2",
+						"deactivate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Product 2",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1MDkwMjc4LCJleHAiOjE3NDUxNzY2Nzh9.YHW5lvrZ3OPb6sMm9VPftEckKMbHMDLK7QOx41uYlOWbdVQVuEKDFM8sFjos8emXvyLH28Vg5VGbqIAYy_V06g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/prodman/2",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Managed Product 1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1MDkwMjc4LCJleHAiOjE3NDUxNzY2Nzh9.YHW5lvrZ3OPb6sMm9VPftEckKMbHMDLK7QOx41uYlOWbdVQVuEKDFM8sFjos8emXvyLH28Vg5VGbqIAYy_V06g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/prodman/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Managed Product 1 Orders",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1MDkwMjc4LCJleHAiOjE3NDUxNzY2Nzh9.YHW5lvrZ3OPb6sMm9VPftEckKMbHMDLK7QOx41uYlOWbdVQVuEKDFM8sFjos8emXvyLH28Vg5VGbqIAYy_V06g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/prodman/1/orders",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"1",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Managed Product 1 Comments",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1MDkwMjc4LCJleHAiOjE3NDUxNzY2Nzh9.YHW5lvrZ3OPb6sMm9VPftEckKMbHMDLK7QOx41uYlOWbdVQVuEKDFM8sFjos8emXvyLH28Vg5VGbqIAYy_V06g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/prodman/1/comments",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"1",
+						"comments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Managed Product 1 Ratings",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1MDkwMjc4LCJleHAiOjE3NDUxNzY2Nzh9.YHW5lvrZ3OPb6sMm9VPftEckKMbHMDLK7QOx41uYlOWbdVQVuEKDFM8sFjos8emXvyLH28Vg5VGbqIAYy_V06g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/prodman/1/ratings",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"1",
+						"ratings"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

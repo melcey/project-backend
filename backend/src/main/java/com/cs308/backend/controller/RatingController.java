@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -16,25 +16,28 @@ import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Rating;
 import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
-import com.cs308.backend.dto.MessageResponse;
-import com.cs308.backend.repo.ProductRepository;
-import com.cs308.backend.repo.RatingRepository;
+import com.cs308.backend.dto.CategoryResponse;
+import com.cs308.backend.dto.ProductResponse;
+import com.cs308.backend.dto.RatingResponse;
+import com.cs308.backend.dto.SubmitRatingRequest;
 import com.cs308.backend.security.UserPrincipal;
+import com.cs308.backend.service.ProductService;
+import com.cs308.backend.service.RatingService;
 
 @RestController
-@RequestMapping("/ratings")
+@RequestMapping("/rating")
 public class RatingController {
 
-    private final RatingRepository ratingRepository;
-    private final ProductRepository productRepository;
+    private final RatingService ratingService;
+    private final ProductService productService;
 
-    public RatingController(RatingRepository ratingRepository, ProductRepository productRepository) {
-        this.ratingRepository = ratingRepository;
-        this.productRepository = productRepository;
+    public RatingController(RatingService ratingService, ProductService productService) {
+        this.ratingService = ratingService;
+        this.productService = productService;
     }
 
     @PostMapping("/submit")
-    public ResponseEntity<?> submitRating(@RequestParam Long productId, @RequestParam int ratingValue) {
+    public ResponseEntity<?> submitRating(@RequestBody SubmitRatingRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if ((auth == null) || !auth.isAuthenticated()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
@@ -47,7 +50,7 @@ public class RatingController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only customers can rate products");
         }
 
-        Optional<Product> productOpt = productRepository.findById(productId);
+        Optional<Product> productOpt = productService.findProductById(request.getProductId());
         if (productOpt.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
         }
@@ -56,24 +59,30 @@ public class RatingController {
 
         // Update rating if user has already rated this product
 
-        Optional<Rating> existingRatingOpt = ratingRepository
-            .findAll()
+        Optional<Rating> existingRatingOpt = ratingService
+            .findRatingsForProduct(product)
             .stream()
-            .filter(r -> r.getRatedProduct().getId().equals(productId) && r.getRatedUser().getId().equals(user.getId()))
+            .filter(r -> r.getRatingUser().getId().equals(user.getId()))
             .findFirst();
 
         Rating rating;
         if (existingRatingOpt.isPresent()) {
             rating = existingRatingOpt.get();
-            rating.setRating(ratingValue);
+            rating.setRating(request.getRatingValue());
             rating.setRatingDate(java.time.LocalDateTime.now());
         } else {
-            rating = new Rating(product, user, ratingValue);
+            rating = new Rating(product, user, request.getRatingValue());
         }
 
-        ratingRepository.save(rating);
+        Optional<Rating> submittedRating = ratingService.submitRating(rating);
 
-        return ResponseEntity.ok(new MessageResponse("Rating submitted successfully."));
+        if (!(submittedRating.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rating submission failed");
+        }
+
+        Rating newRating = submittedRating.get();
+
+        return ResponseEntity.ok(new RatingResponse(newRating.getId(), new ProductResponse(newRating.getRatedProduct().getId(), newRating.getRatedProduct().getName(), newRating.getRatedProduct().getModel(), newRating.getRatedProduct().getSerialNumber(), newRating.getRatedProduct().getDescription(), newRating.getRatedProduct().getQuantityInStock(), newRating.getRatedProduct().getPrice(), newRating.getRatedProduct().getWarrantyStatus(), newRating.getRatedProduct().getDistributorInfo(), newRating.getRatedProduct().getIsActive(), newRating.getRatedProduct().getImageUrl(), new CategoryResponse(newRating.getRatedProduct().getCategory().getId(), newRating.getRatedProduct().getCategory().getName(), newRating.getRatedProduct().getCategory().getDescription())), user.getId(), newRating.getRating(), newRating.getRatingDate()));
     }
 }
 

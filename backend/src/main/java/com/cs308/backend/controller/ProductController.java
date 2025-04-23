@@ -14,20 +14,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cs308.backend.dao.Comment;
 import com.cs308.backend.dao.Product;
+import com.cs308.backend.dao.Rating;
 import com.cs308.backend.dto.CategoryResponse;
 import com.cs308.backend.dto.ProductListResponse;
 import com.cs308.backend.dto.ProductResponse;
+import com.cs308.backend.service.CommentService;
 import com.cs308.backend.service.ProductService;
+import com.cs308.backend.service.RatingService;
 
 @RestController
 @RequestMapping("/products")
 public class ProductController {
 
     private final ProductService productService;
+    private final CommentService commentService;
+    private final RatingService ratingService;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, CommentService commentService, RatingService ratingService) {
         this.productService = productService;
+        this.commentService = commentService;
+        this.ratingService = ratingService;
     }
 
     // Retrieve a product by its ID
@@ -41,6 +49,32 @@ public class ProductController {
         }
 
         return ResponseEntity.ok(new ProductResponse(productOpt.get().getId(), productOpt.get().getName(), productOpt.get().getModel(), productOpt.get().getSerialNumber(), productOpt.get().getDescription(), productOpt.get().getQuantityInStock(), productOpt.get().getPrice(), productOpt.get().getWarrantyStatus(), productOpt.get().getDistributorInfo(), productOpt.get().getIsActive(), productOpt.get().getImageUrl(), new CategoryResponse(productOpt.get().getCategory().getId(), productOpt.get().getCategory().getName(), productOpt.get().getCategory().getDescription())));
+    }
+
+    @GetMapping("/{id}/comments")
+    public ResponseEntity<?> getCommentsForProduct(@PathVariable Long id) {
+        Optional<Product> productOpt = productService.findProductById(id);
+
+        if (!productOpt.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
+        }
+
+        List<Comment> commentsForProduct = commentService.findApprovedCommentsForProduct(productOpt.get());
+
+        return ResponseEntity.ok(commentsForProduct);
+    }
+
+    @GetMapping("/{id}/ratings")
+    public ResponseEntity<?> getRatingsForProduct(@PathVariable Long id) {
+        Optional<Product> productOpt = productService.findProductById(id);
+
+        if (!productOpt.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
+        }
+
+        List<Rating> ratingsForProduct = ratingService.findRatingsForProduct(productOpt.get());
+
+        return ResponseEntity.ok(ratingsForProduct);
     }
 
     @GetMapping("/all")
