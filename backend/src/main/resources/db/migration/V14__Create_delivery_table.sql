@@ -6,5 +6,5 @@ CREATE TABLE delivery (
     quantity INT NOT NULL,
     total_price DECIMAL(10, 2) NOT NULL,
     delivery_address TEXT,
-    delivery_status VARCHAR(50) CHECK (delivery_status IN ('pending', 'processing', 'shipped', 'delivered', 'cancelled'))
+    delivery_status VARCHAR(50) CHECK (delivery_status IN ('processing', 'in-transit', 'delivered'))
 );
