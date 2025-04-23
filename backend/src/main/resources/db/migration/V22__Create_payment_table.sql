@@ -15,7 +15,7 @@ CREATE TABLE payments (
         
     CONSTRAINT fk_payment_credit_card
         FOREIGN KEY (credit_card_id)
-        REFERENCES credit_cards (credit_card_id)
+        REFERENCES credit_cards (card_id)
         ON DELETE SET NULL
 );
 

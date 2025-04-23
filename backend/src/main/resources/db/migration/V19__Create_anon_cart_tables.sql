@@ -16,7 +16,7 @@ CREATE TABLE anon_cart_items (
     quantity INT NOT NULL CHECK (quantity > 0),
     price_at_addition DECIMAL(10, 2) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT unique_product_in_cart UNIQUE (cart_id, product_id)
+    CONSTRAINT unique_product_in_anon_cart UNIQUE (cart_id, product_id)
 );
 
 -- Indexes for performance

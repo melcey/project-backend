@@ -169,7 +169,7 @@ public class RatingRepositoryTest {
         ratingRepository.save(rating2);
 
         // Fetch Ratings by Product and Rating
-        List<Rating> ratings = ratingRepository.findByProductAndRating(savedProduct, 5);
+        List<Rating> ratings = ratingRepository.findByRatedProductAndRating(savedProduct, 5);
 
         // Assert
         assertEquals(1, ratings.size());
