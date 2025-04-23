@@ -1,3 +1,5 @@
+-- V17__Create_cart_tables.sql
+
 -- Main cart table
 CREATE TABLE carts (
     cart_id SERIAL PRIMARY KEY,

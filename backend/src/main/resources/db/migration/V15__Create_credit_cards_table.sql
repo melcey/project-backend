@@ -1,4 +1,4 @@
--- V13__Create_credit_cards_table.sql
+-- V15__Create_credit_cards_table.sql
 CREATE TABLE credit_cards (
     card_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(user_id),

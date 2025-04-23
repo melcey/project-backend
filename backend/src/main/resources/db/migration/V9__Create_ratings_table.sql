@@ -1,3 +1,4 @@
+-- V9__Create_ratings_table.sql
 CREATE TABLE ratings (
     rating_id SERIAL PRIMARY KEY,
     product_id INT REFERENCES products(product_id),

@@ -1,3 +1,5 @@
+-- V19__Create_anon_cart_tables.sql
+
 -- Main cart table
 CREATE TABLE anon_carts (
     cart_id SERIAL PRIMARY KEY,

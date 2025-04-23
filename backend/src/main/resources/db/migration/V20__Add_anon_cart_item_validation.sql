@@ -1,3 +1,5 @@
+-- V20__Add_anon_cart_item_validation.sql
+
 -- Create validation function
 CREATE OR REPLACE FUNCTION validate_anon_cart_item()
 RETURNS TRIGGER AS $$

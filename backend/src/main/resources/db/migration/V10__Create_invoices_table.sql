@@ -1,4 +1,4 @@
--- V9__Create_invoices_table.sql
+-- V10__Create_invoices_table.sql
 CREATE TABLE invoices (
     invoice_id SERIAL PRIMARY KEY,
     invoice_number TEXT,

@@ -1,4 +1,4 @@
--- V3__Create_products_table.sql
+-- V4__Create_products_table.sql
 CREATE TABLE products (
     product_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,

@@ -1,4 +1,4 @@
--- V4__Create_users_table.sql
+-- V2__Create_users_table.sql
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,

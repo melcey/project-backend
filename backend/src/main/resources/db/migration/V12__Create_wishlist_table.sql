@@ -1,4 +1,4 @@
--- V8__Create_wishlist_table.sql
+-- V12__Create_wishlist_table.sql
 CREATE TABLE wishlist (
     wishlist_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(user_id),

@@ -1,3 +1,5 @@
+-- V22__Create_payment_table.sql
+
 CREATE TABLE payments (
     payment_id SERIAL PRIMARY KEY,
     order_id INT NOT NULL,

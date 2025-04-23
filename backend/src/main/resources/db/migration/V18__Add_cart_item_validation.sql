@@ -1,3 +1,5 @@
+-- V18__Add_cart_item_validation.sql
+
 -- Create validation function
 CREATE OR REPLACE FUNCTION validate_cart_item()
 RETURNS TRIGGER AS $$

@@ -1,4 +1,4 @@
--- V5__Create_orders_table.sql
+-- V6__Create_orders_table.sql
 CREATE TABLE orders (
     order_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(user_id),

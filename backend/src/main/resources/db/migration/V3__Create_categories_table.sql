@@ -1,4 +1,4 @@
--- V2__Create_categories_table.sql
+-- V3__Create_categories_table.sql
 CREATE TABLE categories (
     category_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,

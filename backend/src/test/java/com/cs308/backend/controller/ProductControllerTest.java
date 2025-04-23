@@ -108,6 +108,15 @@ public class ProductControllerTest {
         mockProduct.setId(1L);
         mockProduct.setName("Test Product");
         mockProduct.setCategory(new Category("Category 1", "Description 1"));
+        mockProduct.setIsActive(true);
+        mockProduct.setModel("Model X");
+        mockProduct.setSerialNumber("12345");
+        mockProduct.setDescription("Test Description");
+        mockProduct.setQuantityInStock(10);
+        mockProduct.setPrice(BigDecimal.valueOf(99.99));
+        mockProduct.setWarrantyStatus("1 Year");
+        mockProduct.setDistributorInfo("Test Distributor");
+        mockProduct.setImageUrl("http://example.com/image.jpg");
 
         List<Product> mockProducts = Arrays.asList(mockProduct);
 

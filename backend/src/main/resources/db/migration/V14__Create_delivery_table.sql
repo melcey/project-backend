@@ -1,4 +1,4 @@
--- V12__Create_delivery_table.sql
+-- V14__Create_delivery_table.sql
 CREATE TABLE delivery (
     delivery_id SERIAL PRIMARY KEY,
     order_id INT REFERENCES orders(order_id),

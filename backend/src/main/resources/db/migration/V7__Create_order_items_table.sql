@@ -1,4 +1,4 @@
--- V6__Create_order_items_table.sql
+-- V7__Create_order_items_table.sql
 CREATE TABLE order_items (
     order_item_id SERIAL PRIMARY KEY,
     order_id INT REFERENCES orders(order_id),

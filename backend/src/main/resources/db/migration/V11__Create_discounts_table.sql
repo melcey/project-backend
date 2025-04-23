@@ -1,4 +1,4 @@
--- V10__Create_discounts_table.sql
+-- V11__Create_discounts_table.sql
 CREATE TABLE discounts (
     discount_id SERIAL PRIMARY KEY,
     product_id INT REFERENCES products(product_id),

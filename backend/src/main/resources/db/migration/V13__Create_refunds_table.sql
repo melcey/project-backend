@@ -1,4 +1,4 @@
--- V11__Create_refunds_table.sql
+-- V13__Create_refunds_table.sql
 CREATE TABLE refunds (
     refund_id SERIAL PRIMARY KEY,
     order_id INT REFERENCES orders(order_id),

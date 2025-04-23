@@ -1,4 +1,4 @@
--- V7__Create_comments_table.sql
+-- V8__Create_comments_table.sql
 CREATE TABLE comments (
     comment_id SERIAL PRIMARY KEY,
     product_id INT REFERENCES products(product_id),
