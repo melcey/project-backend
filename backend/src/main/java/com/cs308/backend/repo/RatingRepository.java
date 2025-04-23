@@ -23,15 +23,15 @@ public interface RatingRepository extends JpaRepository<Rating, Long> {
     
     List<Rating> findByRatingGreaterThanEqual(int rating);
 
-    List<Rating> findByRatingLessThanEqualAndGreaterThanEqual(int minRating, int maxRating);
+    List<Rating> findByRatingLessThanEqualAndRatingGreaterThanEqual(int minRating, int maxRating);
 
-    List<Rating> findByProductAndRating(Product ratedProduct, int rating);
+    List<Rating> findByRatedProductAndRating(Product ratedProduct, int rating);
     
-    List<Rating> findByProductAndRatingLessThanEqual(Product ratedProduct, int rating);
+    List<Rating> findByRatedProductAndRatingLessThanEqual(Product ratedProduct, int rating);
     
-    List<Rating> findByProductAndRatingGreaterThanEqual(Product ratedProduct, int rating);
+    List<Rating> findByRatedProductAndRatingGreaterThanEqual(Product ratedProduct, int rating);
 
-    List<Rating> findByProductAndRatingLessThanEqualAndGreaterThanEqual(Product ratedProduct, int minRating, int maxRating);
+    List<Rating> findByRatedProductAndRatingLessThanEqualAndRatingGreaterThanEqual(Product ratedProduct, int minRating, int maxRating);
 
     List<Rating> findByRatingDate(LocalDateTime ratingDate);
 

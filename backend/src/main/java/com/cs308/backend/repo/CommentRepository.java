@@ -33,9 +33,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findByApprovedAndCommentDateBetween(boolean approved, LocalDateTime startDate, LocalDateTime endDate);
 
-    List<Comment> findByRatingDateBefore(LocalDateTime beforeDate);
+    List<Comment> findByCommentDateBefore(LocalDateTime beforeDate);
 
-    List<Comment> findByApprovedAndRatingDateBefore(boolean approved, LocalDateTime beforeDate);
+    List<Comment> findByApprovedAndCommentDateBefore(boolean approved, LocalDateTime beforeDate);
 
     List<Comment> findByApprovedAndCommentDateAfter(boolean approved, LocalDateTime afterDate);
 }
