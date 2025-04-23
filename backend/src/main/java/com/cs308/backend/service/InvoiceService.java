@@ -28,6 +28,9 @@ public class InvoiceService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private UserService userService;
+
     @Transactional
     public Invoice generateInvoice(Payment payment) {
         // Generate unique invoice number
@@ -126,7 +129,7 @@ public class InvoiceService {
     }
 
     private void sendInvoiceEmail(Invoice invoice) {
-        String to = invoice.getOrder().getUser().getEmail();
+        String to = userService.getEmail(invoice.getOrder().getUser()).get();
         String subject = "Your Invoice #" + invoice.getInvoiceNumber();
         String text = "Dear " + invoice.getOrder().getUser().getName() + ",\n\n" +
                 "Thank you for your purchase. Please find your invoice attached.\n\n" +

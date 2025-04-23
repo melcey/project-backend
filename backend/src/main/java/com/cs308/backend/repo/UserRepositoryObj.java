@@ -7,6 +7,9 @@ import com.cs308.backend.dao.User;
 // The specific interface to deal with queries
 // for which the entire User objects will need to be passed in Java
 public interface UserRepositoryObj {
+    // The method to get the decrypted email of a user
+    Optional<String> getEmail(User user);
+
     // The method to insert a new user into the `users` table
     // The parameters `email` and `password` are the plain strings since they are not going to be stored on the User object
     Optional<User> insertNewUser(User user, String email, String password);

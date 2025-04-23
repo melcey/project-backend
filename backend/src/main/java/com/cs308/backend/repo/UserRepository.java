@@ -18,7 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
     // An Optional<User> object may or may not contain a User object
     // Results from crypt() are casted into the type BYTEA
     // String value of the Role is passed here in order not to lose PostgreSQL's functionality for crypt()
-    @Query(value = "SELECT * FROM users WHERE email = crypt(:email, convert_from(email, 'UTF8'))::bytea AND password_hash = crypt(:password, convert_from(password_hash, 'UTF8'))::bytea AND role = :role", nativeQuery = true)
+    @Query(value = "SELECT * FROM users WHERE pgp_sym_decrypt(email, 'eUvloSq81xH5J2FjEOzDhKSYwp/e8VYetV8lPwjlWmM=') = :email AND password_hash = crypt(:password, convert_from(password_hash, 'UTF8'))::bytea AND role = :role", nativeQuery = true)
     Optional<User> findByEmailAndPasswordAndRole(@Param("email") String email, @Param("password") String password, @Param("role") String role);
 
     // Executes a native SQL query on the database (specified with the nativeQuery parameter)
@@ -27,7 +27,7 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
     // PostgreSQL rehashes :email using the same salt as `email` to check
     // We are considering `email` unique
     // An Optional<User> object may or may not contain a User object
-    @Query(value = "SELECT * FROM users WHERE email = crypt(:email, convert_from(email, 'UTF8'))::bytea", nativeQuery = true)
+    @Query(value = "SELECT * FROM users WHERE pgp_sym_decrypt(email, 'eUvloSq81xH5J2FjEOzDhKSYwp/e8VYetV8lPwjlWmM=') = :email", nativeQuery = true)
     Optional<User> findByEmail(@Param("email") String email);
     
     List<User> findByName(String name);

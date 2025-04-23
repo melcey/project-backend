@@ -22,16 +22,34 @@ public class UserRepositoryImpl implements UserRepositoryObj {
     private EntityManager entityManager;
 
     @Override
+    public Optional<String> getEmail(User user) {
+        String sqlQuery = "SELECT pgp_sym_decrypt(email, :encryption_key) AS decrypted_email FROM users WHERE user_id = :id";
+
+        try {
+            String email = (String) entityManager.createNativeQuery(sqlQuery)
+                .setParameter("encryption_key", "eUvloSq81xH5J2FjEOzDhKSYwp/e8VYetV8lPwjlWmM=")
+                .setParameter("id", user.getId())
+                .getSingleResult();
+
+            return Optional.of(email);
+        }
+        catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Optional<User> insertNewUser(User user, String email, String password) {
         // Creates the query command in SQL to insert the new record to the table and return the inserted data
         // Casts the result from crypt() into BYTEA
-        String sqlQuery = "INSERT INTO users (name, email, home_address, password_hash, role) VALUES (:name, crypt(:email, gen_salt('bf'))::bytea, :address, crypt(:password, gen_salt('bf'))::bytea, :role) RETURNING *";
+        String sqlQuery = "INSERT INTO users (name, email, home_address, password_hash, role) VALUES (:name, pgp_sym_encrypt(:email, :encryption_key)::bytea, :address, crypt(:password, gen_salt('bf'))::bytea, :role) RETURNING *";
 
         try {
             // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
             User newUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
                 .setParameter("name", user.getName())
                 .setParameter("email", email)
+                .setParameter("encryption_key", "eUvloSq81xH5J2FjEOzDhKSYwp/e8VYetV8lPwjlWmM=")
                 .setParameter("address", user.getAddress())
                 .setParameter("password", password)
                 .setParameter("role", user.getRole().getValue())
@@ -92,12 +110,13 @@ public class UserRepositoryImpl implements UserRepositoryObj {
     @Override
     public Optional<User> updateUserEmail(User user, String newEmail) {
         // Creates the query command to update the email of the given user
-        String sqlQuery = "UPDATE users SET email = crypt(:new_email, gen_salt('bf'))::bytea WHERE user_id = :id RETURNING *";
+        String sqlQuery = "UPDATE users SET email = pgp_sym_encrypt(:email, :encryption_key)::bytea WHERE user_id = :id RETURNING *";
 
         try {
             // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
             User updatedUser = (User)entityManager.createNativeQuery(sqlQuery, User.class)
                 .setParameter("new_email", newEmail)
+                .setParameter("encryption_key", "eUvloSq81xH5J2FjEOzDhKSYwp/e8VYetV8lPwjlWmM=")
                 .setParameter("id", user.getId())
                 .getSingleResult();
 

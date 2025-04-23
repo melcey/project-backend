@@ -17,15 +17,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
@@ -36,7 +32,7 @@ import com.cs308.backend.dto.SignUpRequest;
 import com.cs308.backend.security.JwtTokenProvider;
 import com.cs308.backend.service.UserService;
 
-@Testcontainers
+@WebMvcTest(AuthController.class)
 public class AuthControllerTest {
 
     @Mock
@@ -50,20 +46,6 @@ public class AuthControllerTest {
 
     @InjectMocks
     private AuthController authController;
-
-    @SuppressWarnings("resource")
-    @Container
-    static PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest")
-        .withDatabaseName("testdb")
-        .withUsername("testuser")
-        .withPassword("testpass");
-
-    @DynamicPropertySource
-    static void overrideProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgresContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", postgresContainer::getUsername);
-        registry.add("spring.datasource.password", postgresContainer::getPassword);
-    }
 
     @BeforeEach
     void setUp() {
@@ -189,9 +171,4 @@ public class AuthControllerTest {
 
         verify(userService, times(1)).insertNewUser(user, signUpRequest.getEmail(), signUpRequest.getPassword());
     }
-
-    @AfterAll
-	static void tearDown() {
-		postgresContainer.close();
-	}
 }
