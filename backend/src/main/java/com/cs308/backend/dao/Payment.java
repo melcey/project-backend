@@ -16,27 +16,28 @@ public class Payment {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @Column(name = "amount", nullable = false)
+    @Column(name = "amount", nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 
     @Column(name = "payment_date", nullable = false)
     private LocalDateTime paymentDate;
 
-    @Column(name = "payment_status", nullable = false)
+    @Column(name = "payment_status", nullable = false, length = 20)
     private String paymentStatus; // "PENDING", "COMPLETED", "FAILED"
 
     // Encrypted payment details
-    @Column(name = "card_details")
-    private byte[] encryptedCardDetails;
+    @OneToOne
+    @JoinColumn(name = "credit_card_id", referencedColumnName = "card_id", nullable = false)
+    private CreditCard creditCard;
 
-    public Payment() {
-    }
+    public Payment() {}
 
-    public Payment(Order order, BigDecimal amount) {
+    public Payment(Order order, BigDecimal amount, CreditCard creditCard) {
         this.order = order;
         this.amount = amount;
         this.paymentDate = LocalDateTime.now();
         this.paymentStatus = "PENDING";
+        this.creditCard = creditCard;
     }
 
     // Getters and setters
@@ -80,12 +81,12 @@ public class Payment {
         this.paymentStatus = paymentStatus;
     }
 
-    public byte[] getEncryptedCardDetails() {
-        return encryptedCardDetails;
+    public CreditCard getCreditCard() {
+        return creditCard;
     }
 
-    public void setEncryptedCardDetails(byte[] encryptedCardDetails) {
-        this.encryptedCardDetails = encryptedCardDetails;
+    public void setCreditCard(CreditCard creditCard) {
+        this.creditCard = creditCard;
     }
 
     @Override

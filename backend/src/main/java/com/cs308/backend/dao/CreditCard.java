@@ -1,6 +1,13 @@
 package com.cs308.backend.dao;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "credit_cards")
@@ -99,5 +106,30 @@ public class CreditCard {
 
     public void setCvv(byte[] cvv) {
         this.cvv = cvv;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((cardId == null) ? 0 : cardId.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        CreditCard other = (CreditCard) obj;
+        if (cardId == null) {
+            if (other.cardId != null)
+                return false;
+        } else if (!cardId.equals(other.cardId))
+            return false;
+        return true;
     }
 }
