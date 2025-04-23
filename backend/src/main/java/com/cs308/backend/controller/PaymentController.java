@@ -13,10 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cs308.backend.dao.Order;
+import com.cs308.backend.dao.OrderItem;
 import com.cs308.backend.dao.Payment;
+import com.cs308.backend.dao.Product;
 import com.cs308.backend.dto.PaymentRequest;
 import com.cs308.backend.dto.PaymentResponse;
 import com.cs308.backend.service.PaymentService;
+import com.cs308.backend.service.ProductService;
 
 @RestController
 @RequestMapping("/payments")
@@ -25,15 +29,34 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
+    @Autowired
+    private ProductService productService;
+
     @PostMapping("/process")
     public ResponseEntity<PaymentResponse> processPayment(@RequestBody PaymentRequest paymentRequest) {
         Optional<Payment> payment = paymentService.processPayment(paymentRequest);
 
-        if (!(payment.isPresent())) {
+        if (!payment.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment processing failed");
         }
 
         Payment processedPayment = payment.get();
+
+        Order order = processedPayment.getOrder();
+        for (OrderItem item : order.getOrderItems()) {
+            Product product = item.getProduct();
+            int newStock = product.getQuantityInStock() - item.getQuantity();
+
+            Optional<Product> updatedProduct = productService.updateProductQuantityInStock(
+                    product.getId(),
+                    newStock);
+
+            if (!updatedProduct.isPresent()) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Failed to update stock for product: " + product.getName());
+            }
+        }
 
         PaymentResponse response = new PaymentResponse(
                 processedPayment.getId(),
