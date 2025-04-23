@@ -30,6 +30,7 @@ import com.cs308.backend.repo.CartItemRepository;
 import com.cs308.backend.repo.CartRepository;
 import com.cs308.backend.repo.CategoryRepository;
 import com.cs308.backend.repo.CommentRepository;
+import com.cs308.backend.repo.CreditCardRepository;
 import com.cs308.backend.repo.InvoiceRepository;
 import com.cs308.backend.repo.OrderItemRepository;
 import com.cs308.backend.repo.OrderRepository;
@@ -83,6 +84,9 @@ class BackendApplicationTest {
 	@Autowired
 	private CommentRepository commentRepository;
 
+	@Autowired
+	private CreditCardRepository creditCardRepository;
+
 	//@Autowired
 	//private InvoiceRepository invoiceRepository;
 
@@ -130,6 +134,7 @@ class BackendApplicationTest {
 		Assertions.assertNotNull(cartRepository);
 		Assertions.assertNotNull(categoryRepository);
 		Assertions.assertNotNull(commentRepository);
+		Assertions.assertNotNull(creditCardRepository);
 		//Assertions.assertNotNull(invoiceRepository);
 		Assertions.assertNotNull(orderItemRepository);
 		Assertions.assertNotNull(orderRepository);
@@ -149,6 +154,7 @@ class BackendApplicationTest {
 		cartRepository.deleteAll();
 		categoryRepository.deleteAll();
 		commentRepository.deleteAll();
+		creditCardRepository.deleteAll();
 		//invoiceRepository.deleteAll();
 		orderItemRepository.deleteAll();
 		orderRepository.deleteAll();

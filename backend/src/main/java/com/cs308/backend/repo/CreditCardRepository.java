@@ -7,7 +7,7 @@ import com.cs308.backend.dao.User;
 import java.util.List;
 import java.util.Optional;
 
-public interface CreditCardRepository extends JpaRepository<CreditCard, Long> {
+public interface CreditCardRepository extends JpaRepository<CreditCard, Long>, CreditCardRepositoryObj {
     // Find all credit cards for a specific user
     List<CreditCard> findByUser(User user);
 
@@ -31,4 +31,6 @@ public interface CreditCardRepository extends JpaRepository<CreditCard, Long> {
 
     // Delete all cards for a specific user
     void deleteByUser(User user);
+
+    void deleteById(Long id);
 }
