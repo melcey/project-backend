@@ -24,8 +24,7 @@ public class Payment {
 
     @Column(name = "payment_status", nullable = false, length = 20)
     private String paymentStatus; // "PENDING", "COMPLETED", "FAILED"
-
-    // Encrypted payment details
+    
     @OneToOne
     @JoinColumn(name = "credit_card_id", referencedColumnName = "card_id", nullable = false)
     private CreditCard creditCard;

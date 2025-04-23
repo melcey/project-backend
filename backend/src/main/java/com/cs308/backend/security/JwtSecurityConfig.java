@@ -73,6 +73,9 @@ public class JwtSecurityConfig {
                         .requestMatchers("/comment/approve").hasRole("PRODUCT_MANAGER")
                         .requestMatchers("/comment/disapprove").hasRole("PRODUCT_MANAGER")
                         .requestMatchers("/rating/**").hasRole("CUSTOMER")
+                        .requestMatchers("/payments/**").hasRole("CUSTOMER")
+                        .requestMatchers("/invoices/**").hasRole("CUSTOMER")
+                        .requestMatchers("/invoices/**").hasRole("PRODUCT_MANAGER")
                         .anyRequest().authenticated())
 
                 .authenticationProvider(authenticationProvider);

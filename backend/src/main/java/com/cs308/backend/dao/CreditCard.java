@@ -37,7 +37,14 @@ public class CreditCard {
     private byte[] cvv;
 
     // Default constructor
-    public CreditCard() {
+    public CreditCard() {}
+
+    // The actual constructor to use
+    public CreditCard(User user, String cardNameHolder, Short expiryMonth, Short expiryYear) {
+        this.user = user;
+        this.cardNameHolder = cardNameHolder;
+        this.expiryMonth = expiryMonth;
+        this.expiryYear = expiryYear;
     }
 
     // Constructor with all fields

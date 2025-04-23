@@ -5,15 +5,15 @@ public class PaymentRequest {
     private Long userId;
     private String cardNumber;
     private String cardHolderName;
-    private String expiryMonth;
-    private String expiryYear;
+    private Short expiryMonth;
+    private Short expiryYear;
     private String cvv;
 
     // Default constructor
     public PaymentRequest() {}
 
-    public PaymentRequest(Long orderId, Long userId, String cardNumber, String cardHolderName, String expiryMonth,
-            String expiryYear, String cvv) {
+    public PaymentRequest(Long orderId, Long userId, String cardNumber, String cardHolderName, Short expiryMonth,
+            Short expiryYear, String cvv) {
         this.orderId = orderId;
         this.userId = userId;
         this.cardNumber = cardNumber;
@@ -56,19 +56,19 @@ public class PaymentRequest {
         this.cardHolderName = cardHolderName;
     }
 
-    public String getExpiryMonth() {
+    public Short getExpiryMonth() {
         return expiryMonth;
     }
 
-    public void setExpiryMonth(String expiryMonth) {
+    public void setExpiryMonth(Short expiryMonth) {
         this.expiryMonth = expiryMonth;
     }
 
-    public String getExpiryYear() {
+    public Short getExpiryYear() {
         return expiryYear;
     }
 
-    public void setExpiryYear(String expiryYear) {
+    public void setExpiryYear(Short expiryYear) {
         this.expiryYear = expiryYear;
     }
 
