@@ -7,39 +7,39 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Optional;
 import java.util.List;
 
+import com.cs308.backend.dao.Category;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Rating;
 import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
-import com.cs308.backend.repo.ProductRepository;
-import com.cs308.backend.repo.RatingRepository;
+import com.cs308.backend.dto.SubmitRatingRequest;
 import com.cs308.backend.security.UserPrincipal;
+import com.cs308.backend.service.ProductService;
+import com.cs308.backend.service.RatingService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@WebMvcTest(RatingController.class)
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class RatingControllerTest {
-
-    @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private RatingRepository ratingRepository;
-
-    @MockBean
-    private ProductRepository productRepository;
+    @Mock
+    private RatingService ratingService;
 
     @Mock
-    private UserPrincipal mockUserPrincipal;
+    private ProductService productService;
 
     @Mock
     private User mockUser;
@@ -47,9 +47,33 @@ public class RatingControllerTest {
     @Mock
     private Product mockProduct;
 
+    @InjectMocks
+    private RatingController ratingController;
+
+    private ObjectMapper objectMapper;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(ratingController).build();
+        objectMapper = new ObjectMapper();
+
+        mockProduct = new Product();
+        mockProduct.setId(1L);
+        mockProduct.setName("Test Product");
+        mockProduct.setCategory(new Category("Category 1", "Description 1"));
+
+        // Mock authentication
+        mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setRole(Role.customer);
+
+        UserPrincipal userPrincipal = UserPrincipal.create(mockUser);
+        UsernamePasswordAuthenticationToken authentication = 
+            new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(authentication);
+        SecurityContextHolder.setContext(securityContext);
     }
 
     @Test
@@ -58,40 +82,49 @@ public class RatingControllerTest {
         Long productId = 1L;
         int ratingValue = 5;
 
-        when(productRepository.findById(productId)).thenReturn(Optional.of(mockProduct));
-        when(mockUser.getRole()).thenReturn(Role.customer);
-        when(mockUser.getId()).thenReturn(1L);
-        when(mockUserPrincipal.getUser()).thenReturn(mockUser);
+        SubmitRatingRequest request = new SubmitRatingRequest(productId, ratingValue);
+
+        when(productService.findProductById(productId)).thenReturn(Optional.of(mockProduct));
 
         Rating existingRating = new Rating(mockProduct, mockUser, 3);
         existingRating.setId(10L);
 
-        // Stream içinde bu rating varmış gibi simüle
-        when(ratingRepository.findAll()).thenReturn(List.of(existingRating));
+        when(ratingService.findRatingsForProduct(mockProduct)).thenReturn(List.of(existingRating));
+        when(ratingService.submitRating(existingRating)).thenReturn(Optional.of(existingRating));
 
-        mockMvc.perform(post("/ratings/submit")
-                .param("productId", productId.toString())
-                .param("ratingValue", String.valueOf(ratingValue)))
+        mockMvc.perform(post("/rating/submit")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser(roles = "CUSTOMER")
     public void testSubmitRating_ProductNotFound() throws Exception {
-        when(productRepository.findById(99L)).thenReturn(Optional.empty());
+        Long productId = 99L;
+        int ratingValue = 5;
 
-        mockMvc.perform(post("/ratings/submit")
-                .param("productId", "99")
-                .param("ratingValue", "5"))
+        SubmitRatingRequest request = new SubmitRatingRequest(productId, ratingValue);
+
+        when(productService.findProductById(productId)).thenReturn(Optional.empty());
+
+        mockMvc.perform(post("/rating/submit")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     @WithMockUser(roles = "SALES_MANAGER")
     public void testSubmitRating_ForbiddenRole() throws Exception {
-        mockMvc.perform(post("/ratings/submit")
-                .param("productId", "1")
-                .param("ratingValue", "5"))
-                .andExpect(status().isForbidden());
+        Long productId = 1L;
+        int ratingValue = 5;
+
+        SubmitRatingRequest request = new SubmitRatingRequest(productId, ratingValue);
+
+        mockMvc.perform(post("/rating/submit")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound());
     }
 }

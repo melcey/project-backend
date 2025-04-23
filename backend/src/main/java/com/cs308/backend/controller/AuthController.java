@@ -2,6 +2,7 @@ package com.cs308.backend.controller;
 
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
@@ -49,24 +51,29 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        // Create authentication token with role
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+        try {
+            // Create authentication token with role
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 loginRequest.getEmail(),
                 loginRequest.getPassword());
-        // Set role in authentication details
-        authToken.setDetails(loginRequest.getRole());
+            // Set role in authentication details
+            authToken.setDetails(loginRequest.getRole());
 
-        // Authenticate the user
-        Authentication authentication = authenticationManager.authenticate(authToken);
+            // Authenticate the user
+            Authentication authentication = authenticationManager.authenticate(authToken);
 
-        // Set the authentication in context
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            // Set the authentication in context
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Generate JWT token
-        String jwt = tokenProvider.generateToken(authentication);
+            // Generate JWT token
+            String jwt = tokenProvider.generateToken(authentication);
 
-        // Return the token
-        return ResponseEntity.ok(new AuthResponse(jwt));
+            // Return the token
+            return ResponseEntity.ok(new AuthResponse(jwt));
+        }
+        catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication failed");
+        }
     }
 
     @PostMapping("/signup")
@@ -92,7 +99,7 @@ public class AuthController {
                 signUpRequest.getPassword());
 
             if (!(createdUser.isPresent())) {
-                return ResponseEntity.badRequest().body(new MessageResponse("User creation failed"));
+                return ResponseEntity.badRequest().body(new MessageResponse("User registration failed"));
             }
 
             // No authentication will be performed while registering a user; they will need to explicitly log in
@@ -101,7 +108,7 @@ public class AuthController {
             return ResponseEntity.ok(new MessageResponse("OK"));
         }
         catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse("User creation failed"));
+            return ResponseEntity.badRequest().body(new MessageResponse("User registration failed"));
         }
     }
 }

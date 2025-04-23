@@ -21,17 +21,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.cs308.backend.dao.Category;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.service.ProductService;
 
-@WebMvcTest(ProductController.class)
+@AutoConfigureMockMvc
 public class ProductControllerTest {
-
-    @Autowired
     private MockMvc mockMvc;
 
     @Mock
@@ -43,6 +43,7 @@ public class ProductControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(productController).build();
     }
 
     @Test
@@ -83,10 +84,12 @@ public class ProductControllerTest {
         Product mockProduct1 = new Product();
         mockProduct1.setId(1L);
         mockProduct1.setName("Product 1");
+        mockProduct1.setCategory(new Category("Category 1", "Description 1"));
 
         Product mockProduct2 = new Product();
         mockProduct2.setId(2L);
         mockProduct2.setName("Product 2");
+        mockProduct2.setCategory(new Category("Category 2", "Description 2"));
 
         List<Product> mockProducts = Arrays.asList(mockProduct1, mockProduct2);
 
@@ -104,6 +107,7 @@ public class ProductControllerTest {
         Product mockProduct = new Product();
         mockProduct.setId(1L);
         mockProduct.setName("Test Product");
+        mockProduct.setCategory(new Category("Category 1", "Description 1"));
 
         List<Product> mockProducts = Arrays.asList(mockProduct);
 
@@ -112,10 +116,10 @@ public class ProductControllerTest {
                 .thenReturn(mockProducts);
 
         mockMvc.perform(get("/products")
-                        .param("name", "Test Product"))
+                        .param("name", "Test%20Product"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.products").isArray())
-                .andExpect(jsonPath("$.products[0].id").value(1))
+                .andExpect(jsonPath("$.products[0].id").value(1L))
                 .andExpect(jsonPath("$.products[0].name").value("Test Product"));
     }
 }
