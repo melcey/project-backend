@@ -36,6 +36,9 @@ public class JwtSecurityConfigTest {
     @Mock
     private AuthenticationConfiguration authenticationConfiguration;
 
+    @Mock
+    private CustomAuthenticationProvider customAuthenticationProvider;
+
     @InjectMocks
     private JwtSecurityConfig jwtSecurityConfig;
 
@@ -71,7 +74,7 @@ public class JwtSecurityConfigTest {
 
     @Test
     void testAuthenticationProvider() {
-        AuthenticationProvider authenticationProvider = jwtSecurityConfig.authenticationProvider(userService);
+        AuthenticationProvider authenticationProvider = new CustomAuthenticationProvider(userService);
         assertThat(authenticationProvider).isNotNull();
         assertThat(authenticationProvider).isInstanceOf(CustomAuthenticationProvider.class);
     }

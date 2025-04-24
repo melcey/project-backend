@@ -65,22 +65,20 @@ public class AuthControllerTest {
         Authentication authentication = mock(Authentication.class);
         String jwtToken = "mockJwtToken";
 
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                loginRequest.getEmail(), loginRequest.getPassword());
-        authToken.setDetails(loginRequest.getRole());
-
-        when(authenticationManager.authenticate(authToken)).thenReturn(authentication);
+        // Mock the behavior of AuthenticationManager and JwtTokenProvider
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
         when(tokenProvider.generateToken(authentication)).thenReturn(jwtToken);
 
         // Act & Assert
         mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.accessToken").value(jwtToken));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.accessToken").value(jwtToken));
 
         // Verify that the authenticate method was called once
         verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(tokenProvider, times(1)).generateToken(authentication);
     }
 
     @Test

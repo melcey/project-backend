@@ -75,7 +75,7 @@ public class PaymentService {
         Payment payment = new Payment(
             orderToProcess,
             orderToProcess.getTotalPrice(),
-            creditCard
+            creditCardToSave.get()
         );
 
         try {

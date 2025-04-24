@@ -18,7 +18,7 @@ public class CreditCardRepositoryImpl implements CreditCardRepositoryObj {
 
     @Override
     public Optional<CreditCard> insertNewCard(CreditCard creditCard, String cardNumber, String cvv) {
-        String sqlQuery = "INSERT INTO credit_cards (user_id, card_name_holder, card_number, expiry_month, expiry_year, cvv) VALUES (:user_id, :card_name_holder, crypt(:card_number, gen_salt('bf')::bytea), :expiry_month, :expiry_year, crypt(:cvv, gen_salt('bf')::bytea)) RETURNING *";
+        String sqlQuery = "INSERT INTO credit_cards (user_id, card_name_holder, card_number, expiry_month, expiry_year, cvv) VALUES (:user_id, :card_name_holder, crypt(:card_number, gen_salt('bf'))::bytea, :expiry_month, :expiry_year, crypt(:cvv, gen_salt('bf'))::bytea) RETURNING *";
 
         try {
             CreditCard newCreditCard = (CreditCard)entityManager.createNativeQuery(sqlQuery, CreditCard.class)

@@ -44,10 +44,21 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(Long.toString(userPrincipal.getUser().getId()))
+                .claim("role", "ROLE_" + userPrincipal.getUser().getRole().name().toUpperCase())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(key)
                 .compact();
+    }
+
+    public String getRoleFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    
+        return claims.get("role", String.class);
     }
 
     public Long getUserIdFromToken(String token) {

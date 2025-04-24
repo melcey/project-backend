@@ -17,6 +17,7 @@ import com.cs308.backend.dto.CommentRequest;
 import com.cs308.backend.dto.CommentStateRequest;
 import com.cs308.backend.security.UserPrincipal;
 import com.cs308.backend.service.CommentService;
+import com.cs308.backend.service.OrderService;
 import com.cs308.backend.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -48,6 +49,9 @@ public class CommentControllerTest {
 
     @Mock
     private ProductService productService;
+
+    @Mock
+    private OrderService orderService;
 
     @Mock
     private User mockUser;
@@ -101,7 +105,7 @@ public class CommentControllerTest {
         mockMvc.perform(post("/comment/submit")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(commentRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isForbidden());
     }
 
     @Test

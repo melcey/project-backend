@@ -56,9 +56,7 @@ public class AuthController {
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 loginRequest.getEmail(),
                 loginRequest.getPassword());
-            // Set role in authentication details
-            authToken.setDetails(loginRequest.getRole());
-
+            
             // Authenticate the user
             Authentication authentication = authenticationManager.authenticate(authToken);
 

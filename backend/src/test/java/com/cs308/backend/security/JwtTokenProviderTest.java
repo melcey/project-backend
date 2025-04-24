@@ -12,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
+import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
 
 import io.jsonwebtoken.security.Keys;
@@ -44,6 +45,7 @@ public class JwtTokenProviderTest {
         // Mock UserPrincipal and Authentication
         User mockUser = new User();
         mockUser.setId(1L);
+        mockUser.setRole(Role.customer); // Mock role
         when(mockUserPrincipal.getUser()).thenReturn(mockUser);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(mockUserPrincipal, null);
@@ -55,6 +57,10 @@ public class JwtTokenProviderTest {
         assertThat(token).isNotNull();
         Long userId = jwtTokenProvider.getUserIdFromToken(token);
         assertThat(userId).isEqualTo(1L);
+
+        // Validate role claim
+        String role = jwtTokenProvider.getRoleFromToken(token);
+        assertThat(role).isEqualTo("ROLE_CUSTOMER");
     }
 
     @Test
@@ -62,6 +68,7 @@ public class JwtTokenProviderTest {
         // Mock UserPrincipal and Authentication
         User mockUser = new User();
         mockUser.setId(1L);
+        mockUser.setRole(Role.customer); // Mock role
         when(mockUserPrincipal.getUser()).thenReturn(mockUser);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(mockUserPrincipal, null);
@@ -79,6 +86,7 @@ public class JwtTokenProviderTest {
         // Mock UserPrincipal and Authentication
         User mockUser = new User();
         mockUser.setId(1L);
+        mockUser.setRole(Role.customer); // Mock role
         when(mockUserPrincipal.getUser()).thenReturn(mockUser);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(mockUserPrincipal, null);
@@ -96,6 +104,7 @@ public class JwtTokenProviderTest {
         // Mock UserPrincipal and Authentication
         User mockUser = new User();
         mockUser.setId(1L);
+        mockUser.setRole(Role.customer); // Mock role
         when(mockUserPrincipal.getUser()).thenReturn(mockUser);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(mockUserPrincipal, null);

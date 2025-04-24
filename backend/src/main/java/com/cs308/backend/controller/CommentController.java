@@ -1,5 +1,6 @@
 package com.cs308.backend.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cs308.backend.dao.Comment;
+import com.cs308.backend.dao.Order;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
@@ -24,6 +26,7 @@ import com.cs308.backend.dto.MessageResponse;
 import com.cs308.backend.dto.ProductResponse;
 import com.cs308.backend.security.UserPrincipal;
 import com.cs308.backend.service.CommentService;
+import com.cs308.backend.service.OrderService;
 import com.cs308.backend.service.ProductService;
 
 @RestController
@@ -32,10 +35,12 @@ public class CommentController {
 
     private final CommentService commentService;
     private final ProductService productService;
+    private final OrderService orderService;
 
-    public CommentController(CommentService commentService, ProductService productService) {
+    public CommentController(CommentService commentService, ProductService productService, OrderService orderService) {
         this.commentService = commentService;
         this.productService = productService;
+        this.orderService = orderService;
     }
 
     @PostMapping("/submit")
@@ -56,6 +61,14 @@ public class CommentController {
 
         if (!(productToComment.isPresent())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The product does not exist");
+        }
+
+        Product retrievedProduct = productToComment.get();
+
+        List<Order> ordersWithProduct = orderService.findAllOrdersIncludingProduct(retrievedProduct);
+
+        if (ordersWithProduct.size() == 0) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The customer did not order this product.");
         }
 
         Optional<Comment> submittedComment = commentService.submitComment(new Comment(productToComment.get(), user, commentRequest.getComment()));
