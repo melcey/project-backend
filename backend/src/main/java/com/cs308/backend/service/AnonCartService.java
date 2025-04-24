@@ -57,6 +57,9 @@ public class AnonCartService {
 
         AnonCart oldAnonCart = foundAnonCart.clone();
 
+        if (foundProduct.getQuantityInStock() == 0) {
+            return Optional.of(oldAnonCart);
+        }
 
         AnonCartItem anonCartItem = anonCart.get().getItems().stream()
             .filter(item -> item.getProduct().getId().equals(productId))

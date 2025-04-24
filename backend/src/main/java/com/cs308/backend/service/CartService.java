@@ -93,6 +93,9 @@ public class CartService {
 
         Cart oldCart = foundCart.clone();
 
+        if (foundProduct.getQuantityInStock() == 0) {
+            return Optional.of(oldCart);
+        }
 
         CartItem cartItem = cart.get().getItems().stream()
             .filter(item -> item.getProduct().getId().equals(productId))
