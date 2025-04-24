@@ -171,8 +171,50 @@ public class OrderController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order creation failed");
         }
     }
+
+    @GetMapping("/manager/{id}")
+    public ResponseEntity<?> getOrderForProductManager(@PathVariable Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ((auth == null) || (!(auth.isAuthenticated()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
+
+        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
+            
+        User user = userDetails.getUser();
+
+        if (user.getRole() != Role.product_manager) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
+        }
+
+        Optional<Order> retrievedOrder = orderService.findOrder(id);
+
+        if (!(retrievedOrder.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order could not be found");
+        }
+
+        int managedCount = 0;
+        
+        for (OrderItem retrievedOrderItem: retrievedOrder.get().getOrderItems()) {
+            if (retrievedOrderItem.getProduct().getProductManager().equals(user)) {
+                managedCount += 1;
+            }
+        }
+
+        if (managedCount == 0) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No products in the associated order belong to the product manager");
+        }
+
+        List<OrderItemResponse> responseItems = new ArrayList<>();
+
+        for (OrderItem retrievedOrderItem: retrievedOrder.get().getOrderItems()) {
+            responseItems.add(new OrderItemResponse(retrievedOrderItem.getId(), retrievedOrder.get().getId(), new ProductResponse(retrievedOrderItem.getProduct().getId(), retrievedOrderItem.getProduct().getName(), retrievedOrderItem.getProduct().getModel(), retrievedOrderItem.getProduct().getSerialNumber(), retrievedOrderItem.getProduct().getDescription(), retrievedOrderItem.getProduct().getQuantityInStock(), retrievedOrderItem.getProduct().getPrice(), retrievedOrderItem.getProduct().getWarrantyStatus(), retrievedOrderItem.getProduct().getDistributorInfo(), retrievedOrderItem.getProduct().getIsActive(), retrievedOrderItem.getProduct().getImageUrl(), new CategoryResponse(retrievedOrderItem.getProduct().getCategory().getId(), retrievedOrderItem.getProduct().getCategory().getName(), retrievedOrderItem.getProduct().getCategory().getDescription())), retrievedOrderItem.getQuantity(), retrievedOrderItem.getPrice()));
+        }
+
+        return ResponseEntity.ok(new OrderResponse(retrievedOrder.get().getId(), user.getId(), retrievedOrder.get().getOrderDate(), retrievedOrder.get().getStatus(), retrievedOrder.get().getTotalPrice(), retrievedOrder.get().getDeliveryAddress(), responseItems));
+    }
     
-    // One of "pending", "processing", "shipped", "delivered"
+    // One of "pending", in-transit", "delivered"
     @PutMapping("/manager/{id}")
     public ResponseEntity<?> updateOrderStatus(@PathVariable Long id, @RequestBody UpdateOrderStateRequest newStateRequest) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

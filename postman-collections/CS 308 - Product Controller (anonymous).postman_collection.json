@@ -31,7 +31,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/products?name=examplename&model=examplemodel&serialNumber=exampleserialnumber&description=somedescription&distributorInfo=sampledistributor&isActive=true&minPrice=999.99&maxPrice=2999.99&minQuantity=1&maxQuantity=10000&categoryId=1&categoryId=2",
+					"raw": "localhost:8080/products?name=Smart&model=Model&serialNumber=SN&isActive=true&minPrice=999.99&maxPrice=2999.99&minQuantity=1&maxQuantity=10000&categoryId=1&categoryId=2",
 					"host": [
 						"localhost"
 					],
@@ -42,25 +42,27 @@
 					"query": [
 						{
 							"key": "name",
-							"value": "examplename",
+							"value": "Smart",
 							"description": "All parameters are optional"
 						},
 						{
 							"key": "model",
-							"value": "examplemodel",
+							"value": "Model",
 							"description": "This is a sample request with toy parameters"
 						},
 						{
 							"key": "serialNumber",
-							"value": "exampleserialnumber"
+							"value": "SN"
 						},
 						{
 							"key": "description",
-							"value": "somedescription"
+							"value": "somedescription",
+							"disabled": true
 						},
 						{
 							"key": "distributorInfo",
-							"value": "sampledistributor"
+							"value": "sampledistributor",
+							"disabled": true
 						},
 						{
 							"key": "isActive",
