@@ -56,6 +56,7 @@ public class CartRepositoryTest {
         cart.setTotalPrice(new BigDecimal("150.00"));
         cart.setCreatedAt(LocalDateTime.now());
         cart.setUpdatedAt(LocalDateTime.now());
+        cart.setUser(savedUser);
 
         // Save the Cart
         Cart savedCart = cartRepository.save(cart);

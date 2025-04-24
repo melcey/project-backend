@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
@@ -20,6 +21,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.cs308.backend.dao.Cart;
 import com.cs308.backend.dao.CartItem;
+import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
 
@@ -49,29 +51,48 @@ public class CartItemRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ProductRepository productRepository;
+
     @Test
     public void testFindByCartId() {
         // Create a new User
         User user = new User("John Doe", "123 Main St", Role.customer);
         User savedUser = userRepository.save(user);
 
+        // Create and save two products
+        Product product1 = new Product();
+        product1.setName("Test Product");
+        product1.setPrice(BigDecimal.valueOf(100.00));
+        product1.setQuantityInStock(10);
+        product1 = productRepository.save(product1);
+
+        Product product2 = new Product();
+        product2.setName("Test Product");
+        product2.setPrice(BigDecimal.valueOf(300.00));
+        product2.setQuantityInStock(20);
+        product2 = productRepository.save(product2);
+
         // Create a new Cart
         Cart cart = new Cart(savedUser);
-        cart.setTotalPrice(new BigDecimal("150.00"));
+        cart.setTotalPrice(new BigDecimal("1050.00"));
         cart.setCreatedAt(LocalDateTime.now());
         cart.setUpdatedAt(LocalDateTime.now());
         Cart savedCart = cartRepository.save(cart);
 
         // Create CartItems
-        CartItem item1 = new CartItem(savedCart, null, 2, new BigDecimal("50.00"));
+        CartItem item1 = new CartItem(savedCart, product1, 2, new BigDecimal("600.00"));
         item1.setCreatedAt(LocalDateTime.now());
 
-        CartItem item2 = new CartItem(savedCart, null, 3, new BigDecimal("100.00"));
+        CartItem item2 = new CartItem(savedCart, product2, 3, new BigDecimal("450.00"));
         item2.setCreatedAt(LocalDateTime.now());
 
         // Save CartItems
         cartItemRepository.save(item1);
         cartItemRepository.save(item2);
+
+        savedCart.setItems(new ArrayList<>(List.of(item1, item2)));
+        savedCart = cartRepository.save(savedCart);
 
         // Fetch items by cart ID
         List<CartItem> fetchedItems = cartItemRepository.findByCartId(savedCart.getId());
@@ -88,19 +109,30 @@ public class CartItemRepositoryTest {
         User user = new User("Jane Doe", "456 Elm St", Role.customer);
         User savedUser = userRepository.save(user);
 
+        // Create a new Product
+        Product product = new Product();
+        product.setName("Test Product");
+        product.setPrice(BigDecimal.valueOf(100.00));
+        product.setQuantityInStock(10);
+        product = productRepository.save(product);
+
         // Create a new Cart
         Cart cart = new Cart(savedUser);
-        cart.setTotalPrice(new BigDecimal("200.00"));
+        cart.setTotalPrice(new BigDecimal("500.00"));
         cart.setCreatedAt(LocalDateTime.now());
         cart.setUpdatedAt(LocalDateTime.now());
+        cart.setUser(savedUser);
         Cart savedCart = cartRepository.save(cart);
 
         // Create a CartItem
-        CartItem item = new CartItem(savedCart, null, 5, new BigDecimal("75.00"));
+        CartItem item = new CartItem(savedCart, product, 5, new BigDecimal("100.00"));
         item.setCreatedAt(LocalDateTime.now());
 
         // Save the CartItem
         CartItem savedItem = cartItemRepository.save(item);
+
+        savedCart.setItems(new ArrayList<>(List.of(savedItem)));
+        savedCart = cartRepository.save(savedCart);
 
         // Fetch the CartItem by ID
         CartItem fetchedItem = cartItemRepository.findById(savedItem.getId()).orElse(null);

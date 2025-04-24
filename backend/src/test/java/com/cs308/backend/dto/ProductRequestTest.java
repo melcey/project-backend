@@ -58,7 +58,7 @@ class ProductRequestTest {
     void testToString() {
         ProductRequest request = new ProductRequest("Laptop", "Model X", "12345", "High-end laptop", 10,
                 BigDecimal.valueOf(1200.00), "1 year", "Distributor Inc.", true, "image.jpg", 1L);
-        String expected = "CreateProductRequest [name=Laptop, model=Model X, serialNumber=12345, description=High-end laptop, quantityInStock=10, price=1200.0, warrantyStatus=1 year, distributorInfo=Distributor Inc., isActive=true, imageUrl=image.jpg, categoryId=1]";
+        String expected = "ProductRequest [name=Laptop, model=Model X, serialNumber=12345, description=High-end laptop, quantityInStock=10, price=1200.0, warrantyStatus=1 year, distributorInfo=Distributor Inc., isActive=true, imageUrl=image.jpg, categoryId=1]";
         assertEquals(expected, request.toString());
     }
 

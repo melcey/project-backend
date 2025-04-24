@@ -1,6 +1,7 @@
 package com.cs308.backend.repo;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -43,22 +44,20 @@ public class UserRepositoryTest {
     private UserRepository userRepository;
 
     private User testUser;
-    byte[] encryptedEmail;
-    byte[] passwordHashed;
+    private String email;
+    private String password;
 
     @BeforeEach
     void setUp() {
-        encryptedEmail = TestEncryptionUtil.encrypt("johndoe@example.com");
-        passwordHashed = TestEncryptionUtil.encrypt("password123");
+        email = "johndoe@example.com";
+        password = "password123";
 
         // Create and save a User entity
         testUser = new User();
         testUser.setName("John Doe");
         testUser.setRole(Role.customer);
         testUser.setAddress("123 Main St");
-        testUser.setEncryptedEmail(encryptedEmail);
-        testUser.setPasswordHashed(passwordHashed);
-        userRepository.save(testUser);
+        testUser = userRepository.insertNewUser(testUser, email, password).get();
     }
 
     @Test
@@ -74,8 +73,7 @@ public class UserRepositoryTest {
         assertThat(users).isNotEmpty();
         
         // Verify the encrypted email matches the plain text email
-        boolean matches = TestEncryptionUtil.verify("johndoe@example.com", users.get(0).getEncryptedEmail());
-        assertThat(matches).isTrue();
+        assertThat(userRepository.getEmail(users.get(0)).get()).isEqualTo(email);
     }
 
     @Test
@@ -96,8 +94,7 @@ public class UserRepositoryTest {
         assertThat(savedUser).isPresent();
         
         // Verify the encrypted email matches the plain text email
-        boolean matches = TestEncryptionUtil.verify("janedoe@example.com", savedUser.get().getEncryptedEmail());
-        assertThat(matches).isTrue();    
+        assertThat(userRepository.getEmail(savedUser.get()).get()).isEqualTo("janedoe@example.com");   
     }
 
     @Test
@@ -120,8 +117,7 @@ public class UserRepositoryTest {
         assertThat(updatedUser).isPresent();
 
         // Verify the encrypted email matches the updated plain text email
-        boolean matches = TestEncryptionUtil.verify("johnsmith@example.com", updatedUser.get().getEncryptedEmail());
-        assertThat(matches).isTrue();
+        assertThat(userRepository.getEmail(updatedUser.get()).get()).isEqualTo("johnsmith@example.com");   
     }
 
     @Test
@@ -152,17 +148,6 @@ public class UserRepositoryTest {
 	}
 
     class TestEncryptionUtil {
-        /**
-         * Encrypts a value using BCrypt, similar to PostgreSQL's `crypt()` function.
-         *
-         * @param value The plain text value to encrypt.
-         * @return The encrypted value as a byte[].
-         */
-        public static byte[] encrypt(String value) {
-            String hashedValue = BCrypt.hashpw(value, BCrypt.gensalt());
-            return hashedValue.getBytes(StandardCharsets.UTF_8); // Convert to byte[]
-        }
-    
         /**
          * Verifies a plain text value against an encrypted value.
          *

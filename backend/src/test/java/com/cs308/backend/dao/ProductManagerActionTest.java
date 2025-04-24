@@ -42,6 +42,7 @@ class ProductManagerActionTest {
         User productManager = new User();
         productManager.setId(1L);
         productManager.setName("testUser");
+        productManager.setRole(Role.product_manager);
 
         String actionType = "DELETE_PRODUCT";
         String details = "Deleted a product from the catalog";

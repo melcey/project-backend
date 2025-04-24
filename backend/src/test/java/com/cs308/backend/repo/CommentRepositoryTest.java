@@ -3,6 +3,7 @@ package com.cs308.backend.repo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -55,12 +56,20 @@ public class CommentRepositoryTest {
         User user = new User("John Doe", "123 Main St", Role.customer);
         User savedUser = userRepository.save(user);
 
+        // Create a Product
+        Product product = new Product();
+        product.setName("Sample Product");
+        product.setPrice(BigDecimal.valueOf(1999.99));
+        Product savedProduct = productRepository.save(product);
+
         // Create a Comment
         Comment comment = new Comment();
         comment.setCommentingUser(savedUser);
         comment.setComment("Great product!");
         comment.setApproved(true);
         comment.setCommentDate(LocalDateTime.now());
+        comment.setCommentedProduct(savedProduct);
+        comment.setCommentingUser(user);
         commentRepository.save(comment);
 
         // Fetch comments by commenting user
@@ -77,12 +86,20 @@ public class CommentRepositoryTest {
         User user = new User("Jane Doe", "456 Elm St", Role.customer);
         User savedUser = userRepository.save(user);
 
+        // Create a Product
+        Product product = new Product();
+        product.setName("Sample Product");
+        product.setPrice(BigDecimal.valueOf(1999.99));
+        Product savedProduct = productRepository.save(product);
+
         // Create Comments
         Comment approvedComment = new Comment();
         approvedComment.setCommentingUser(savedUser);
         approvedComment.setComment("Approved comment");
         approvedComment.setApproved(true);
         approvedComment.setCommentDate(LocalDateTime.now());
+        approvedComment.setCommentedProduct(savedProduct);
+        approvedComment.setCommentingUser(user);
         commentRepository.save(approvedComment);
 
         Comment unapprovedComment = new Comment();
@@ -90,6 +107,8 @@ public class CommentRepositoryTest {
         unapprovedComment.setComment("Unapproved comment");
         unapprovedComment.setApproved(false);
         unapprovedComment.setCommentDate(LocalDateTime.now());
+        unapprovedComment.setCommentedProduct(savedProduct);
+        unapprovedComment.setCommentingUser(user);
         commentRepository.save(unapprovedComment);
 
         // Fetch approved comments by user
@@ -102,9 +121,14 @@ public class CommentRepositoryTest {
 
     @Test
     public void testFindByCommentedProduct() {
+        // Create a User
+        User user = new User("John Doe", "123 Main St", Role.customer);
+        User savedUser = userRepository.save(user);
+
         // Create a Product
         Product product = new Product();
         product.setName("Sample Product");
+        product.setPrice(BigDecimal.valueOf(1999.99));
         Product savedProduct = productRepository.save(product);
 
         // Create a Comment
@@ -113,6 +137,8 @@ public class CommentRepositoryTest {
         comment.setComment("Nice product!");
         comment.setApproved(true);
         comment.setCommentDate(LocalDateTime.now());
+        comment.setCommentedProduct(savedProduct);
+        comment.setCommentingUser(savedUser);
         commentRepository.save(comment);
 
         // Fetch comments by product
@@ -125,17 +151,31 @@ public class CommentRepositoryTest {
 
     @Test
     public void testFindByCommentDateBetween() {
+        // Create a User
+        User user = new User("John Doe", "123 Main St", Role.customer);
+        User savedUser = userRepository.save(user);
+
+        // Create a Product
+        Product product = new Product();
+        product.setName("Sample Product");
+        product.setPrice(BigDecimal.valueOf(1999.99));
+        Product savedProduct = productRepository.save(product);
+
         // Create Comments
         Comment comment1 = new Comment();
         comment1.setComment("Comment 1");
         comment1.setCommentDate(LocalDateTime.now().minusDays(2));
         comment1.setApproved(true);
+        comment1.setCommentedProduct(savedProduct);
+        comment1.setCommentingUser(savedUser);
         commentRepository.save(comment1);
 
         Comment comment2 = new Comment();
         comment2.setComment("Comment 2");
         comment2.setCommentDate(LocalDateTime.now().minusDays(1));
         comment2.setApproved(true);
+        comment2.setCommentedProduct(savedProduct);
+        comment2.setCommentingUser(savedUser);
         commentRepository.save(comment2);
 
         // Fetch comments between dates
@@ -148,11 +188,23 @@ public class CommentRepositoryTest {
 
     @Test
     public void testFindByIdAndApproved() {
+        // Create a User
+        User user = new User("John Doe", "123 Main St", Role.customer);
+        User savedUser = userRepository.save(user);
+
+        // Create a Product
+        Product product = new Product();
+        product.setName("Sample Product");
+        product.setPrice(BigDecimal.valueOf(1999.99));
+        Product savedProduct = productRepository.save(product);
+
         // Create a Comment
         Comment comment = new Comment();
         comment.setComment("Approved comment");
         comment.setApproved(true);
         comment.setCommentDate(LocalDateTime.now());
+        comment.setCommentedProduct(savedProduct);
+        comment.setCommentingUser(savedUser);
         Comment savedComment = commentRepository.save(comment);
 
         // Fetch comment by ID and approved status

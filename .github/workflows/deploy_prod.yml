@@ -36,8 +36,8 @@ jobs:
           token: ${{ secrets.TC_CLOUD_TOKEN }}
 
       # Disabled until the tests are fixed
-      #- name: Run JUnit tests
-      #  run: cd backend && ./mvnw test
+      - name: Run JUnit tests
+        run: cd backend && ./mvnw test
 
       - name: Deploy Docker Compose Prod
         run: docker compose -f docker-compose.prod.release.yml up --build -d

@@ -20,6 +20,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.cs308.backend.dao.AnonCart;
 import com.cs308.backend.dao.AnonCartItem;
+import com.cs308.backend.dao.Product;
 
 @DataJpaTest
 @Testcontainers
@@ -40,6 +41,9 @@ public class AnonCartRepositoryTest {
 
     @Autowired
     private AnonCartRepository anonCartRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Test
     public void testFindById() {
@@ -63,9 +67,16 @@ public class AnonCartRepositoryTest {
 
     @Test
     public void testSaveAndRetrieveCartWithItems() {
+        // Create a new Product
+        Product product = new Product();
+        product.setName("Test Product");
+        product.setPrice(BigDecimal.valueOf(100.00));
+        product.setQuantityInStock(10);
+        product = productRepository.save(product);
+
         // Create a new AnonCart
         AnonCart cart = new AnonCart();
-        cart.setTotalPrice(new BigDecimal("200.00"));
+        cart.setTotalPrice(new BigDecimal("100.00"));
         cart.setCreatedAt(LocalDateTime.now());
         cart.setUpdatedAt(LocalDateTime.now());
 
@@ -74,6 +85,7 @@ public class AnonCartRepositoryTest {
         item.setCart(cart);
         item.setQuantity(2);
         item.setPriceAtAddition(new BigDecimal("50.00"));
+        item.setProduct(product);
         item.setCreatedAt(LocalDateTime.now());
 
         // Add the item to the cart
@@ -88,7 +100,7 @@ public class AnonCartRepositoryTest {
         // Assert that the cart and its items are saved and retrieved correctly
         assertTrue(fetchedCart.isPresent());
         assertEquals(1, fetchedCart.get().getItems().size());
-        assertEquals(new BigDecimal("200.00"), fetchedCart.get().getTotalPrice());
+        assertEquals(new BigDecimal("100.00"), fetchedCart.get().getTotalPrice());
     }
 
     @AfterEach

@@ -3,6 +3,7 @@ package com.cs308.backend.repo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
@@ -63,11 +64,14 @@ public class AnonCartItemRepositoryTest {
         product.setQuantityInStock(10);
         product = productRepository.save(product);
 
-        // Create and save cart items
-        AnonCartItem item1 = new AnonCartItem(cart, product, 2, BigDecimal.valueOf(100.00));
-        AnonCartItem item2 = new AnonCartItem(cart, product, 1, BigDecimal.valueOf(100.00));
-        anonCartItemRepository.save(item1);
-        anonCartItemRepository.save(item2);
+        // Create a single cart item with combined quantity
+        AnonCartItem item = new AnonCartItem(cart, product, 3, BigDecimal.valueOf(100.00)); // Combined quantity
+        item = anonCartItemRepository.save(item);
+
+        // Update the cart with the item and total price
+        cart.setItems(new ArrayList<>(List.of(item)));
+        cart.setTotalPrice(BigDecimal.valueOf(300.00)); // Adjusted total price
+        cart = anonCartRepository.save(cart);
     }
 
     @Test
@@ -77,7 +81,7 @@ public class AnonCartItemRepositoryTest {
 
         // Assertions
         assertThat(items).isNotNull();
-        assertThat(items.size()).isEqualTo(2);
+        assertThat(items.size()).isEqualTo(1);
         assertThat(items.get(0).getCart().getId()).isEqualTo(cart.getId());
         assertThat(items.get(0).getProduct().getId()).isEqualTo(product.getId());
     }

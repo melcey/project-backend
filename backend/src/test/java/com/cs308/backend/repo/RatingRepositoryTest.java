@@ -3,6 +3,7 @@ package com.cs308.backend.repo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -21,8 +22,10 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 @DataJpaTest
+@Testcontainers
 public class RatingRepositoryTest {
     @SuppressWarnings("resource")
     @Container
@@ -49,10 +52,22 @@ public class RatingRepositoryTest {
 
     @Test
     public void testFindById() {
+        // Create a User
+        User user = new User("John Doe", "123 Main St", Role.customer);
+        User savedUser = userRepository.save(user);
+
+        // Create a Product
+        Product product = new Product();
+        product.setName("Sample Product");
+        product.setPrice(BigDecimal.valueOf(1999.99));
+        Product savedProduct = productRepository.save(product);
+
         // Create a Rating
         Rating rating = new Rating();
         rating.setRating(5);
         rating.setRatingDate(LocalDateTime.now());
+        rating.setRatedProduct(savedProduct);
+        rating.setRatingUser(savedUser);
         Rating savedRating = ratingRepository.save(rating);
 
         // Fetch the Rating by ID
@@ -65,9 +80,14 @@ public class RatingRepositoryTest {
 
     @Test
     public void testFindByRatedProduct() {
+        // Create a User
+        User user = new User("John Doe", "123 Main St", Role.customer);
+        User savedUser = userRepository.save(user);
+
         // Create a Product
         Product product = new Product();
         product.setName("Sample Product");
+        product.setPrice(BigDecimal.valueOf(1999.99));
         Product savedProduct = productRepository.save(product);
 
         // Create a Rating
@@ -75,6 +95,7 @@ public class RatingRepositoryTest {
         rating.setRatedProduct(savedProduct);
         rating.setRating(4);
         rating.setRatingDate(LocalDateTime.now());
+        rating.setRatingUser(savedUser);
         ratingRepository.save(rating);
 
         // Fetch Ratings by Product
@@ -91,11 +112,18 @@ public class RatingRepositoryTest {
         User user = new User("John Doe", "123 Main St", Role.customer);
         User savedUser = userRepository.save(user);
 
+        // Create a Product
+        Product product = new Product();
+        product.setName("Sample Product");
+        product.setPrice(BigDecimal.valueOf(1999.99));
+        Product savedProduct = productRepository.save(product);
+
         // Create a Rating
         Rating rating = new Rating();
         rating.setRatingUser(savedUser);
         rating.setRating(3);
         rating.setRatingDate(LocalDateTime.now());
+        rating.setRatedProduct(savedProduct);
         ratingRepository.save(rating);
 
         // Fetch Ratings by User
@@ -108,15 +136,29 @@ public class RatingRepositoryTest {
 
     @Test
     public void testFindByRatingRange() {
+        // Create a User
+        User user = new User("John Doe", "123 Main St", Role.customer);
+        User savedUser = userRepository.save(user);
+
+        // Create a Product
+        Product product = new Product();
+        product.setName("Sample Product");
+        product.setPrice(BigDecimal.valueOf(1999.99));
+        Product savedProduct = productRepository.save(product);
+
         // Create Ratings
         Rating rating1 = new Rating();
         rating1.setRating(2);
         rating1.setRatingDate(LocalDateTime.now());
+        rating1.setRatingUser(savedUser);
+        rating1.setRatedProduct(savedProduct);
         ratingRepository.save(rating1);
 
         Rating rating2 = new Rating();
         rating2.setRating(4);
         rating2.setRatingDate(LocalDateTime.now());
+        rating2.setRatingUser(savedUser);
+        rating2.setRatedProduct(savedProduct);
         ratingRepository.save(rating2);
 
         // Fetch Ratings by range
@@ -129,15 +171,29 @@ public class RatingRepositoryTest {
 
     @Test
     public void testFindByRatingDateBetween() {
+        // Create a User
+        User user = new User("John Doe", "123 Main St", Role.customer);
+        User savedUser = userRepository.save(user);
+
+        // Create a Product
+        Product product = new Product();
+        product.setName("Sample Product");
+        product.setPrice(BigDecimal.valueOf(1999.99));
+        Product savedProduct = productRepository.save(product);
+
         // Create Ratings
         Rating rating1 = new Rating();
         rating1.setRating(5);
         rating1.setRatingDate(LocalDateTime.now().minusDays(2));
+        rating1.setRatedProduct(savedProduct);
+        rating1.setRatingUser(savedUser);
         ratingRepository.save(rating1);
 
         Rating rating2 = new Rating();
         rating2.setRating(3);
         rating2.setRatingDate(LocalDateTime.now().minusDays(1));
+        rating2.setRatedProduct(savedProduct);
+        rating2.setRatingUser(savedUser);
         ratingRepository.save(rating2);
 
         // Fetch Ratings by date range
@@ -150,9 +206,14 @@ public class RatingRepositoryTest {
 
     @Test
     public void testFindByProductAndRating() {
+        // Create a User
+        User user = new User("John Doe", "123 Main St", Role.customer);
+        User savedUser = userRepository.save(user);
+
         // Create a Product
         Product product = new Product();
         product.setName("Test Product");
+        product.setPrice(BigDecimal.valueOf(1999.99));
         Product savedProduct = productRepository.save(product);
 
         // Create Ratings
@@ -160,12 +221,16 @@ public class RatingRepositoryTest {
         rating1.setRatedProduct(savedProduct);
         rating1.setRating(5);
         rating1.setRatingDate(LocalDateTime.now());
+        rating1.setRatedProduct(savedProduct);
+        rating1.setRatingUser(savedUser);
         ratingRepository.save(rating1);
 
         Rating rating2 = new Rating();
         rating2.setRatedProduct(savedProduct);
         rating2.setRating(3);
         rating2.setRatingDate(LocalDateTime.now());
+        rating2.setRatedProduct(savedProduct);
+        rating2.setRatingUser(savedUser);
         ratingRepository.save(rating2);
 
         // Fetch Ratings by Product and Rating

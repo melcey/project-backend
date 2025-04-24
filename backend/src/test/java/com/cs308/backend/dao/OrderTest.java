@@ -48,11 +48,12 @@ class OrderTest {
     void testToString() {
         User user = new User();
         user.setName("John Doe");
+        user.setRole(Role.customer);
         LocalDateTime orderDate = LocalDateTime.of(2025, 4, 19, 12, 0);
         Order order = new Order(user, OrderStatus.pending, BigDecimal.valueOf(500.00), "456 Avenue", new ArrayList<>());
         order.setOrderDate(orderDate);
 
-        String expected = "Order [id=null, user=User [id=null, name=John Doe, address=null, role=null], orderDate=2025-04-19T12:00, status=pending, totalPrice=500.0, deliveryAddress=456 Avenue, orderItems=[]]";
+        String expected = "Order [id=null, user=User [id=null, name=John Doe, address=null, role=customer], orderDate=2025-04-19T12:00, status=pending, totalPrice=500.0, deliveryAddress=456 Avenue, orderItems=[]]";
         assertEquals(expected, order.toString());
     }
 
