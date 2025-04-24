@@ -18,8 +18,12 @@ import com.cs308.backend.dao.Comment;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Rating;
 import com.cs308.backend.dto.CategoryResponse;
+import com.cs308.backend.dto.CommentListResponse;
+import com.cs308.backend.dto.CommentResponse;
 import com.cs308.backend.dto.ProductListResponse;
 import com.cs308.backend.dto.ProductResponse;
+import com.cs308.backend.dto.RatingListResponse;
+import com.cs308.backend.dto.RatingResponse;
 import com.cs308.backend.service.CommentService;
 import com.cs308.backend.service.ProductService;
 import com.cs308.backend.service.RatingService;
@@ -61,7 +65,13 @@ public class ProductController {
 
         List<Comment> commentsForProduct = commentService.findApprovedCommentsForProduct(productOpt.get());
 
-        return ResponseEntity.ok(commentsForProduct);
+        List<CommentResponse> responseComments = new ArrayList<>();
+
+        for (Comment commentForProduct: commentsForProduct) {
+            responseComments.add(new CommentResponse(commentForProduct.getId(), new ProductResponse(commentForProduct.getCommentedProduct().getId(), commentForProduct.getCommentedProduct().getName(), commentForProduct.getCommentedProduct().getModel(), commentForProduct.getCommentedProduct().getSerialNumber(), commentForProduct.getCommentedProduct().getDescription(), commentForProduct.getCommentedProduct().getQuantityInStock(), commentForProduct.getCommentedProduct().getPrice(), commentForProduct.getCommentedProduct().getWarrantyStatus(), commentForProduct.getCommentedProduct().getDistributorInfo(), commentForProduct.getCommentedProduct().getIsActive(), commentForProduct.getCommentedProduct().getImageUrl(), new CategoryResponse(commentForProduct.getCommentedProduct().getCategory().getId(), commentForProduct.getCommentedProduct().getCategory().getName(), commentForProduct.getCommentedProduct().getCategory().getDescription())), commentForProduct.getCommentingUser().getId(), commentForProduct.getApproved(), commentForProduct.getComment(), commentForProduct.getCommentDate()));
+        }
+
+        return ResponseEntity.ok(new CommentListResponse(responseComments));
     }
 
     @GetMapping("/{id}/ratings")
@@ -74,7 +84,13 @@ public class ProductController {
 
         List<Rating> ratingsForProduct = ratingService.findRatingsForProduct(productOpt.get());
 
-        return ResponseEntity.ok(ratingsForProduct);
+        List<RatingResponse> responseRatings = new ArrayList<>();
+
+        for (Rating ratingForProduct: ratingsForProduct) {
+            responseRatings.add(new RatingResponse(ratingForProduct.getId(), new ProductResponse(ratingForProduct.getRatedProduct().getId(), ratingForProduct.getRatedProduct().getName(), ratingForProduct.getRatedProduct().getModel(), ratingForProduct.getRatedProduct().getSerialNumber(), ratingForProduct.getRatedProduct().getDescription(), ratingForProduct.getRatedProduct().getQuantityInStock(), ratingForProduct.getRatedProduct().getPrice(), ratingForProduct.getRatedProduct().getWarrantyStatus(), ratingForProduct.getRatedProduct().getDistributorInfo(), ratingForProduct.getRatedProduct().getIsActive(), ratingForProduct.getRatedProduct().getImageUrl(), new CategoryResponse(ratingForProduct.getRatedProduct().getCategory().getId(), ratingForProduct.getRatedProduct().getCategory().getName(), ratingForProduct.getRatedProduct().getCategory().getDescription())), ratingForProduct.getRatingUser().getId(), ratingForProduct.getRating(), ratingForProduct.getRatingDate()));
+        }
+
+        return ResponseEntity.ok(new RatingListResponse(responseRatings));
     }
 
     @GetMapping("/all")

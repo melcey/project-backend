@@ -101,7 +101,7 @@ public class CommentControllerTest {
         mockMvc.perform(post("/comment/submit")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(commentRequest)))
-                .andExpect(status().isOk()); // Gerçek token'la testte mocklanması gerekir.
+                .andExpect(status().isOk());
     }
 
     @Test

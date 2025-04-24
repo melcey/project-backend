@@ -2,6 +2,7 @@ package com.cs308.backend.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -46,6 +47,10 @@ public class AnonCartService {
         }
 
         AnonCart foundAnonCart = anonCart.get();
+
+        if (foundAnonCart.getItems() == null) {
+            foundAnonCart.setItems(new ArrayList<>());
+        }
 
         Optional<Product> product = productService.findProductById(productId);
 

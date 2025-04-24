@@ -32,6 +32,8 @@ import com.cs308.backend.dao.Category;
 import com.cs308.backend.dao.Comment;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Rating;
+import com.cs308.backend.dao.Role;
+import com.cs308.backend.dao.User;
 import com.cs308.backend.service.CommentService;
 import com.cs308.backend.service.ProductService;
 import com.cs308.backend.service.RatingService;
@@ -99,16 +101,29 @@ public class ProductControllerTest {
     
     @Test
     void testGetCommentsForProduct_Success() throws Exception {
+        User mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setRole(Role.customer);
+
+        Category mockCategory = new Category();
+        mockCategory.setId(1L);
+
         Product mockProduct = new Product();
         mockProduct.setId(1L);
+        mockProduct.setPrice(BigDecimal.valueOf(1999.99));
+        mockProduct.setCategory(mockCategory);
 
         Comment mockComment1 = new Comment();
         mockComment1.setId(1L);
         mockComment1.setComment("Great product!");
+        mockComment1.setCommentedProduct(mockProduct);
+        mockComment1.setCommentingUser(mockUser);
 
         Comment mockComment2 = new Comment();
         mockComment2.setId(2L);
         mockComment2.setComment("Not bad.");
+        mockComment2.setCommentedProduct(mockProduct);
+        mockComment2.setCommentingUser(mockUser);
 
         List<Comment> mockComments = Arrays.asList(mockComment1, mockComment2);
 
@@ -117,10 +132,10 @@ public class ProductControllerTest {
 
         mockMvc.perform(get("/products/1/comments"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].comment").value("Great product!"))
-                .andExpect(jsonPath("$[1].id").value(2))
-                .andExpect(jsonPath("$[1].comment").value("Not bad."));
+                .andExpect(jsonPath("$.comments[0].id").value(1))
+                .andExpect(jsonPath("$.comments[0].comment").value("Great product!"))
+                .andExpect(jsonPath("$.comments[1].id").value(2))
+                .andExpect(jsonPath("$.comments[1].comment").value("Not bad."));
     }
 
     @Test
@@ -133,16 +148,29 @@ public class ProductControllerTest {
 
     @Test
     void testGetRatingsForProduct_Success() throws Exception {
+        User mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setRole(Role.customer);
+
+        Category mockCategory = new Category();
+        mockCategory.setId(1L);
+
         Product mockProduct = new Product();
         mockProduct.setId(1L);
+        mockProduct.setPrice(BigDecimal.valueOf(1999.99));
+        mockProduct.setCategory(mockCategory);
 
         Rating mockRating1 = new Rating();
         mockRating1.setId(1L);
         mockRating1.setRating(5);
+        mockRating1.setRatedProduct(mockProduct);
+        mockRating1.setRatingUser(mockUser);
 
         Rating mockRating2 = new Rating();
         mockRating2.setId(2L);
         mockRating2.setRating(4);
+        mockRating2.setRatedProduct(mockProduct);
+        mockRating2.setRatingUser(mockUser);
 
         List<Rating> mockRatings = Arrays.asList(mockRating1, mockRating2);
 
@@ -151,10 +179,10 @@ public class ProductControllerTest {
 
         mockMvc.perform(get("/products/1/ratings"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].rating").value(5))
-                .andExpect(jsonPath("$[1].id").value(2))
-                .andExpect(jsonPath("$[1].rating").value(4));
+                .andExpect(jsonPath("$.ratings[0].id").value(1))
+                .andExpect(jsonPath("$.ratings[0].rating").value(5))
+                .andExpect(jsonPath("$.ratings[1].id").value(2))
+                .andExpect(jsonPath("$.ratings[1].rating").value(4));
     }
 
     @Test

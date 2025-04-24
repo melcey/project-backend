@@ -120,6 +120,7 @@ public class CartServiceTest {
         Product product = new Product();
         product.setId(1L);
         product.setPrice(new BigDecimal("50.00"));
+        product.setQuantityInStock(10);
 
         when(cartRepository.findByUser(user)).thenReturn(Optional.of(cart));
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
