@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "0b596a38-c3cc-48d1-895a-70693071f207",
+		"_postman_id": "764401de-0f8f-4230-8f89-9ffacf1153e6",
 		"name": "CS 308 - Product Controller (anonymous)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "44198589"
+		"_exporter_id": "33959811",
+		"_collection_link": "https://cs-308-group-23.postman.co/workspace/My-Workspace~b5b5991a-6836-4a41-823c-ca9c7ff6a01e/collection/33959811-764401de-0f8f-4230-8f89-9ffacf1153e6?action=share&source=collection_link&creator=33959811"
 	},
 	"item": [
 		{
@@ -31,7 +32,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/products?name=Smart&model=Model&serialNumber=SN&isActive=true&minPrice=999.99&maxPrice=2999.99&minQuantity=1&maxQuantity=10000&categoryId=1&categoryId=2",
+					"raw": "localhost:8080/products?name=Smartphone X",
 					"host": [
 						"localhost"
 					],
@@ -42,17 +43,19 @@
 					"query": [
 						{
 							"key": "name",
-							"value": "Smart",
+							"value": "Smartphone X",
 							"description": "All parameters are optional"
 						},
 						{
 							"key": "model",
 							"value": "Model",
-							"description": "This is a sample request with toy parameters"
+							"description": "This is a sample request with toy parameters",
+							"disabled": true
 						},
 						{
 							"key": "serialNumber",
-							"value": "SN"
+							"value": "SN",
+							"disabled": true
 						},
 						{
 							"key": "description",
@@ -67,32 +70,39 @@
 						{
 							"key": "isActive",
 							"value": "true",
-							"description": "I do not know whether the false setting will be used at all for this parameter in real-life, let's see"
+							"description": "I do not know whether the false setting will be used at all for this parameter in real-life, let's see",
+							"disabled": true
 						},
 						{
 							"key": "minPrice",
-							"value": "999.99"
+							"value": "999.99",
+							"disabled": true
 						},
 						{
 							"key": "maxPrice",
-							"value": "2999.99"
+							"value": "2999.99",
+							"disabled": true
 						},
 						{
 							"key": "minQuantity",
-							"value": "1"
+							"value": "1",
+							"disabled": true
 						},
 						{
 							"key": "maxQuantity",
-							"value": "10000"
+							"value": "10000",
+							"disabled": true
 						},
 						{
 							"key": "categoryId",
 							"value": "1",
-							"description": "This must be repeated if multiple categories are going to be searched"
+							"description": "This must be repeated if multiple categories are going to be searched",
+							"disabled": true
 						},
 						{
 							"key": "categoryId",
-							"value": "2"
+							"value": "2",
+							"disabled": true
 						}
 					]
 				}

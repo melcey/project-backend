@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "51fabf74-b364-47ff-bb03-275102438002",
+		"_postman_id": "f8b4265c-5fde-4d79-93e7-0de67f9d9819",
 		"name": "CS 308 - Customer",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "44198589"
+		"_exporter_id": "33959811",
+		"_collection_link": "https://cs-308-group-23.postman.co/workspace/My-Workspace~b5b5991a-6836-4a41-823c-ca9c7ff6a01e/collection/33959811-f8b4265c-5fde-4d79-93e7-0de67f9d9819?action=share&source=collection_link&creator=33959811"
 	},
 	"item": [
 		{
@@ -19,7 +20,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"user2\",\n    \"email\": \"user2@customer2.com\",\n    \"password\": \"password2\",\n    \"address\": \"address2\",\n    \"role\": \"customer\"\n}",
+					"raw": "{\n    \"name\": \"user2\",\n    \"email\": \"user2@customer2.com\",\n    \"password\": \"password2\",\n    \"address\": \"Istanbul, Turkey\",\n    \"role\": \"customer\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -106,7 +107,14 @@
 			"name": "Get Orders By Customer",
 			"request": {
 				"auth": {
-					"type": "bearer"
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfQ1VTVE9NRVIiLCJpYXQiOjE3NDU1MjQ5NTUsImV4cCI6MTc0NTYxMTM1NX0.ZHUU8L8fhfAg2H2Llg9bj5WY749i30EZ_gWS6INNT89Ni6ZhBMww1fy78Q3oJ1qRxIxMAHSaIx662FAR_cD4HA",
+							"type": "string"
+						}
+					]
 				},
 				"method": "GET",
 				"header": [],
@@ -128,7 +136,14 @@
 			"name": "Submit Comment",
 			"request": {
 				"auth": {
-					"type": "bearer"
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfQ1VTVE9NRVIiLCJpYXQiOjE3NDU1MjQ5NTUsImV4cCI6MTc0NTYxMTM1NX0.ZHUU8L8fhfAg2H2Llg9bj5WY749i30EZ_gWS6INNT89Ni6ZhBMww1fy78Q3oJ1qRxIxMAHSaIx662FAR_cD4HA",
+							"type": "string"
+						}
+					]
 				},
 				"method": "POST",
 				"header": [],
@@ -156,6 +171,44 @@
 			"response": []
 		},
 		{
+			"name": "Submit Rating",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfQ1VTVE9NRVIiLCJpYXQiOjE3NDU1MjQ5NTUsImV4cCI6MTc0NTYxMTM1NX0.ZHUU8L8fhfAg2H2Llg9bj5WY749i30EZ_gWS6INNT89Ni6ZhBMww1fy78Q3oJ1qRxIxMAHSaIx662FAR_cD4HA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"productId\": 1,\n    \"ratingValue\": 10\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/rating/submit",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rating",
+						"submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get Order By Customer",
 			"request": {
 				"auth": {
@@ -173,6 +226,82 @@
 						"order",
 						"customer",
 						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create New Order",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfQ1VTVE9NRVIiLCJpYXQiOjE3NDU1MjQ5NTUsImV4cCI6MTc0NTYxMTM1NX0.ZHUU8L8fhfAg2H2Llg9bj5WY749i30EZ_gWS6INNT89Ni6ZhBMww1fy78Q3oJ1qRxIxMAHSaIx662FAR_cD4HA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"status\": \"processing\",\n    \"totalPrice\": 2099.98,\n    \"deliveryAddress\": \"Istanbul, Turkey\",\n    \"orderItems\": [\n        {\n            \"quantity\": 1,\n            \"productId\": 1,\n            \"price\": 799.99\n        },\n        {\n            \"quantity\": 1,\n            \"productId\": 2,\n            \"price\": 1299.99\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/order/customer",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"order",
+						"customer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Process Payment",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfQ1VTVE9NRVIiLCJpYXQiOjE3NDU1MjQ5NTUsImV4cCI6MTc0NTYxMTM1NX0.ZHUU8L8fhfAg2H2Llg9bj5WY749i30EZ_gWS6INNT89Ni6ZhBMww1fy78Q3oJ1qRxIxMAHSaIx662FAR_cD4HA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"orderId\": 1,\n    \"userId\": 1,\n    \"cardNumber\": \"1234 5678 9012 3456\",\n    \"cardHolderName\": \"Onur Orman\",\n    \"expiryMonth\": 12,\n    \"expiryYear\": 2025,\n    \"cvv\": \"290\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/payments/process",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"payments",
+						"process"
 					]
 				}
 			},
