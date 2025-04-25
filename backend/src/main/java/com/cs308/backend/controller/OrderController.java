@@ -193,15 +193,10 @@ public class OrderController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order could not be found");
         }
 
-        int managedCount = 0;
-        
-        for (OrderItem retrievedOrderItem: retrievedOrder.get().getOrderItems()) {
-            if (retrievedOrderItem.getProduct().getProductManager().equals(user)) {
-                managedCount += 1;
-            }
-        }
+        boolean hasManagedProducts = retrievedOrder.get().getOrderItems().stream()
+            .anyMatch(orderItem -> orderItem.getProduct().getProductManager().equals(user));
 
-        if (managedCount == 0) {
+        if (!hasManagedProducts) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No products in the associated order belong to the product manager");
         }
 

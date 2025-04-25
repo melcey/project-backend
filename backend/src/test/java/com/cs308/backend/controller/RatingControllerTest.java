@@ -1,19 +1,25 @@
 package com.cs308.backend.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Optional;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.cs308.backend.dao.Category;
+import com.cs308.backend.dao.Order;
+import com.cs308.backend.dao.OrderStatus;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Rating;
 import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
 import com.cs308.backend.dto.SubmitRatingRequest;
 import com.cs308.backend.security.UserPrincipal;
+import com.cs308.backend.service.OrderService;
 import com.cs308.backend.service.ProductService;
 import com.cs308.backend.service.RatingService;
 
@@ -40,6 +46,9 @@ public class RatingControllerTest {
 
     @Mock
     private ProductService productService;
+
+    @Mock
+    private OrderService orderService;
 
     @Mock
     private User mockUser;
@@ -77,26 +86,43 @@ public class RatingControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "CUSTOMER")
-    public void testSubmitRating_Success() throws Exception {
-        Long productId = 1L;
-        int ratingValue = 5;
+@WithMockUser(roles = "CUSTOMER")
+public void testSubmitRating_Success() throws Exception {
+    Long productId = 1L;
+    int ratingValue = 5;
 
-        SubmitRatingRequest request = new SubmitRatingRequest(productId, ratingValue);
+    SubmitRatingRequest request = new SubmitRatingRequest(productId, ratingValue);
 
-        when(productService.findProductById(productId)).thenReturn(Optional.of(mockProduct));
+    // Mock the product retrieval
+    when(productService.findProductById(productId)).thenReturn(Optional.of(mockProduct));
 
-        Rating existingRating = new Rating(mockProduct, mockUser, 3);
-        existingRating.setId(10L);
+    // Create a mock order with the required fields
+    Order mockOrder = new Order(
+        mockUser,
+        OrderStatus.delivered,
+        BigDecimal.valueOf(100.00), // Example total price
+        "123 Test Address", // Example delivery address
+        new ArrayList<>() // Empty order items list
+    );
 
-        when(ratingService.findRatingsForProduct(mockProduct)).thenReturn(List.of(existingRating));
-        when(ratingService.submitRating(existingRating)).thenReturn(Optional.of(existingRating));
+    // Mock the order service to simulate that the user has ordered and received the product
+    when(orderService.findAllOrdersIncludingProduct(mockProduct)).thenReturn(List.of(mockOrder));
 
-        mockMvc.perform(post("/rating/submit")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk());
-    }
+    // Mock the rating submission
+    Rating newRating = new Rating(mockProduct, mockUser, ratingValue);
+    newRating.setId(10L);
+    when(ratingService.submitRating(any(Rating.class))).thenAnswer(invocation -> {
+        Rating submittedRating = invocation.getArgument(0);
+        submittedRating.setId(10L); // Simulate the rating being saved with an ID
+        return Optional.of(submittedRating);
+    });
+
+    // Perform the POST request and verify the response
+    mockMvc.perform(post("/rating/submit")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isOk());
+}
 
     @Test
     @WithMockUser(roles = "CUSTOMER")

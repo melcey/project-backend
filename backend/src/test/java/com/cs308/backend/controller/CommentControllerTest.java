@@ -6,10 +6,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.cs308.backend.dao.Category;
 import com.cs308.backend.dao.Comment;
+import com.cs308.backend.dao.Order;
+import com.cs308.backend.dao.OrderStatus;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
@@ -106,6 +111,39 @@ public class CommentControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(commentRequest)))
                 .andExpect(status().isForbidden());
+    }
+    
+    @Test
+    @WithMockUser(roles = "CUSTOMER")
+    public void testSubmitComment_Authenticated() throws Exception {
+        CommentRequest commentRequest = new CommentRequest(mockProduct.getId(), "Test comment");
+
+        // Mock the product retrieval
+        when(productService.findProductById(mockProduct.getId())).thenReturn(Optional.of(mockProduct));
+
+        // Create a mock order with the required fields
+        Order mockOrder = new Order(
+            mockUser,
+            OrderStatus.delivered,
+            BigDecimal.valueOf(100.00), // Example total price
+            "123 Test Address", // Example delivery address
+            new ArrayList<>() // Empty order items list
+        );
+
+        // Mock the order service to simulate that the user has ordered and received the product
+        when(orderService.findAllOrdersIncludingProduct(mockProduct)).thenReturn(List.of(mockOrder));
+
+        // Mock the comment submission
+        when(commentService.submitComment(any(Comment.class))).thenAnswer(invocation -> {
+            Comment submittedComment = invocation.getArgument(0);
+            submittedComment.setId(1L); // Simulate the comment being saved with an ID
+            return Optional.of(submittedComment);
+        });
+
+        mockMvc.perform(post("/comment/submit")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(commentRequest)))
+                .andExpect(status().isOk());
     }
 
     @Test

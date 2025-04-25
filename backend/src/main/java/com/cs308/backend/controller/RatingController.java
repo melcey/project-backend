@@ -63,21 +63,10 @@ public class RatingController {
 
         Product product = productOpt.get();
 
-        List<Order> ordersWithProduct = orderService.findAllOrdersIncludingProduct(product);
+        boolean hasOrderedAndDelivered = orderService.findAllOrdersIncludingProduct(product).stream()
+            .anyMatch(order -> order.getUser().equals(user) && order.getStatus().equals(OrderStatus.delivered));
 
-        if (ordersWithProduct.size() == 0) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The customer did not order this product.");
-        }
-
-        int orderedAndDeliveredCount = 0;
-
-        for (Order orderWithProduct: ordersWithProduct) {
-            if ((orderWithProduct.getUser().equals(user)) && (orderWithProduct.getStatus().equals(OrderStatus.delivered))) {
-                orderedAndDeliveredCount += 1;
-            }
-        }
-
-        if (orderedAndDeliveredCount == 0) {
+        if (!hasOrderedAndDelivered) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The customer did not order this product.");
         }
 

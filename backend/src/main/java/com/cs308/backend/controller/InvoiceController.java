@@ -58,15 +58,10 @@ public class InvoiceController {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invoice does not belong to the user");
         }
         else if (user.getRole().equals(Role.product_manager)) {
-                int managedCount = 0;
+                boolean hasManagedProducts = invoice.getPayment().getOrder().getOrderItems().stream()
+                        .anyMatch(orderItem -> orderItem.getProduct().getProductManager().equals(user));
 
-                for (OrderItem orderedItem: invoice.getPayment().getOrder().getOrderItems()) {
-                        if (orderedItem.getProduct().getProductManager().equals(user)) {
-                                managedCount += 1;
-                        }
-                }
-
-                if (managedCount == 0) {
+                if (!hasManagedProducts) {
                         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No products in the associated order belong to the product manager");
                 }
         }
@@ -112,15 +107,10 @@ public class InvoiceController {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invoice does not belong to the user");
         }
         else if (user.getRole().equals(Role.product_manager)) {
-                int managedCount = 0;
+                boolean hasManagedProducts = invoice.getPayment().getOrder().getOrderItems().stream()
+                        .anyMatch(orderItem -> orderItem.getProduct().getProductManager().equals(user));
 
-                for (OrderItem orderedItem: invoice.getPayment().getOrder().getOrderItems()) {
-                        if (orderedItem.getProduct().getProductManager().equals(user)) {
-                                managedCount += 1;
-                        }
-                }
-
-                if (managedCount == 0) {
+                if (!hasManagedProducts) {
                         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No products in the associated order belong to the product manager");
                 }
         }

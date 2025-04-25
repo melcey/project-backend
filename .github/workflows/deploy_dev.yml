@@ -32,7 +32,6 @@ jobs:
         with:
           token: ${{ secrets.TC_CLOUD_TOKEN }}
       
-      # Disabled until the tests are fixed
       - name: Run JUnit tests
         run: cd backend && ./mvnw test
 
