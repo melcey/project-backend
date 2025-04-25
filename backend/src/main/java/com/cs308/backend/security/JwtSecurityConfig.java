@@ -57,6 +57,9 @@ public class JwtSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationProvider authenticationProvider)
             throws Exception {
         http
+                // Enable CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
                 // Disable CSRF as we're using JWT
                 .csrf(csrf -> csrf.disable())
 
@@ -99,7 +102,7 @@ public class JwtSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://frontend:3000", "http://frontend:3001"));
+        config.setAllowedOrigins(List.of("http://frontend:3000"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
