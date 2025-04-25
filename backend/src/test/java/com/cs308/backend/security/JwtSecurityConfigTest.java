@@ -85,7 +85,8 @@ public class JwtSecurityConfigTest {
         HttpSecurity httpSecurity = mock(HttpSecurity.class);
 
         // Mock chained method calls
-        when(httpSecurity.csrf(any())).thenReturn(httpSecurity);
+        when(httpSecurity.cors(any())).thenReturn(httpSecurity); // Mock cors()
+        when(httpSecurity.csrf(any())).thenReturn(httpSecurity); // Mock csrf()
         when(httpSecurity.sessionManagement(any())).thenReturn(httpSecurity);
         when(httpSecurity.authorizeHttpRequests(any())).thenReturn(httpSecurity);
         when(httpSecurity.authenticationProvider(any())).thenReturn(httpSecurity);
