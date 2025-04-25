@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.cs308.backend.dao.Comment;
 import com.cs308.backend.dao.Order;
+import com.cs308.backend.dao.OrderStatus;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
@@ -68,6 +69,18 @@ public class CommentController {
         List<Order> ordersWithProduct = orderService.findAllOrdersIncludingProduct(retrievedProduct);
 
         if (ordersWithProduct.size() == 0) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The customer did not order this product.");
+        }
+
+        int orderedAndDeliveredCount = 0;
+
+        for (Order orderWithProduct: ordersWithProduct) {
+            if ((orderWithProduct.getUser().equals(user)) && (orderWithProduct.getStatus().equals(OrderStatus.delivered))) {
+                orderedAndDeliveredCount += 1;
+            }
+        }
+
+        if (orderedAndDeliveredCount == 0) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The customer did not order this product.");
         }
 

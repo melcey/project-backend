@@ -23,13 +23,13 @@ class OrderResponseTest {
         items.add(new OrderItemResponse(1L, 1L, product, 2, BigDecimal.valueOf(100.00)));
 
         LocalDateTime orderDate = LocalDateTime.of(2025, 4, 19, 12, 0);
-        OrderResponse response = new OrderResponse(1L, 2L, orderDate, OrderStatus.pending,
+        OrderResponse response = new OrderResponse(1L, 2L, orderDate, OrderStatus.processing,
                 BigDecimal.valueOf(500.00), "123 Street", items);
 
         assertEquals(1L, response.getId());
         assertEquals(2L, response.getUserId());
         assertEquals(orderDate, response.getOrderDate());
-        assertEquals(OrderStatus.pending, response.getStatus());
+        assertEquals(OrderStatus.processing, response.getStatus());
         assertEquals(BigDecimal.valueOf(500.00), response.getTotalPrice());
         assertEquals("123 Street", response.getDeliveryAddress());
         assertEquals(items, response.getOrderItems());
@@ -42,7 +42,7 @@ class OrderResponseTest {
         response.setId(1L);
         response.setUserId(2L);
         response.setOrderDate(LocalDateTime.now());
-        response.setStatus(OrderStatus.pending);
+        response.setStatus(OrderStatus.processing);
         response.setTotalPrice(BigDecimal.valueOf(500.00));
         response.setDeliveryAddress("123 Street");
         response.setOrderItems(items);
@@ -50,7 +50,7 @@ class OrderResponseTest {
         assertEquals(1L, response.getId());
         assertEquals(2L, response.getUserId());
         assertNotNull(response.getOrderDate());
-        assertEquals(OrderStatus.pending, response.getStatus());
+        assertEquals(OrderStatus.processing, response.getStatus());
         assertEquals(BigDecimal.valueOf(500.00), response.getTotalPrice());
         assertEquals("123 Street", response.getDeliveryAddress());
         assertEquals(items, response.getOrderItems());
@@ -66,10 +66,10 @@ class OrderResponseTest {
         items.add(new OrderItemResponse(1L, 1L, product, 2, BigDecimal.valueOf(100.00)));
 
         LocalDateTime orderDate = LocalDateTime.of(2025, 4, 19, 12, 0);
-        OrderResponse response = new OrderResponse(1L, 2L, orderDate, OrderStatus.pending,
+        OrderResponse response = new OrderResponse(1L, 2L, orderDate, OrderStatus.processing,
                 BigDecimal.valueOf(500.00), "123 Street", items);
 
-        String expected = "OrderResponse [id=1, userId=2, orderDate=2025-04-19T12:00, status=pending, totalPrice=500.0, deliveryAddress=123 Street, orderItems=[OrderItemResponse [id=1, orderId=1, product=ProductResponse [id=1, name=Laptop, model=Model X, serialNumber=12345, description=High-end laptop, quantityInStock=10, price=1200.0, warrantyStatus=1 year, distributorInfo=Distributor Inc., isActive=true, imageUrl=image.jpg, category=CategoryResponse [id=1, name=Electronics, description=Devices and gadgets]], quantity=2, price=100.0]]]";
+        String expected = "OrderResponse [id=1, userId=2, orderDate=2025-04-19T12:00, status=processing, totalPrice=500.0, deliveryAddress=123 Street, orderItems=[OrderItemResponse [id=1, orderId=1, product=ProductResponse [id=1, name=Laptop, model=Model X, serialNumber=12345, description=High-end laptop, quantityInStock=10, price=1200.0, warrantyStatus=1 year, distributorInfo=Distributor Inc., isActive=true, imageUrl=image.jpg, category=CategoryResponse [id=1, name=Electronics, description=Devices and gadgets]], quantity=2, price=100.0]]]";
 
         assertEquals(expected, response.toString());
     }

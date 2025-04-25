@@ -4,11 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum OrderStatus {
-    pending("pending"),
     processing("processing"),
-    shipped("shipped"),
-    delivered("delivered"),
-    cancelled("cancelled");
+    intransit("in-transit"),
+    delivered("delivered");
 
     private final String value;
 

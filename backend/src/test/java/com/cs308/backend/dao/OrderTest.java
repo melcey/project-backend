@@ -14,10 +14,10 @@ class OrderTest {
     @Test
     void testOrderCreation() {
         User user = new User();
-        Order order = new Order(user, OrderStatus.pending, BigDecimal.valueOf(500.00), "456 Avenue", new ArrayList<>());
+        Order order = new Order(user, OrderStatus.processing, BigDecimal.valueOf(500.00), "456 Avenue", new ArrayList<>());
 
         assertEquals(user, order.getUser());
-        assertEquals(OrderStatus.pending, order.getStatus());
+        assertEquals(OrderStatus.processing, order.getStatus());
         assertEquals(BigDecimal.valueOf(500.00), order.getTotalPrice());
         assertEquals("456 Avenue", order.getDeliveryAddress());
         assertNotNull(order.getOrderDate());
@@ -31,14 +31,14 @@ class OrderTest {
 
         order.setId(1L);
         order.setUser(user);
-        order.setStatus(OrderStatus.pending);
+        order.setStatus(OrderStatus.processing);
         order.setTotalPrice(BigDecimal.valueOf(500.00));
         order.setDeliveryAddress("456 Avenue");
         order.setOrderItems(items);
 
         assertEquals(1L, order.getId());
         assertEquals(user, order.getUser());
-        assertEquals(OrderStatus.pending, order.getStatus());
+        assertEquals(OrderStatus.processing, order.getStatus());
         assertEquals(BigDecimal.valueOf(500.00), order.getTotalPrice());
         assertEquals("456 Avenue", order.getDeliveryAddress());
         assertEquals(items, order.getOrderItems());
@@ -50,10 +50,10 @@ class OrderTest {
         user.setName("John Doe");
         user.setRole(Role.customer);
         LocalDateTime orderDate = LocalDateTime.of(2025, 4, 19, 12, 0);
-        Order order = new Order(user, OrderStatus.pending, BigDecimal.valueOf(500.00), "456 Avenue", new ArrayList<>());
+        Order order = new Order(user, OrderStatus.processing, BigDecimal.valueOf(500.00), "456 Avenue", new ArrayList<>());
         order.setOrderDate(orderDate);
 
-        String expected = "Order [id=null, user=User [id=null, name=John Doe, address=null, role=customer], orderDate=2025-04-19T12:00, status=pending, totalPrice=500.0, deliveryAddress=456 Avenue, orderItems=[]]";
+        String expected = "Order [id=null, user=User [id=null, name=John Doe, address=null, role=customer], orderDate=2025-04-19T12:00, status=processing, totalPrice=500.0, deliveryAddress=456 Avenue, orderItems=[]]";
         assertEquals(expected, order.toString());
     }
 
@@ -63,8 +63,8 @@ class OrderTest {
         User user1 = new User();
         User user2 = new User();
 
-        Order order1 = new Order(user1, OrderStatus.pending, BigDecimal.valueOf(500.00), "456 Avenue", new ArrayList<>());
-        Order order2 = new Order(user1, OrderStatus.pending, BigDecimal.valueOf(500.00), "456 Avenue", new ArrayList<>());
+        Order order1 = new Order(user1, OrderStatus.processing, BigDecimal.valueOf(500.00), "456 Avenue", new ArrayList<>());
+        Order order2 = new Order(user1, OrderStatus.processing, BigDecimal.valueOf(500.00), "456 Avenue", new ArrayList<>());
         Order order3 = new Order(user2, OrderStatus.delivered, BigDecimal.valueOf(1000.00), "789 Street", new ArrayList<>());
         Order orderNull = new Order();
 

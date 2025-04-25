@@ -251,7 +251,8 @@ public class OrderController {
         return ResponseEntity.ok(new OrderResponse(updatedOrder.get().getId(), user.getId(), updatedOrder.get().getOrderDate(), updatedOrder.get().getStatus(), updatedOrder.get().getTotalPrice(), updatedOrder.get().getDeliveryAddress(), responseItems));
     }
 
-    @DeleteMapping("/customer/{id}")
+    // To be unused right now
+    /*@DeleteMapping("/customer/{id}")
     public ResponseEntity<?> deleteOrder(@PathVariable Long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if ((auth == null) || (!(auth.isAuthenticated()))) {
@@ -291,5 +292,5 @@ public class OrderController {
         }
 
         return ResponseEntity.ok(new OrderResponse(deletedOrder.get().getId(), user.getId(), deletedOrder.get().getOrderDate(), deletedOrder.get().getStatus(), deletedOrder.get().getTotalPrice(), deletedOrder.get().getDeliveryAddress(), responseItems));
-    }
+    }*/
 }

@@ -59,7 +59,7 @@ public class OrderServiceTest {
         testOrder = new Order();
         testOrder.setId(1L);
         testOrder.setUser(testUser);
-        testOrder.setStatus(OrderStatus.pending);
+        testOrder.setStatus(OrderStatus.processing);
         testOrder.setOrderItems(List.of(testOrderItem));
     }
 
@@ -78,10 +78,10 @@ public class OrderServiceTest {
     void testUpdateOrderStatus() {
         when(orderRepository.save(testOrder)).thenReturn(testOrder);
 
-        Optional<Order> updatedOrder = orderService.updateOrderStatus(testOrder, "shipped");
+        Optional<Order> updatedOrder = orderService.updateOrderStatus(testOrder, "delivered");
 
         assertThat(updatedOrder).isPresent();
-        assertThat(updatedOrder.get().getStatus()).isEqualTo(OrderStatus.shipped);
+        assertThat(updatedOrder.get().getStatus()).isEqualTo(OrderStatus.delivered);
         verify(orderRepository, times(1)).save(testOrder);
     }
 

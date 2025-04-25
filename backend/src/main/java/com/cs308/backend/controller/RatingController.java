@@ -1,5 +1,6 @@
 package com.cs308.backend.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cs308.backend.dao.Order;
+import com.cs308.backend.dao.OrderStatus;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Rating;
 import com.cs308.backend.dao.Role;
@@ -21,6 +24,7 @@ import com.cs308.backend.dto.ProductResponse;
 import com.cs308.backend.dto.RatingResponse;
 import com.cs308.backend.dto.SubmitRatingRequest;
 import com.cs308.backend.security.UserPrincipal;
+import com.cs308.backend.service.OrderService;
 import com.cs308.backend.service.ProductService;
 import com.cs308.backend.service.RatingService;
 
@@ -30,10 +34,12 @@ public class RatingController {
 
     private final RatingService ratingService;
     private final ProductService productService;
+    private final OrderService orderService;
 
-    public RatingController(RatingService ratingService, ProductService productService) {
+    public RatingController(RatingService ratingService, ProductService productService, OrderService orderService) {
         this.ratingService = ratingService;
         this.productService = productService;
+        this.orderService = orderService;
     }
 
     @PostMapping("/submit")
@@ -56,6 +62,24 @@ public class RatingController {
         }
 
         Product product = productOpt.get();
+
+        List<Order> ordersWithProduct = orderService.findAllOrdersIncludingProduct(product);
+
+        if (ordersWithProduct.size() == 0) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The customer did not order this product.");
+        }
+
+        int orderedAndDeliveredCount = 0;
+
+        for (Order orderWithProduct: ordersWithProduct) {
+            if ((orderWithProduct.getUser().equals(user)) && (orderWithProduct.getStatus().equals(OrderStatus.delivered))) {
+                orderedAndDeliveredCount += 1;
+            }
+        }
+
+        if (orderedAndDeliveredCount == 0) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The customer did not order this product.");
+        }
 
         // Update rating if user has already rated this product
 

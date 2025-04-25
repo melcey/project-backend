@@ -9,11 +9,10 @@ import org.junit.jupiter.api.Test;
 class OrderStatusTest {
     @Test
     void testOrderStatusFromString() {
-        assertEquals(OrderStatus.pending, OrderStatus.fromString("pending"));
         assertEquals(OrderStatus.processing, OrderStatus.fromString("processing"));
-        assertEquals(OrderStatus.shipped, OrderStatus.fromString("shipped"));
+        assertEquals(OrderStatus.processing, OrderStatus.fromString("processing"));
+        assertEquals(OrderStatus.intransit, OrderStatus.fromString("in-transit"));
         assertEquals(OrderStatus.delivered, OrderStatus.fromString("delivered"));
-        assertEquals(OrderStatus.cancelled, OrderStatus.fromString("cancelled"));
     }
 
     @Test
@@ -23,30 +22,29 @@ class OrderStatusTest {
 
     @Test
     void testOrderStatusToString() {
-        assertEquals("pending", OrderStatus.pending.toString());
         assertEquals("processing", OrderStatus.processing.toString());
-        assertEquals("shipped", OrderStatus.shipped.toString());
+        assertEquals("processing", OrderStatus.processing.toString());
+        assertEquals("in-transit", OrderStatus.intransit.toString());
         assertEquals("delivered", OrderStatus.delivered.toString());
-        assertEquals("cancelled", OrderStatus.cancelled.toString());
     }
 
     @Test
     void testHashCodeAndEquals() {
         // Test equality for the same enum value
-        assertEquals(OrderStatus.pending, OrderStatus.fromString("pending"));
-        assertEquals(OrderStatus.pending.hashCode(), OrderStatus.fromString("pending").hashCode());
+        assertEquals(OrderStatus.processing, OrderStatus.fromString("processing"));
+        assertEquals(OrderStatus.processing.hashCode(), OrderStatus.fromString("processing").hashCode());
 
         // Test inequality for different enum values
-        assertNotEquals(OrderStatus.pending, OrderStatus.delivered);
-        assertNotEquals(OrderStatus.pending.hashCode(), OrderStatus.delivered.hashCode());
+        assertNotEquals(OrderStatus.processing, OrderStatus.delivered);
+        assertNotEquals(OrderStatus.processing.hashCode(), OrderStatus.delivered.hashCode());
 
         // Test self-equality
         assertEquals(OrderStatus.processing, OrderStatus.processing);
 
         // Test inequality with null
-        assertNotEquals(OrderStatus.shipped, null);
+        assertNotEquals(OrderStatus.intransit, null);
 
         // Test inequality with an object of a different class
-        assertNotEquals(OrderStatus.cancelled, "cancelled");
+        assertNotEquals(OrderStatus.delivered, "delivered");
     }
 }
