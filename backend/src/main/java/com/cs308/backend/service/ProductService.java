@@ -32,45 +32,48 @@ public class ProductService {
 
     public List<Product> searchProducts(String name, String model, String serialNumber, String description, String distributorInfo, Boolean isActive, String warrantyStatus, BigDecimal minPrice, BigDecimal maxPrice, Integer minQuantity, Integer maxQuantity, List<Long> categoryIds) {
 
-        Set<Product> resultSet = new HashSet<>();
+        List<Product> resultSet = productRepository.findAll();
 
         if (name != null) {
-            resultSet.addAll(findProductsByName(name));
+            resultSet.retainAll(findProductsByName(name));
         }
         if (model != null) {
-            resultSet.addAll(findProductsByModel(model));
+            resultSet.retainAll(findProductsByModel(model));
         }
         if (serialNumber != null) {
-            resultSet.addAll(findProductsBySerialNumber(serialNumber));
+            resultSet.retainAll(findProductsBySerialNumber(serialNumber));
         }
         if (description != null) {
-            resultSet.addAll(findProductsByDescriptionContains(description));
+            resultSet.retainAll(findProductsByDescriptionContains(description));
         }
         if (distributorInfo != null) {
-            resultSet.addAll(findProductsByDistributorInfo(distributorInfo));
+            resultSet.retainAll(findProductsByDistributorInfo(distributorInfo));
         }
         if (isActive != null) {
-            resultSet.addAll(findProductsByIsActive(isActive));
+            resultSet.retainAll(findProductsByIsActive(isActive));
         }
         if (warrantyStatus != null) {
-            resultSet.addAll(findProductsByWarrantyStatus(warrantyStatus));
+            resultSet.retainAll(findProductsByWarrantyStatus(warrantyStatus));
         }
         if (minPrice != null) {
-            resultSet.addAll(findProductsByPriceGreaterThanEqual(minPrice));
+            resultSet.retainAll(findProductsByPriceGreaterThanEqual(minPrice));
         }
         if (maxPrice != null) {
-            resultSet.addAll(findProductsByPriceLessThanEqual(maxPrice));
+            resultSet.retainAll(findProductsByPriceLessThanEqual(maxPrice));
         }
         if (minQuantity != null) {
-            resultSet.addAll(findProductsByQuantityInStockGreaterThanEqual(minQuantity));
+            resultSet.retainAll(findProductsByQuantityInStockGreaterThanEqual(minQuantity));
         }
         if (maxQuantity != null) {
-            resultSet.addAll(findProductsByQuantityInStockLessThanEqual(maxQuantity));
+            resultSet.retainAll(findProductsByQuantityInStockLessThanEqual(maxQuantity));
         }
-        if ((categoryIds != null) && (!(categoryIds.isEmpty()))) {
-            for (Long categoryId: categoryIds) {
-                resultSet.addAll(findProductsByCategory(findCategoryById(categoryId).get()));
+        if ((categoryIds != null) && (!categoryIds.isEmpty())) {
+            Set<Product> categoryFilteredProducts = new HashSet<>();
+            for (Long categoryId : categoryIds) {
+                categoryFilteredProducts.addAll(findProductsByCategory(findCategoryById(categoryId).get()));
             }
+            
+            resultSet.retainAll(categoryFilteredProducts);
         }
         
         return new ArrayList<>(resultSet);
@@ -78,45 +81,48 @@ public class ProductService {
 
     public List<Product> searchManagedProducts(User productManager, String name, String model, String serialNumber, String description, String distributorInfo, Boolean isActive, String warrantyStatus, BigDecimal minPrice, BigDecimal maxPrice, Integer minQuantity, Integer maxQuantity, List<Long> categoryIds) {
 
-        Set<Product> resultSet = new HashSet<>();
+        List<Product> resultSet = productRepository.findByProductManagerId(productManager.getId());
 
         if (name != null) {
-            resultSet.addAll(findManagedProductsByName(name, productManager));
+            resultSet.retainAll(findManagedProductsByName(name, productManager));
         }
         if (model != null) {
-            resultSet.addAll(findManagedProductsByModel(model, productManager));
+            resultSet.retainAll(findManagedProductsByModel(model, productManager));
         }
         if (serialNumber != null) {
-            resultSet.addAll(findManagedProductsBySerialNumber(serialNumber, productManager));
+            resultSet.retainAll(findManagedProductsBySerialNumber(serialNumber, productManager));
         }
         if (description != null) {
-            resultSet.addAll(findManagedProductsByDescriptionContains(description, productManager));
+            resultSet.retainAll(findManagedProductsByDescriptionContains(description, productManager));
         }
         if (distributorInfo != null) {
-            resultSet.addAll(findManagedProductsByDistributorInfo(distributorInfo, productManager));
+            resultSet.retainAll(findManagedProductsByDistributorInfo(distributorInfo, productManager));
         }
         if (isActive != null) {
-            resultSet.addAll(findManagedProductsByIsActive(isActive, productManager));
+            resultSet.retainAll(findManagedProductsByIsActive(isActive, productManager));
         }
         if (warrantyStatus != null) {
-            resultSet.addAll(findManagedProductsByWarrantyStatus(warrantyStatus, productManager));
+            resultSet.retainAll(findManagedProductsByWarrantyStatus(warrantyStatus, productManager));
         }
         if (minPrice != null) {
-            resultSet.addAll(findManagedProductsByPriceGreaterThanEqual(minPrice, productManager));
+            resultSet.retainAll(findManagedProductsByPriceGreaterThanEqual(minPrice, productManager));
         }
         if (maxPrice != null) {
-            resultSet.addAll(findManagedProductsByPriceLessThanEqual(maxPrice, productManager));
+            resultSet.retainAll(findManagedProductsByPriceLessThanEqual(maxPrice, productManager));
         }
         if (minQuantity != null) {
-            resultSet.addAll(findManagedProductsByQuantityInStockGreaterThanEqual(minQuantity, productManager));
+            resultSet.retainAll(findManagedProductsByQuantityInStockGreaterThanEqual(minQuantity, productManager));
         }
         if (maxQuantity != null) {
-            resultSet.addAll(findManagedProductsByQuantityInStockLessThanEqual(maxQuantity, productManager));
+            resultSet.retainAll(findManagedProductsByQuantityInStockLessThanEqual(maxQuantity, productManager));
         }
         if ((categoryIds != null) && (!(categoryIds.isEmpty()))) {
+            Set<Product> categoryFilteredProducts = new HashSet<>();
             for (Long categoryId: categoryIds) {
-                resultSet.addAll(findManagedProductsByCategory(findCategoryById(categoryId).get(), productManager));
+                categoryFilteredProducts.addAll(findManagedProductsByCategory(findCategoryById(categoryId).get(), productManager));
             }
+
+            resultSet.retainAll(categoryFilteredProducts);
         }
         
         return new ArrayList<>(resultSet);
