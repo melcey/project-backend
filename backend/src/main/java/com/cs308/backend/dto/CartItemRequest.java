@@ -1,12 +1,12 @@
 package com.cs308.backend.dto;
 
-public class AddAnonCartItemRequest {
+public class CartItemRequest {
     private Long productId;
     private int quantity;
 
-    public AddAnonCartItemRequest() {}
+    public CartItemRequest() {}
 
-    public AddAnonCartItemRequest(Long productId, int quantity) {
+    public CartItemRequest(Long productId, int quantity) {
         this.productId = productId;
         this.quantity = quantity;
     }
@@ -30,7 +30,7 @@ public class AddAnonCartItemRequest {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("AddAnonCartItemRequest [productId=").append(productId)
+        builder.append("AddCartItemRequest [productId=").append(productId)
             .append(", quantity=").append(quantity)
             .append("]");
 
@@ -54,7 +54,7 @@ public class AddAnonCartItemRequest {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        AddAnonCartItemRequest other = (AddAnonCartItemRequest) obj;
+        CartItemRequest other = (CartItemRequest) obj;
         if (productId == null) {
             if (other.productId != null)
                 return false;
