@@ -1,6 +1,7 @@
 package com.cs308.backend.service;
 
 import com.cs308.backend.dao.Invoice;
+import com.cs308.backend.dao.Order;
 import com.cs308.backend.dao.Payment;
 import com.cs308.backend.dao.OrderItem;
 import com.cs308.backend.repo.InvoiceRepository;
@@ -57,8 +58,11 @@ public class InvoiceService {
     }
 
     public Optional<Invoice> findByInvoiceNumber(String invoiceNumber) {
-        // Replace this with the actual logic to find an invoice by its number
-        return Optional.empty();
+        return invoiceRepository.findByInvoiceNumber(invoiceNumber);
+    }
+
+    public Optional<Invoice> findByOrder(Order order) {
+        return invoiceRepository.findByOrder(order);
     }
 
     private byte[] generatePDF(Invoice invoice) {

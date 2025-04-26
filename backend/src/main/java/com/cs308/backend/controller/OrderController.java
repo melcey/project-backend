@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cs308.backend.dao.Invoice;
 import com.cs308.backend.dao.Order;
 import com.cs308.backend.dao.OrderItem;
 import com.cs308.backend.dao.OrderStatus;
@@ -27,12 +28,14 @@ import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
 import com.cs308.backend.dto.CategoryResponse;
 import com.cs308.backend.dto.CreateOrderRequest;
+import com.cs308.backend.dto.InvoiceResponse;
 import com.cs308.backend.dto.OrderItemRequest;
 import com.cs308.backend.dto.OrderItemResponse;
 import com.cs308.backend.dto.OrderResponse;
 import com.cs308.backend.dto.ProductResponse;
 import com.cs308.backend.dto.UpdateOrderStateRequest;
 import com.cs308.backend.security.UserPrincipal;
+import com.cs308.backend.service.InvoiceService;
 import com.cs308.backend.service.OrderService;
 import com.cs308.backend.service.ProductService;
 
@@ -42,10 +45,12 @@ import com.cs308.backend.service.ProductService;
 public class OrderController {
     private final OrderService orderService;
     private final ProductService productService;
+    private final InvoiceService invoiceService;
 
-    public OrderController(OrderService orderService, ProductService productService) {
+    public OrderController(OrderService orderService, ProductService productService, InvoiceService invoiceService) {
         this.orderService = orderService;
         this.productService = productService;
+        this.invoiceService = invoiceService;
     }
 
     @GetMapping("/customer")
@@ -111,6 +116,42 @@ public class OrderController {
         }
 
         return ResponseEntity.ok(new OrderResponse(retrievedOrder.get().getId(), user.getId(), retrievedOrder.get().getOrderDate(), retrievedOrder.get().getStatus(), retrievedOrder.get().getTotalPrice(), retrievedOrder.get().getDeliveryAddress(), orderItems));
+    }
+
+    @GetMapping("/customer/{id}/invoice")
+    public ResponseEntity<?> getInvoiceForOrderByUser(@PathVariable Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ((auth == null) || (!(auth.isAuthenticated()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
+
+        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
+            
+        User user = userDetails.getUser();
+
+        if (user.getRole() != Role.customer) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
+        }
+
+        Optional<Order> retrievedOrder = orderService.findOrder(id);
+
+        if (!(retrievedOrder.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order could not be found");
+        }
+
+        if (!(user.equals(retrievedOrder.get().getUser()))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Order does not belong to the user");
+        }
+
+        Optional<Invoice> retrievedInvoice = invoiceService.findByOrder(retrievedOrder.get());
+
+        if (!(retrievedInvoice.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoice could not be found");
+        }
+
+        Invoice invoice = retrievedInvoice.get();
+
+        return ResponseEntity.ok(new InvoiceResponse(invoice.getId(), invoice.getInvoiceNumber(), invoice.getOrder().getId(), invoice.getPayment().getId(), invoice.getInvoiceDate(), invoice.getTotalAmount()));
     }
     
     @PostMapping("/customer")
@@ -207,6 +248,45 @@ public class OrderController {
         }
 
         return ResponseEntity.ok(new OrderResponse(retrievedOrder.get().getId(), user.getId(), retrievedOrder.get().getOrderDate(), retrievedOrder.get().getStatus(), retrievedOrder.get().getTotalPrice(), retrievedOrder.get().getDeliveryAddress(), responseItems));
+    }
+
+    @GetMapping("/manager/{id}/invoice")
+    public ResponseEntity<?> getInvoiceForOrderForProductManager(@PathVariable Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ((auth == null) || (!(auth.isAuthenticated()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
+
+        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
+            
+        User user = userDetails.getUser();
+
+        if (user.getRole() != Role.product_manager) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
+        }
+
+        Optional<Order> retrievedOrder = orderService.findOrder(id);
+
+        if (!(retrievedOrder.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order could not be found");
+        }
+
+        boolean hasManagedProducts = retrievedOrder.get().getOrderItems().stream()
+            .anyMatch(orderItem -> orderItem.getProduct().getProductManager().equals(user));
+
+        if (!hasManagedProducts) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No products in the associated order belong to the product manager");
+        }
+
+        Optional<Invoice> retrievedInvoice = invoiceService.findByOrder(retrievedOrder.get());
+
+        if (!(retrievedInvoice.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoice could not be found");
+        }
+
+        Invoice invoice = retrievedInvoice.get();
+
+        return ResponseEntity.ok(new InvoiceResponse(invoice.getId(), invoice.getInvoiceNumber(), invoice.getOrder().getId(), invoice.getPayment().getId(), invoice.getInvoiceDate(), invoice.getTotalAmount()));
     }
     
     // One of "pending", in-transit", "delivered"
