@@ -168,17 +168,21 @@ public class CartServiceTest {
     public void testAddItemToCart_CartNotFound() {
         // Mock data
         User user = new User("John Doe", "123 Main St", Role.customer);
+        Cart newCart = new Cart(user);
 
         when(cartRepository.findByUser(user)).thenReturn(Optional.empty());
+        when(cartRepository.save(any(Cart.class))).thenReturn(newCart);
 
         // Call the service method
         Optional<Cart> updatedCart = cartService.addItemToCart(user, 1L, 2);
 
         // Assert
-        assertTrue(updatedCart.isEmpty());
+        assertTrue(updatedCart.isPresent());
+        assertEquals(user, updatedCart.get().getUser());
+        assertEquals(0, updatedCart.get().getItems().size());
 
         verify(cartRepository, times(1)).findByUser(user);
+        verify(cartRepository, times(1)).save(any(Cart.class));
         verify(productRepository, never()).findById(anyLong());
-        verify(cartRepository, never()).save(any(Cart.class));
     }
 }

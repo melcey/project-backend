@@ -130,16 +130,19 @@ public class AnonCartServiceTest {
     @Test
     public void testAddItemToAnonCart_CartNotFound() {
         // Mock the repository
+        AnonCart newAnonCart = new AnonCart();
         when(anonCartRepository.findById(1L)).thenReturn(Optional.empty());
+        when(anonCartRepository.save(any(AnonCart.class))).thenReturn(newAnonCart);
 
         // Call the service method
         Optional<AnonCart> updatedCart = anonCartService.addItemToAnonCart(1L, 1L, 2);
 
         // Assert the result
-        assertTrue(updatedCart.isEmpty());
+        assertTrue(updatedCart.isPresent());
+        assertEquals(0, updatedCart.get().getItems().size());
 
         verify(anonCartRepository, times(1)).findById(1L);
+        verify(anonCartRepository, times(1)).save(any(AnonCart.class));
         verify(productService, never()).findProductById(anyLong());
-        verify(anonCartRepository, never()).save(any(AnonCart.class));
     }
 }

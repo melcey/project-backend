@@ -43,7 +43,10 @@ public class AnonCartService {
         Optional<AnonCart> anonCart = anonCartRepository.findById(anonCartId);
 
         if (!(anonCart.isPresent())) {
-            return Optional.empty();
+            AnonCart newAnonCart = new AnonCart();
+            newAnonCart = anonCartRepository.save(newAnonCart);
+
+            return Optional.of(newAnonCart);
         }
 
         AnonCart foundAnonCart = anonCart.get();
@@ -87,6 +90,73 @@ public class AnonCartService {
             return Optional.of(updatedAnonCart);
         }
         catch (Exception e) {
+            return Optional.of(oldAnonCart);
+        }
+    }
+
+    public Optional<AnonCart> deleteItemFromAnonCart(Long anonCartId, Long productId, int quantity) {
+        Optional<AnonCart> anonCart = anonCartRepository.findById(anonCartId);
+
+        if (!(anonCart.isPresent())) {
+            AnonCart newAnonCart = new AnonCart();
+            newAnonCart = anonCartRepository.save(newAnonCart);
+
+            return Optional.of(newAnonCart);
+        }
+
+        AnonCart foundAnonCart = anonCart.get();
+
+        if (foundAnonCart.getItems() == null) {
+            foundAnonCart.setItems(new ArrayList<>());
+        }
+
+        Optional<Product> product = productService.findProductById(productId);
+
+        if (!(product.isPresent())) {
+            return anonCart;
+        }
+
+        Product foundProduct = product.get();
+
+        AnonCart oldAnonCart = foundAnonCart.clone();
+
+        AnonCartItem anonCartItem = anonCart.get().getItems().stream()
+            .filter(item -> item.getProduct().getId().equals(productId))
+            .findFirst()
+            .orElse(new AnonCartItem());
+
+        if (quantity == anonCartItem.getQuantity()) {
+            foundAnonCart.getItems().remove(anonCartItem);
+
+            try {
+                AnonCart updatedAnonCart = anonCartRepository.save(foundAnonCart);
+                return Optional.of(updatedAnonCart);
+            }
+            catch (Exception e) {
+                return Optional.of(oldAnonCart);
+            }
+        }
+        else if (quantity < anonCartItem.getQuantity()) {
+            anonCartItem.setCart(foundAnonCart);
+            anonCartItem.setProduct(foundProduct);
+            anonCartItem.setQuantity(anonCartItem.getQuantity() - quantity);
+            anonCartItem.setPriceAtAddition(foundProduct.getPrice());
+
+            foundAnonCart.getItems().add(anonCartItem);
+            foundAnonCart.setTotalPrice(foundAnonCart.getItems().stream()
+                .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+            foundAnonCart.setUpdatedAt(LocalDateTime.now());
+
+            try {
+                AnonCart updatedAnonCart = anonCartRepository.save(foundAnonCart);
+                return Optional.of(updatedAnonCart);
+            }
+            catch (Exception e) {
+                return Optional.of(oldAnonCart);
+            }
+        }
+        else {
             return Optional.of(oldAnonCart);
         }
     }
