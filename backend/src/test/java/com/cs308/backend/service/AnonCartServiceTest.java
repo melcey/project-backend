@@ -129,20 +129,43 @@ public class AnonCartServiceTest {
 
     @Test
     public void testAddItemToAnonCart_CartNotFound() {
-        // Mock the repository
+        // Mock the repository and product service
         AnonCart newAnonCart = new AnonCart();
+        newAnonCart.setItems(new ArrayList<>()); // Ensure items list is initialized
+
+        Product mockProduct = new Product();
+        mockProduct.setId(1L);
+        mockProduct.setPrice(new BigDecimal("50.00"));
+        mockProduct.setQuantityInStock(10);
+
+        // Add the item to the mock cart
+        AnonCartItem mockItem = new AnonCartItem();
+        mockItem.setCart(newAnonCart);
+        mockItem.setProduct(mockProduct);
+        mockItem.setQuantity(2);
+        mockItem.setPriceAtAddition(mockProduct.getPrice());
+        newAnonCart.getItems().add(mockItem);
+        newAnonCart.setTotalPrice(mockProduct.getPrice().multiply(BigDecimal.valueOf(2)));
+
         when(anonCartRepository.findById(1L)).thenReturn(Optional.empty());
         when(anonCartRepository.save(any(AnonCart.class))).thenReturn(newAnonCart);
+        when(productService.findProductById(1L)).thenReturn(Optional.of(mockProduct));
 
         // Call the service method
         Optional<AnonCart> updatedCart = anonCartService.addItemToAnonCart(1L, 1L, 2);
 
         // Assert the result
         assertTrue(updatedCart.isPresent());
-        assertEquals(0, updatedCart.get().getItems().size());
+        assertEquals(1, updatedCart.get().getItems().size());
+
+        AnonCartItem item = updatedCart.get().getItems().get(0);
+        assertEquals(1L, item.getProduct().getId());
+        assertEquals(2, item.getQuantity());
+        assertEquals(new BigDecimal("50.00"), item.getPriceAtAddition());
+        assertEquals(new BigDecimal("100.00"), updatedCart.get().getTotalPrice());
 
         verify(anonCartRepository, times(1)).findById(1L);
         verify(anonCartRepository, times(1)).save(any(AnonCart.class));
-        verify(productService, never()).findProductById(anyLong());
+        verify(productService, times(1)).findProductById(1L);
     }
 }

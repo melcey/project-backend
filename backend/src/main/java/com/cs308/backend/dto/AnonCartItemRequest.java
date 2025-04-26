@@ -30,7 +30,7 @@ public class AnonCartItemRequest {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("AddAnonCartItemRequest [productId=").append(productId)
+        builder.append("AnonCartItemRequest [productId=").append(productId)
             .append(", quantity=").append(quantity)
             .append("]");
 

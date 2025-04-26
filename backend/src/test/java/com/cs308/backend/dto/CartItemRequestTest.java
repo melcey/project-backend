@@ -28,7 +28,7 @@ class CartItemRequestTest {
     @Test
     void testToString() {
         CartItemRequest request = new CartItemRequest(3L, 7);
-        String expected = "AddCartItemRequest [productId=3, quantity=7]";
+        String expected = "CartItemRequest [productId=3, quantity=7]";
 
         assertEquals(expected, request.toString());
     }

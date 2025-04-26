@@ -3,8 +3,10 @@ package com.cs308.backend.service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
@@ -79,49 +81,86 @@ public class CartService {
 
         if (!(cart.isPresent())) {
             Cart newCart = new Cart(user);
-            newCart = cartRepository.save(newCart);
 
-            return Optional.of(newCart);
+            Optional<Product> product = productRepository.findById(productId);
+
+            if (!(product.isPresent())) {
+                Cart updatedCart = cartRepository.save(newCart);
+                return Optional.of(updatedCart);
+            }
+
+            Product foundProduct = product.get();
+
+            Cart oldCart = newCart.clone();
+
+            if (foundProduct.getQuantityInStock() == 0) {
+                return Optional.of(oldCart);
+            }
+
+            CartItem cartItem = new CartItem();
+
+            cartItem.setCart(newCart);
+            cartItem.setProduct(foundProduct);
+            cartItem.setQuantity(cartItem.getQuantity() + quantity);
+            cartItem.setPriceAtAddition(foundProduct.getPrice());
+            
+            newCart.getItems().add(cartItem);
+            newCart.setTotalPrice(foundProduct.getPrice().multiply(BigDecimal.valueOf(quantity)));
+            newCart.setUpdatedAt(LocalDateTime.now());
+
+            try {
+                Cart updatedCart = cartRepository.save(newCart);
+                return Optional.of(updatedCart);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                return Optional.of(oldCart);
+            }
         }
+        else {
+            Cart foundCart = cart.get();
 
-        Cart foundCart = cart.get();
+            Optional<Product> product = productRepository.findById(productId);
 
-        Optional<Product> product = productRepository.findById(productId);
+            if (!(product.isPresent())) {
+                return cart;
+            }
 
-        if (!(product.isPresent())) {
-            return cart;
-        }
+            Product foundProduct = product.get();
 
-        Product foundProduct = product.get();
+            Cart oldCart = foundCart.clone();
 
-        Cart oldCart = foundCart.clone();
+            if (foundProduct.getQuantityInStock() < quantity) {
+                return Optional.of(oldCart);
+            }
 
-        if (foundProduct.getQuantityInStock() == 0) {
-            return Optional.of(oldCart);
-        }
+            CartItem cartItem = cart.get().getItems().stream()
+                .filter(item -> item.getProduct().getId().equals(productId))
+                .findFirst()
+                .orElse(new CartItem());
 
-        CartItem cartItem = cart.get().getItems().stream()
-            .filter(item -> item.getProduct().getId().equals(productId))
-            .findFirst()
-            .orElse(new CartItem());
+            cartItem.setCart(foundCart);
+            cartItem.setProduct(foundProduct);
+            cartItem.setQuantity(cartItem.getQuantity() + quantity);
+            cartItem.setPriceAtAddition(foundProduct.getPrice());
+            
+            Set<CartItem> setOfCartItems = new LinkedHashSet<>(foundCart.getItems());
+            setOfCartItems.add(cartItem);
+            
+            foundCart.setItems(new ArrayList<>(setOfCartItems));
+            foundCart.setTotalPrice(foundCart.getItems().stream()
+                .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+            foundCart.setUpdatedAt(LocalDateTime.now());
 
-        cartItem.setCart(foundCart);
-        cartItem.setProduct(foundProduct);
-        cartItem.setQuantity(cartItem.getQuantity() + quantity);
-        cartItem.setPriceAtAddition(foundProduct.getPrice());
-
-        foundCart.getItems().add(cartItem);
-        foundCart.setTotalPrice(foundCart.getItems().stream()
-            .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
-            .reduce(BigDecimal.ZERO, BigDecimal::add));
-        foundCart.setUpdatedAt(LocalDateTime.now());
-
-        try {
-            Cart updatedCart = cartRepository.save(foundCart);
-            return Optional.of(updatedCart);
-        }
-        catch (Exception e) {
-            return Optional.of(oldCart);
+            try {
+                Cart updatedCart = cartRepository.save(foundCart);
+                return Optional.of(updatedCart);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                return Optional.of(oldCart);
+            }
         }
     }
 
@@ -153,7 +192,10 @@ public class CartService {
             .orElse(new CartItem());
 
         if (quantity == cartItem.getQuantity()) {
-            foundCart.getItems().remove(cartItem);
+            Set<CartItem> setOfCartItems = new LinkedHashSet<>(foundCart.getItems());
+            setOfCartItems.remove(cartItem);
+            
+            foundCart.setItems(new ArrayList<>(setOfCartItems));
 
             try {
                 Cart updatedCart = cartRepository.save(foundCart);
@@ -166,10 +208,13 @@ public class CartService {
         else if (quantity < cartItem.getQuantity()) {
             cartItem.setCart(foundCart);
             cartItem.setProduct(foundProduct);
-            cartItem.setQuantity(cartItem.getQuantity() + quantity);
+            cartItem.setQuantity(cartItem.getQuantity() - quantity);
             cartItem.setPriceAtAddition(foundProduct.getPrice());
 
-            foundCart.getItems().add(cartItem);
+            Set<CartItem> setOfCartItems = new LinkedHashSet<>(foundCart.getItems());
+            setOfCartItems.add(cartItem);
+            
+            foundCart.setItems(new ArrayList<>(setOfCartItems));
             foundCart.setTotalPrice(foundCart.getItems().stream()
                 .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add));

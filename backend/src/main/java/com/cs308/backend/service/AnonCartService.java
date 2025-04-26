@@ -3,7 +3,10 @@ package com.cs308.backend.service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
@@ -44,53 +47,88 @@ public class AnonCartService {
 
         if (!(anonCart.isPresent())) {
             AnonCart newAnonCart = new AnonCart();
-            newAnonCart = anonCartRepository.save(newAnonCart);
 
-            return Optional.of(newAnonCart);
+            Optional<Product> product = productService.findProductById(productId);
+
+            if (!(product.isPresent())) {
+                AnonCart updatedAnonCart = anonCartRepository.save(newAnonCart);
+                return Optional.of(updatedAnonCart);
+            }
+
+            Product foundProduct = product.get();
+
+            AnonCart oldAnonCart = newAnonCart.clone();
+
+            if (foundProduct.getQuantityInStock() == 0) {
+                return Optional.of(oldAnonCart);
+            }
+
+            AnonCartItem anonCartItem = new AnonCartItem();
+
+            anonCartItem.setCart(newAnonCart);
+            anonCartItem.setProduct(foundProduct);
+            anonCartItem.setQuantity(anonCartItem.getQuantity() + quantity);
+            anonCartItem.setPriceAtAddition(foundProduct.getPrice());
+            
+            newAnonCart.getItems().add(anonCartItem);
+            newAnonCart.setTotalPrice(foundProduct.getPrice().multiply(BigDecimal.valueOf(quantity)));
+            newAnonCart.setUpdatedAt(LocalDateTime.now());
+
+            try {
+                AnonCart updatedAnonCart = anonCartRepository.save(newAnonCart);
+                return Optional.of(updatedAnonCart);
+            }
+            catch (Exception e) {
+                return Optional.of(oldAnonCart);
+            }
         }
+        else {
+            AnonCart foundAnonCart = anonCart.get();
 
-        AnonCart foundAnonCart = anonCart.get();
+            if (foundAnonCart.getItems() == null) {
+                foundAnonCart.setItems(new ArrayList<>());
+            }
 
-        if (foundAnonCart.getItems() == null) {
-            foundAnonCart.setItems(new ArrayList<>());
-        }
+            Optional<Product> product = productService.findProductById(productId);
 
-        Optional<Product> product = productService.findProductById(productId);
+            if (!(product.isPresent())) {
+                return anonCart;
+            }
 
-        if (!(product.isPresent())) {
-            return anonCart;
-        }
+            Product foundProduct = product.get();
 
-        Product foundProduct = product.get();
+            AnonCart oldAnonCart = foundAnonCart.clone();
 
-        AnonCart oldAnonCart = foundAnonCart.clone();
+            if (foundProduct.getQuantityInStock() < quantity) {
+                return Optional.of(oldAnonCart);
+            }
 
-        if (foundProduct.getQuantityInStock() == 0) {
-            return Optional.of(oldAnonCart);
-        }
+            AnonCartItem anonCartItem = anonCart.get().getItems().stream()
+                .filter(item -> item.getProduct().getId().equals(productId))
+                .findFirst()
+                .orElse(new AnonCartItem());
 
-        AnonCartItem anonCartItem = anonCart.get().getItems().stream()
-            .filter(item -> item.getProduct().getId().equals(productId))
-            .findFirst()
-            .orElse(new AnonCartItem());
+            anonCartItem.setCart(foundAnonCart);
+            anonCartItem.setProduct(foundProduct);
+            anonCartItem.setQuantity(anonCartItem.getQuantity() + quantity);
+            anonCartItem.setPriceAtAddition(foundProduct.getPrice());
+            
+            Set<AnonCartItem> setOfAnonCartItems = new LinkedHashSet<>(foundAnonCart.getItems());
+            setOfAnonCartItems.add(anonCartItem);
 
-        anonCartItem.setCart(foundAnonCart);
-        anonCartItem.setProduct(foundProduct);
-        anonCartItem.setQuantity(anonCartItem.getQuantity() + quantity);
-        anonCartItem.setPriceAtAddition(foundProduct.getPrice());
+            foundAnonCart.setItems(new ArrayList<>(setOfAnonCartItems));
+            foundAnonCart.setTotalPrice(foundAnonCart.getItems().stream()
+                .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+            foundAnonCart.setUpdatedAt(LocalDateTime.now());
 
-        foundAnonCart.getItems().add(anonCartItem);
-        foundAnonCart.setTotalPrice(foundAnonCart.getItems().stream()
-            .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
-            .reduce(BigDecimal.ZERO, BigDecimal::add));
-        foundAnonCart.setUpdatedAt(LocalDateTime.now());
-
-        try {
-            AnonCart updatedAnonCart = anonCartRepository.save(foundAnonCart);
-            return Optional.of(updatedAnonCart);
-        }
-        catch (Exception e) {
-            return Optional.of(oldAnonCart);
+            try {
+                AnonCart updatedAnonCart = anonCartRepository.save(foundAnonCart);
+                return Optional.of(updatedAnonCart);
+            }
+            catch (Exception e) {
+                return Optional.of(oldAnonCart);
+            }
         }
     }
 
@@ -126,7 +164,10 @@ public class AnonCartService {
             .orElse(new AnonCartItem());
 
         if (quantity == anonCartItem.getQuantity()) {
-            foundAnonCart.getItems().remove(anonCartItem);
+            Set<AnonCartItem> setOfAnonCartItems = new LinkedHashSet<>(foundAnonCart.getItems());
+            setOfAnonCartItems.remove(anonCartItem);
+
+            foundAnonCart.setItems(new ArrayList<>(setOfAnonCartItems));
 
             try {
                 AnonCart updatedAnonCart = anonCartRepository.save(foundAnonCart);
@@ -142,7 +183,10 @@ public class AnonCartService {
             anonCartItem.setQuantity(anonCartItem.getQuantity() - quantity);
             anonCartItem.setPriceAtAddition(foundProduct.getPrice());
 
-            foundAnonCart.getItems().add(anonCartItem);
+            Set<AnonCartItem> setOfAnonCartItems = new LinkedHashSet<>(foundAnonCart.getItems());
+            setOfAnonCartItems.add(anonCartItem);
+
+            foundAnonCart.setItems(new ArrayList<>(setOfAnonCartItems));
             foundAnonCart.setTotalPrice(foundAnonCart.getItems().stream()
                 .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add));

@@ -28,7 +28,7 @@ class AnonCartItemRequestTest {
     @Test
     void testToString() {
         AnonCartItemRequest request = new AnonCartItemRequest(3L, 7);
-        String expected = "AddAnonCartItemRequest [productId=3, quantity=7]";
+        String expected = "AnonCartItemRequest [productId=3, quantity=7]";
 
         assertEquals(expected, request.toString());
     }

@@ -30,7 +30,7 @@ public class CartItemRequest {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("AddCartItemRequest [productId=").append(productId)
+        builder.append("CartItemRequest [productId=").append(productId)
             .append(", quantity=").append(quantity)
             .append("]");
 
