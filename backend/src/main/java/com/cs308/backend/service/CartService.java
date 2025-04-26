@@ -75,50 +75,62 @@ public class CartService {
     }
 
     public Optional<Cart> addItemToCart(User user, Long productId, int quantity) {
-        Optional<Cart> cart = cartRepository.findByUser(user);
+        Optional<Cart> cartOpt = cartRepository.findByUser(user);
 
-        if (!(cart.isPresent())) {
-            return Optional.empty();
+        Cart cart;
+        if (cartOpt.isPresent()) {
+            cart = cartOpt.get();
+        } else {
+            // Eğer kullanıcının cart'ı yoksa yeni bir cart oluştur
+            cart = new Cart();
+            cart.setUser(user);
+            cart.setTotalPrice(BigDecimal.ZERO);
+            cart.setCreatedAt(LocalDateTime.now());
+            cart.setUpdatedAt(LocalDateTime.now());
+            cart.setItems(new ArrayList<>());  // boş liste başlat
+            cart = cartRepository.save(cart); // kaydet
         }
 
-        Cart foundCart = cart.get();
-
-        Optional<Product> product = productRepository.findById(productId);
-
-        if (!(product.isPresent())) {
-            return cart;
+        // Ürünü bul
+        Optional<Product> productOpt = productRepository.findById(productId);
+        if (!productOpt.isPresent()) {
+            return Optional.of(cart); // Ürün bulunamadıysa cart'ı yine de dön
         }
 
-        Product foundProduct = product.get();
+        Product product = productOpt.get();
 
-        Cart oldCart = foundCart.clone();
-
-        if (foundProduct.getQuantityInStock() == 0) {
-            return Optional.of(oldCart);
+        if (product.getQuantityInStock() == 0) {
+            return Optional.of(cart); // Stok yoksa cart'ı yine de dön
         }
 
-        CartItem cartItem = cart.get().getItems().stream()
-            .filter(item -> item.getProduct().getId().equals(productId))
-            .findFirst()
-            .orElse(new CartItem());
+        // Cart'ta bu ürün zaten var mı?
+        CartItem cartItem = cart.getItems().stream()
+                .filter(item -> item.getProduct().getId().equals(productId))
+                .findFirst()
+                .orElse(null);
 
-        cartItem.setCart(foundCart);
-        cartItem.setProduct(foundProduct);
+        if (cartItem == null) {
+            // Ürün yoksa yeni cartItem oluştur
+            cartItem = new CartItem();
+            cartItem.setCart(cart);
+            cartItem.setProduct(product);
+            cartItem.setQuantity(0);
+            cartItem.setCreatedAt(LocalDateTime.now()); // BURASI EKLENDİ
+            cart.getItems().add(cartItem);
+        }
+
+        // Miktarı ve fiyatı güncelle
         cartItem.setQuantity(cartItem.getQuantity() + quantity);
-        cartItem.setPriceAtAddition(foundProduct.getPrice());
+        cartItem.setPriceAtAddition(product.getPrice());
 
-        foundCart.getItems().add(cartItem);
-        foundCart.setTotalPrice(foundCart.getItems().stream()
-            .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
-            .reduce(BigDecimal.ZERO, BigDecimal::add));
-        foundCart.setUpdatedAt(LocalDateTime.now());
+        // Total price güncelle
+        cart.setTotalPrice(cart.getItems().stream()
+                .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
 
-        try {
-            Cart updatedCart = cartRepository.save(foundCart);
-            return Optional.of(updatedCart);
-        }
-        catch (Exception e) {
-            return Optional.of(oldCart);
-        }
+        cart.setUpdatedAt(LocalDateTime.now());
+
+        Cart updatedCart = cartRepository.save(cart);
+        return Optional.of(updatedCart);
     }
 }
