@@ -70,7 +70,7 @@ public class CommentController {
             .anyMatch(order -> order.getUser().equals(user) && order.getStatus().equals(OrderStatus.delivered));
 
         if (!hasOrderedAndDelivered) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The customer did not order this product.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The product was not delivered to the customer.");
         }
 
         Optional<Comment> submittedComment = commentService.submitComment(new Comment(productToComment.get(), user, commentRequest.getComment()));
