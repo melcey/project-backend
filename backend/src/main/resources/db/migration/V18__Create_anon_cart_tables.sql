@@ -1,4 +1,4 @@
--- V19__Create_anon_cart_tables.sql
+-- V18__Create_anon_cart_tables.sql
 
 -- Main cart table
 CREATE TABLE anon_carts (

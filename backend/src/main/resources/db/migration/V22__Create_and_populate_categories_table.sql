@@ -1,4 +1,4 @@
--- V21__Create_and_populate_categories_table.sql
+-- V22__Create_and_populate_categories_table.sql
 
 -- Insert initial categories
 INSERT INTO categories (name, description)

@@ -1,4 +1,4 @@
--- V17__Create_cart_tables.sql
+-- V16__Create_cart_tables.sql
 
 -- Main cart table
 CREATE TABLE carts (
