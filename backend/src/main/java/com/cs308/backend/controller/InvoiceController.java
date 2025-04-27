@@ -39,11 +39,8 @@ public class InvoiceController {
             
         User user = userDetails.getUser();
 
-        if (user.getRole() != Role.customer) {
+        if ((user.getRole() != Role.customer) && (user.getRole() != Role.product_manager)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
-        }
-        else if (user.getRole() != Role.product_manager) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
         }
 
         Optional<Invoice> retrievedInvoice = invoiceService.findByInvoiceNumber(invoiceNumber);
@@ -88,11 +85,8 @@ public class InvoiceController {
             
         User user = userDetails.getUser();
 
-        if (user.getRole() != Role.customer) {
+        if ((user.getRole() != Role.customer) && (user.getRole() != Role.product_manager)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
-        }
-        else if (user.getRole() != Role.product_manager) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
         }
 
         Optional<Invoice> retrievedInvoice = invoiceService.findByInvoiceNumber(invoiceNumber);
