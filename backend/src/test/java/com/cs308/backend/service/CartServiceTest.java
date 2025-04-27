@@ -149,9 +149,11 @@ public class CartServiceTest {
         User user = new User("John Doe", "123 Main St", Role.customer);
         Cart cart = new Cart(user);
         cart.setId(1L);
+        cart.setItems(new ArrayList<>());
 
         when(cartRepository.findByUser(user)).thenReturn(Optional.of(cart));
         when(productRepository.findById(1L)).thenReturn(Optional.empty());
+        when(cartRepository.save(any(Cart.class))).thenReturn(cart);
 
         // Call the service method
         Optional<Cart> updatedCart = cartService.addItemToCart(user, 1L, 2);
@@ -162,7 +164,7 @@ public class CartServiceTest {
 
         verify(cartRepository, times(1)).findByUser(user);
         verify(productRepository, times(1)).findById(1L);
-        verify(cartRepository, never()).save(any(Cart.class));
+        verify(cartRepository, times(1)).save(any(Cart.class));
     }
 
     @Test

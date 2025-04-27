@@ -23,6 +23,7 @@ import com.cs308.backend.dao.AnonCart;
 import com.cs308.backend.dao.AnonCartItem;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.repo.AnonCartRepository;
+import com.cs308.backend.repo.ProductRepository;
 
 public class AnonCartServiceTest {
 
@@ -30,7 +31,7 @@ public class AnonCartServiceTest {
     private AnonCartRepository anonCartRepository;
 
     @Mock
-    private ProductService productService;
+    private ProductRepository productRepository;
 
     @InjectMocks
     private AnonCartService anonCartService;
@@ -81,7 +82,7 @@ public class AnonCartServiceTest {
         mockProduct.setQuantityInStock(10);
 
         when(anonCartRepository.findById(1L)).thenReturn(Optional.of(mockCart));
-        when(productService.findProductById(1L)).thenReturn(Optional.of(mockProduct));
+        when(productRepository.findById(1L)).thenReturn(Optional.of(mockProduct));
         when(anonCartRepository.save(any(AnonCart.class))).thenReturn(mockCart);
 
         // Call the service method with valid inputs
@@ -102,7 +103,7 @@ public class AnonCartServiceTest {
 
         // Verify interactions with mocks
         verify(anonCartRepository, times(1)).findById(1L);
-        verify(productService, times(1)).findProductById(1L);
+        verify(productRepository, times(1)).findById(1L);
         verify(anonCartRepository, times(1)).save(any(AnonCart.class));
     }
 
@@ -111,9 +112,11 @@ public class AnonCartServiceTest {
         // Mock the repository and product service
         AnonCart mockCart = new AnonCart();
         mockCart.setId(1L);
+        mockCart.setItems(new ArrayList<>());
 
         when(anonCartRepository.findById(1L)).thenReturn(Optional.of(mockCart));
-        when(productService.findProductById(1L)).thenReturn(Optional.empty());
+        when(productRepository.findById(1L)).thenReturn(Optional.empty());
+        when(anonCartRepository.save(any(AnonCart.class))).thenReturn(mockCart);
 
         // Call the service method
         Optional<AnonCart> updatedCart = anonCartService.addItemToAnonCart(1L, 1L, 2);
@@ -123,8 +126,8 @@ public class AnonCartServiceTest {
         assertEquals(0, updatedCart.get().getItems().size());
 
         verify(anonCartRepository, times(1)).findById(1L);
-        verify(productService, times(1)).findProductById(1L);
-        verify(anonCartRepository, never()).save(any(AnonCart.class));
+        verify(productRepository, times(1)).findById(1L);
+        verify(anonCartRepository, times(1)).save(any(AnonCart.class));
     }
 
     @Test
@@ -149,7 +152,7 @@ public class AnonCartServiceTest {
 
         when(anonCartRepository.findById(1L)).thenReturn(Optional.empty());
         when(anonCartRepository.save(any(AnonCart.class))).thenReturn(newAnonCart);
-        when(productService.findProductById(1L)).thenReturn(Optional.of(mockProduct));
+        when(productRepository.findById(1L)).thenReturn(Optional.of(mockProduct));
 
         // Call the service method
         Optional<AnonCart> updatedCart = anonCartService.addItemToAnonCart(1L, 1L, 2);
@@ -166,6 +169,6 @@ public class AnonCartServiceTest {
 
         verify(anonCartRepository, times(1)).findById(1L);
         verify(anonCartRepository, times(1)).save(any(AnonCart.class));
-        verify(productService, times(1)).findProductById(1L);
+        verify(productRepository, times(1)).findById(1L);
     }
 }

@@ -56,6 +56,7 @@ public class CartService {
             return Optional.of(createdCart);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.of(cartRepository.save(new Cart(user)));
         }
     }
@@ -68,6 +69,7 @@ public class CartService {
             return Optional.of(createdCart);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -91,10 +93,9 @@ public class CartService {
 
             Product foundProduct = product.get();
 
-            Cart oldCart = newCart.clone();
-
-            if (foundProduct.getQuantityInStock() == 0) {
-                return Optional.of(oldCart);
+            if (foundProduct.getQuantityInStock() < quantity) {
+                newCart = cartRepository.save(newCart);
+                return Optional.of(newCart);
             }
 
             CartItem cartItem = new CartItem();
@@ -114,7 +115,8 @@ public class CartService {
             }
             catch (Exception e) {
                 e.printStackTrace();
-                return Optional.of(oldCart);
+                newCart = cartRepository.save(newCart);
+                return Optional.of(newCart);
             }
         }
         else {
@@ -123,7 +125,8 @@ public class CartService {
             Optional<Product> product = productRepository.findById(productId);
 
             if (!(product.isPresent())) {
-                return cart;
+                foundCart = cartRepository.save(foundCart);
+                return Optional.of(foundCart);
             }
 
             Product foundProduct = product.get();
@@ -131,6 +134,7 @@ public class CartService {
             Cart oldCart = foundCart.clone();
 
             if (foundProduct.getQuantityInStock() < quantity) {
+                oldCart = cartRepository.save(oldCart);
                 return Optional.of(oldCart);
             }
 
@@ -147,7 +151,8 @@ public class CartService {
             Set<CartItem> setOfCartItems = new LinkedHashSet<>(foundCart.getItems());
             setOfCartItems.add(cartItem);
             
-            foundCart.setItems(new ArrayList<>(setOfCartItems));
+            foundCart.getItems().clear();
+            foundCart.getItems().addAll(setOfCartItems);
             foundCart.setTotalPrice(foundCart.getItems().stream()
                 .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add));
@@ -159,6 +164,7 @@ public class CartService {
             }
             catch (Exception e) {
                 e.printStackTrace();
+                oldCart = cartRepository.save(oldCart);
                 return Optional.of(oldCart);
             }
         }
@@ -176,10 +182,15 @@ public class CartService {
 
         Cart foundCart = cart.get();
 
+        if (foundCart.getItems() == null) {
+            foundCart.setItems(new ArrayList<>());
+        }
+
         Optional<Product> product = productRepository.findById(productId);
 
         if (!(product.isPresent())) {
-            return cart;
+            foundCart = cartRepository.save(foundCart);
+            return Optional.of(foundCart);
         }
 
         Product foundProduct = product.get();
@@ -195,13 +206,18 @@ public class CartService {
             Set<CartItem> setOfCartItems = new LinkedHashSet<>(foundCart.getItems());
             setOfCartItems.remove(cartItem);
             
-            foundCart.setItems(new ArrayList<>(setOfCartItems));
+            foundCart.getItems().clear();
+            foundCart.getItems().addAll(setOfCartItems);
+            foundCart.setTotalPrice(foundCart.getTotalPrice().subtract(cartItem.getPriceAtAddition().multiply(BigDecimal.valueOf(cartItem.getQuantity()))));
+            foundCart.setUpdatedAt(LocalDateTime.now());
 
             try {
                 Cart updatedCart = cartRepository.save(foundCart);
                 return Optional.of(updatedCart);
             }
             catch (Exception e) {
+                e.printStackTrace();
+                oldCart = cartRepository.save(oldCart);
                 return Optional.of(oldCart);
             }
         }
@@ -214,7 +230,8 @@ public class CartService {
             Set<CartItem> setOfCartItems = new LinkedHashSet<>(foundCart.getItems());
             setOfCartItems.add(cartItem);
             
-            foundCart.setItems(new ArrayList<>(setOfCartItems));
+            foundCart.getItems().clear();
+            foundCart.getItems().addAll(setOfCartItems);
             foundCart.setTotalPrice(foundCart.getItems().stream()
                 .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add));
@@ -225,10 +242,13 @@ public class CartService {
                 return Optional.of(updatedCart);
             }
             catch (Exception e) {
+                e.printStackTrace();
+                oldCart = cartRepository.save(oldCart);
                 return Optional.of(oldCart);
             }
         }
         else {
+            oldCart = cartRepository.save(oldCart);
             return Optional.of(oldCart);
         }
     }

@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -14,15 +13,16 @@ import com.cs308.backend.dao.AnonCart;
 import com.cs308.backend.dao.AnonCartItem;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.repo.AnonCartRepository;
+import com.cs308.backend.repo.ProductRepository;
 
 @Service
 public class AnonCartService {
     private final AnonCartRepository anonCartRepository;
-    private final ProductService productService;
+    private final ProductRepository productRepository;
 
-    public AnonCartService(AnonCartRepository anonCartRepository, ProductService productService) {
+    public AnonCartService(AnonCartRepository anonCartRepository, ProductRepository productRepository) {
         this.anonCartRepository = anonCartRepository;
-        this.productService = productService;
+        this.productRepository = productRepository;
     }
 
     public Optional<AnonCart> createAnonCart() {
@@ -48,7 +48,7 @@ public class AnonCartService {
         if (!(anonCart.isPresent())) {
             AnonCart newAnonCart = new AnonCart();
 
-            Optional<Product> product = productService.findProductById(productId);
+            Optional<Product> product = productRepository.findById(productId);
 
             if (!(product.isPresent())) {
                 AnonCart updatedAnonCart = anonCartRepository.save(newAnonCart);
@@ -57,10 +57,9 @@ public class AnonCartService {
 
             Product foundProduct = product.get();
 
-            AnonCart oldAnonCart = newAnonCart.clone();
-
-            if (foundProduct.getQuantityInStock() == 0) {
-                return Optional.of(oldAnonCart);
+            if (foundProduct.getQuantityInStock() < quantity) {
+                newAnonCart = anonCartRepository.save(newAnonCart);
+                return Optional.of(newAnonCart);
             }
 
             AnonCartItem anonCartItem = new AnonCartItem();
@@ -79,7 +78,9 @@ public class AnonCartService {
                 return Optional.of(updatedAnonCart);
             }
             catch (Exception e) {
-                return Optional.of(oldAnonCart);
+                e.printStackTrace();
+                newAnonCart = anonCartRepository.save(newAnonCart);
+                return Optional.of(newAnonCart);
             }
         }
         else {
@@ -89,10 +90,11 @@ public class AnonCartService {
                 foundAnonCart.setItems(new ArrayList<>());
             }
 
-            Optional<Product> product = productService.findProductById(productId);
+            Optional<Product> product = productRepository.findById(productId);
 
             if (!(product.isPresent())) {
-                return anonCart;
+                foundAnonCart = anonCartRepository.save(foundAnonCart);
+                return Optional.of(foundAnonCart);
             }
 
             Product foundProduct = product.get();
@@ -100,6 +102,7 @@ public class AnonCartService {
             AnonCart oldAnonCart = foundAnonCart.clone();
 
             if (foundProduct.getQuantityInStock() < quantity) {
+                oldAnonCart = anonCartRepository.save(oldAnonCart);
                 return Optional.of(oldAnonCart);
             }
 
@@ -116,7 +119,8 @@ public class AnonCartService {
             Set<AnonCartItem> setOfAnonCartItems = new LinkedHashSet<>(foundAnonCart.getItems());
             setOfAnonCartItems.add(anonCartItem);
 
-            foundAnonCart.setItems(new ArrayList<>(setOfAnonCartItems));
+            foundAnonCart.getItems().clear();
+            foundAnonCart.getItems().addAll(setOfAnonCartItems);
             foundAnonCart.setTotalPrice(foundAnonCart.getItems().stream()
                 .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add));
@@ -127,6 +131,8 @@ public class AnonCartService {
                 return Optional.of(updatedAnonCart);
             }
             catch (Exception e) {
+                e.printStackTrace();
+                oldAnonCart = anonCartRepository.save(oldAnonCart);
                 return Optional.of(oldAnonCart);
             }
         }
@@ -148,10 +154,11 @@ public class AnonCartService {
             foundAnonCart.setItems(new ArrayList<>());
         }
 
-        Optional<Product> product = productService.findProductById(productId);
+        Optional<Product> product = productRepository.findById(productId);
 
         if (!(product.isPresent())) {
-            return anonCart;
+            foundAnonCart = anonCartRepository.save(foundAnonCart);
+            return Optional.of(foundAnonCart);
         }
 
         Product foundProduct = product.get();
@@ -167,13 +174,18 @@ public class AnonCartService {
             Set<AnonCartItem> setOfAnonCartItems = new LinkedHashSet<>(foundAnonCart.getItems());
             setOfAnonCartItems.remove(anonCartItem);
 
-            foundAnonCart.setItems(new ArrayList<>(setOfAnonCartItems));
+            foundAnonCart.getItems().clear();
+            foundAnonCart.getItems().addAll(setOfAnonCartItems);
+            foundAnonCart.setTotalPrice(foundAnonCart.getTotalPrice().subtract(anonCartItem.getPriceAtAddition().multiply(BigDecimal.valueOf(anonCartItem.getQuantity()))));
+            foundAnonCart.setUpdatedAt(LocalDateTime.now());
 
             try {
                 AnonCart updatedAnonCart = anonCartRepository.save(foundAnonCart);
                 return Optional.of(updatedAnonCart);
             }
             catch (Exception e) {
+                e.printStackTrace();
+                oldAnonCart = anonCartRepository.save(oldAnonCart);
                 return Optional.of(oldAnonCart);
             }
         }
@@ -186,7 +198,8 @@ public class AnonCartService {
             Set<AnonCartItem> setOfAnonCartItems = new LinkedHashSet<>(foundAnonCart.getItems());
             setOfAnonCartItems.add(anonCartItem);
 
-            foundAnonCart.setItems(new ArrayList<>(setOfAnonCartItems));
+            foundAnonCart.getItems().clear();
+            foundAnonCart.getItems().addAll(setOfAnonCartItems);
             foundAnonCart.setTotalPrice(foundAnonCart.getItems().stream()
                 .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add));
@@ -197,10 +210,13 @@ public class AnonCartService {
                 return Optional.of(updatedAnonCart);
             }
             catch (Exception e) {
+                e.printStackTrace();
+                oldAnonCart = anonCartRepository.save(oldAnonCart);
                 return Optional.of(oldAnonCart);
             }
         }
         else {
+            oldAnonCart = anonCartRepository.save(oldAnonCart);
             return Optional.of(oldAnonCart);
         }
     }
