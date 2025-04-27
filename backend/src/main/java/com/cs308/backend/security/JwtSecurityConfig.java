@@ -84,6 +84,7 @@ public class JwtSecurityConfig {
                         .requestMatchers("/payments/**").hasRole("CUSTOMER")
                         .requestMatchers("/invoices/**").hasRole("CUSTOMER")
                         .requestMatchers("/invoices/**").hasRole("PRODUCT_MANAGER")
+                        .requestMatchers("/uploads/**").permitAll()
                         .anyRequest().authenticated())
 
                 .authenticationProvider(authenticationProvider);
