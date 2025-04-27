@@ -186,7 +186,7 @@ public class OrderController {
         }
         
         try {
-            Order newOrder = new Order(user, OrderStatus.fromString(orderToCreate.getStatus()), orderToCreate.getTotalPrice(), orderToCreate.getDeliveryAddress(), null);
+            Order newOrder = new Order(user, OrderStatus.fromString(orderToCreate.getStatus()), orderToCreate.getTotalPrice(), user.getAddress(), null);
             
             for (OrderItem orderItem: orderItems) {
                 orderItem.setOrder(newOrder);
