@@ -405,7 +405,7 @@ public class ProductManagerController {
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
             
             String oldImageUrl = foundProduct.get().getImageUrl();
-            Optional<Product> updatedProduct = productService.updateProductImageUrl(id, fileName);
+            Optional<Product> updatedProduct = productService.updateProductImageUrl(id, "/uploads/" + fileName);
 
             if (!updatedProduct.isPresent()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to update product with new image");

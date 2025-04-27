@@ -37,6 +37,11 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+  web:
+    resources:
+      static-locations:
+        - file:/app/uploads/
+        - classpath:/static/
         
 
 app:
@@ -48,4 +53,4 @@ app:
 
 upload:
   product_images:
-    dir: /uploads/product-images
+    dir: /app/uploads/
