@@ -2,7 +2,7 @@
 CREATE TABLE delivery (
     delivery_id SERIAL PRIMARY KEY,
     order_id INT REFERENCES orders(order_id),
-    product_id INT REFERENCES products(product_id) UNIQUE,
+    product_id INT UNIQUE REFERENCES products(product_id),
     quantity INT NOT NULL,
     total_price DECIMAL(10, 2) NOT NULL,
     delivery_address TEXT,
