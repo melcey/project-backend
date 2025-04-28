@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cs308.backend.dao.Cart;
 import com.cs308.backend.dao.CreditCard;
 import com.cs308.backend.dao.Order;
 import com.cs308.backend.dao.OrderItem;
@@ -25,6 +26,7 @@ import com.cs308.backend.dao.User;
 import com.cs308.backend.dto.PaymentRequest;
 import com.cs308.backend.dto.PaymentResponse;
 import com.cs308.backend.security.UserPrincipal;
+import com.cs308.backend.service.CartService;
 import com.cs308.backend.service.PaymentService;
 import com.cs308.backend.service.ProductService;
 
@@ -37,6 +39,9 @@ public class PaymentController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private CartService cartService;
 
     @PostMapping("/process")
     public ResponseEntity<PaymentResponse> processPayment(@RequestBody PaymentRequest paymentRequest) {
@@ -79,6 +84,12 @@ public class PaymentController {
                         HttpStatus.BAD_REQUEST,
                         "Failed to update stock for product: " + product.getName());
             }
+        }
+
+        Optional<Cart> updatedCart = cartService.clearCart(user);
+
+        if (!(updatedCart.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart could not be cleared");
         }
 
         PaymentResponse response = new PaymentResponse(

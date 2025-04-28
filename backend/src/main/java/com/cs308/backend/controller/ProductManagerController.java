@@ -38,6 +38,7 @@ import com.cs308.backend.dao.User;
 import com.cs308.backend.dto.CategoryResponse;
 import com.cs308.backend.dto.CommentListResponse;
 import com.cs308.backend.dto.CommentResponse;
+import com.cs308.backend.dto.MessageResponse;
 import com.cs308.backend.dto.OrderItemResponse;
 import com.cs308.backend.dto.OrderListResponse;
 import com.cs308.backend.dto.OrderResponse;
@@ -451,10 +452,24 @@ public class ProductManagerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
         }
 
-        productService.deleteProduct(id);
-        actionService.logAction(user, "DELETE_PRODUCT", Long.toString(id));
+        List<Order> findOrdersWithProduct = orderService.findAllOrdersIncludingProduct(foundProduct.get());
 
-        return ResponseEntity.ok("OK");
+        if (findOrdersWithProduct.size() == 0) {
+            productService.deleteProduct(id);
+            actionService.logAction(user, "DELETE_PRODUCT", Long.toString(id));
+        }
+        else {
+            boolean oldIsActive = foundProduct.get().getIsActive();
+            Optional<Product> updatedProduct = productService.updateProductIsActive(id, false);
+
+            if (!(updatedProduct.isPresent())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            }
+            
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %b -> %b", updatedProduct.get().getId(), oldIsActive, updatedProduct.get().getIsActive()));
+        }
+
+        return ResponseEntity.ok(new MessageResponse("OK"));
     }
 
     // Unified update endpoint for the products

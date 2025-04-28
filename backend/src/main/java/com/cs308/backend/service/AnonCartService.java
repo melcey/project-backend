@@ -220,4 +220,35 @@ public class AnonCartService {
             return Optional.of(oldAnonCart);
         }
     }
+
+    public Optional<AnonCart> clearAnonCart(Long anonCartId) {
+        Optional<AnonCart> anonCart = anonCartRepository.findById(anonCartId);
+
+        if (!(anonCart.isPresent())) {
+            AnonCart newAnonCart = new AnonCart();
+            newAnonCart = anonCartRepository.save(newAnonCart);
+
+            return Optional.of(newAnonCart);
+        }
+
+        AnonCart foundAnonCart = anonCart.get();
+
+        if (foundAnonCart.getItems() == null) {
+            foundAnonCart.setItems(new ArrayList<>());
+        }
+
+        AnonCart oldAnonCart = foundAnonCart.clone();
+
+        foundAnonCart.getItems().clear();
+
+        try {
+            AnonCart updatedAnonCart = anonCartRepository.save(foundAnonCart);
+            return Optional.of(updatedAnonCart);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            oldAnonCart = anonCartRepository.save(oldAnonCart);
+            return Optional.of(oldAnonCart);
+        }
+    }
 }

@@ -171,15 +171,9 @@ public class OrderController {
 
         List<OrderItem> orderItems = new ArrayList<>();
         for (OrderItemRequest newOrderItem: orderToCreate.getOrderItems()) {
-            Optional<Product> retrievedProduct = productService.findProductById(newOrderItem.getProductId());
-            if (!(retrievedProduct.isPresent())) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
-            }
-
-            Optional<Product> currentProduct = productService.updateProductQuantityInStock(retrievedProduct.get().getId(), retrievedProduct.get().getQuantityInStock() - 1);
-
+            Optional<Product> currentProduct = productService.findProductById(newOrderItem.getProductId());
             if (!(currentProduct.isPresent())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
             }
 
             orderItems.add(new OrderItem(null, currentProduct.get(), newOrderItem.getQuantity(), newOrderItem.getPrice()));
