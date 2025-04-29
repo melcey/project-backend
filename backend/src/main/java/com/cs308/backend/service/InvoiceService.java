@@ -1,23 +1,33 @@
 package com.cs308.backend.service;
 
-import com.cs308.backend.dao.Invoice;
-import com.cs308.backend.dao.Payment;
-import com.cs308.backend.dao.OrderItem;
-import com.cs308.backend.repo.InvoiceRepository;
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
+import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Stream;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayOutputStream;
-import java.math.BigDecimal;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
-import java.util.Optional;
-import java.util.stream.Stream;
+import com.cs308.backend.dao.Invoice;
+import com.cs308.backend.dao.Order;
+import com.cs308.backend.dao.OrderItem;
+import com.cs308.backend.dao.Payment;
+import com.cs308.backend.repo.InvoiceRepository;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+
+import jakarta.persistence.EntityExistsException;
 
 @Service
 public class InvoiceService {
@@ -32,7 +42,13 @@ public class InvoiceService {
     private UserService userService;
 
     @Transactional
-    public Invoice generateInvoice(Payment payment) {
+    public Invoice generateInvoice(Payment payment) throws EntityExistsException  {
+        Optional<Invoice> existingInvoice = invoiceRepository.findByPayment(payment);
+
+        if (existingInvoice.isPresent()) {
+            throw new EntityExistsException("There already exists an invoice for this payment");
+        }
+
         // Generate unique invoice number
         String invoiceNumber = generateInvoiceNumber();
 
@@ -57,8 +73,11 @@ public class InvoiceService {
     }
 
     public Optional<Invoice> findByInvoiceNumber(String invoiceNumber) {
-        // Replace this with the actual logic to find an invoice by its number
-        return Optional.empty();
+        return invoiceRepository.findByInvoiceNumber(invoiceNumber);
+    }
+
+    public Optional<Invoice> findByOrder(Order order) {
+        return invoiceRepository.findByOrder(order);
     }
 
     private byte[] generatePDF(Invoice invoice) {

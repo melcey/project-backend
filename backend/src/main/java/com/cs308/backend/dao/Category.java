@@ -80,7 +80,6 @@ public class Category {
         builder.append("Category [id=").append(id)
             .append(", name=").append(name)
             .append(", description=").append(description)
-            .append(", products=").append(products)
             .append("]");
             
         return builder.toString();

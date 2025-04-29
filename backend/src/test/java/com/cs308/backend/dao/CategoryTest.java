@@ -31,7 +31,7 @@ class CategoryTest {
     void testToString() {
         Category category = new Category("Electronics", "Devices and gadgets");
 
-        String expected = "Category [id=null, name=Electronics, description=Devices and gadgets, products=[]]";
+        String expected = "Category [id=null, name=Electronics, description=Devices and gadgets]";
         assertEquals(expected, category.toString());
     }
     

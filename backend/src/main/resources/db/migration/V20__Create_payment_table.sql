@@ -1,8 +1,8 @@
--- V22__Create_payment_table.sql
+-- V20__Create_payment_table.sql
 
 CREATE TABLE payments (
     payment_id SERIAL PRIMARY KEY,
-    order_id INT NOT NULL,
+    order_id INT UNIQUE NOT NULL,
     amount DECIMAL(10, 2) NOT NULL,
     payment_date TIMESTAMP NOT NULL,
     payment_status VARCHAR(20) NOT NULL CHECK (payment_status IN ('PENDING', 'COMPLETED', 'FAILED')),

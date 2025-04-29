@@ -3,8 +3,10 @@ package com.cs308.backend.service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
@@ -31,30 +33,66 @@ public class CartService {
     }
 
     public Optional<Cart> anonCartToCart(Long anonCartId, User user) {
-        Optional<AnonCart> anonCart = anonCartRepository.findById(anonCartId);
+        Optional<Cart> retrievedCart = cartRepository.findByUser(user);
 
-        if (!(anonCart.isPresent())) {
-            return Optional.of(cartRepository.save(new Cart(user)));
+        if (!(retrievedCart.isPresent())) {
+            Optional<AnonCart> anonCart = anonCartRepository.findById(anonCartId);
+
+            if (!(anonCart.isPresent())) {
+                return Optional.of(cartRepository.save(new Cart(user)));
+            }
+
+            AnonCart foundAnonCart = anonCart.get();
+
+            Cart newCart = new Cart(user, foundAnonCart.getTotalPrice(), null);
+
+            List<CartItem> cartItems = new ArrayList<>();
+
+            for (AnonCartItem anonCartItem: foundAnonCart.getItems()) {
+                cartItems.add(new CartItem(newCart, anonCartItem.getProduct(), anonCartItem.getQuantity(), anonCartItem.getPriceAtAddition()));
+            }
+
+            newCart.setItems(cartItems);
+
+            try {
+                Cart createdCart = cartRepository.save(newCart);
+                return Optional.of(createdCart);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                return Optional.of(cartRepository.save(new Cart(user)));
+            }
         }
+        else {
+            Optional<AnonCart> anonCart = anonCartRepository.findById(anonCartId);
 
-        AnonCart foundAnonCart = anonCart.get();
+            if (!(anonCart.isPresent())) {
+                return retrievedCart;
+            }
 
-        Cart newCart = new Cart(user, foundAnonCart.getTotalPrice(), null);
+            Cart existingCart = retrievedCart.get();
 
-        List<CartItem> cartItems = new ArrayList<>();
+            AnonCart foundAnonCart = anonCart.get();
 
-        for (AnonCartItem anonCartItem: foundAnonCart.getItems()) {
-            cartItems.add(new CartItem(newCart, anonCartItem.getProduct(), anonCartItem.getQuantity(), anonCartItem.getPriceAtAddition()));
-        }
+            existingCart.getItems().clear();
+            existingCart.setTotalPrice(foundAnonCart.getTotalPrice());
 
-        newCart.setItems(cartItems);
+            List<CartItem> cartItems = new ArrayList<>();
 
-        try {
-            Cart createdCart = cartRepository.save(newCart);
-            return Optional.of(createdCart);
-        }
-        catch (Exception e) {
-            return Optional.of(cartRepository.save(new Cart(user)));
+            for (AnonCartItem anonCartItem: foundAnonCart.getItems()) {
+                cartItems.add(new CartItem(existingCart, anonCartItem.getProduct(), anonCartItem.getQuantity(), anonCartItem.getPriceAtAddition()));
+            }
+
+            existingCart.getItems().addAll(cartItems);
+
+            try {
+                Cart createdCart = cartRepository.save(existingCart);
+                return Optional.of(createdCart);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                return retrievedCart;
+            }
         }
     }
 
@@ -66,6 +104,7 @@ public class CartService {
             return Optional.of(createdCart);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -78,46 +117,204 @@ public class CartService {
         Optional<Cart> cart = cartRepository.findByUser(user);
 
         if (!(cart.isPresent())) {
-            return Optional.empty();
+            Cart newCart = new Cart(user);
+
+            Optional<Product> product = productRepository.findById(productId);
+
+            if (!(product.isPresent())) {
+                Cart updatedCart = cartRepository.save(newCart);
+                return Optional.of(updatedCart);
+            }
+
+            Product foundProduct = product.get();
+
+            if (foundProduct.getQuantityInStock() < quantity) {
+                newCart = cartRepository.save(newCart);
+                return Optional.of(newCart);
+            }
+
+            CartItem cartItem = new CartItem();
+
+            cartItem.setCart(newCart);
+            cartItem.setProduct(foundProduct);
+            cartItem.setQuantity(cartItem.getQuantity() + quantity);
+            cartItem.setPriceAtAddition(foundProduct.getPrice());
+            
+            newCart.getItems().add(cartItem);
+            newCart.setTotalPrice(foundProduct.getPrice().multiply(BigDecimal.valueOf(quantity)));
+            newCart.setUpdatedAt(LocalDateTime.now());
+
+            try {
+                Cart updatedCart = cartRepository.save(newCart);
+                return Optional.of(updatedCart);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                newCart = cartRepository.save(newCart);
+                return Optional.of(newCart);
+            }
+        }
+        else {
+            Cart foundCart = cart.get();
+
+            Optional<Product> product = productRepository.findById(productId);
+
+            if (!(product.isPresent())) {
+                foundCart = cartRepository.save(foundCart);
+                return Optional.of(foundCart);
+            }
+
+            Product foundProduct = product.get();
+
+            Cart oldCart = foundCart.clone();
+
+            if (foundProduct.getQuantityInStock() < quantity) {
+                oldCart = cartRepository.save(oldCart);
+                return Optional.of(oldCart);
+            }
+
+            CartItem cartItem = cart.get().getItems().stream()
+                .filter(item -> item.getProduct().getId().equals(productId))
+                .findFirst()
+                .orElse(new CartItem());
+
+            cartItem.setCart(foundCart);
+            cartItem.setProduct(foundProduct);
+            cartItem.setQuantity(cartItem.getQuantity() + quantity);
+            cartItem.setPriceAtAddition(foundProduct.getPrice());
+            
+            Set<CartItem> setOfCartItems = new LinkedHashSet<>(foundCart.getItems());
+            setOfCartItems.add(cartItem);
+            
+            foundCart.getItems().clear();
+            foundCart.getItems().addAll(setOfCartItems);
+            foundCart.setTotalPrice(foundCart.getItems().stream()
+                .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+            foundCart.setUpdatedAt(LocalDateTime.now());
+
+            try {
+                Cart updatedCart = cartRepository.save(foundCart);
+                return Optional.of(updatedCart);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                oldCart = cartRepository.save(oldCart);
+                return Optional.of(oldCart);
+            }
+        }
+    }
+
+    public Optional<Cart> deleteItemFromCart(User user, Long productId, int quantity) {
+        Optional<Cart> cart = cartRepository.findByUser(user);
+
+        if (!(cart.isPresent())) {
+            Cart newCart = new Cart(user);
+            newCart = cartRepository.save(newCart);
+
+            return Optional.of(newCart);
         }
 
         Cart foundCart = cart.get();
 
+        if (foundCart.getItems() == null) {
+            foundCart.setItems(new ArrayList<>());
+        }
+
         Optional<Product> product = productRepository.findById(productId);
 
         if (!(product.isPresent())) {
-            return cart;
+            foundCart = cartRepository.save(foundCart);
+            return Optional.of(foundCart);
         }
 
         Product foundProduct = product.get();
 
         Cart oldCart = foundCart.clone();
 
-        if (foundProduct.getQuantityInStock() == 0) {
-            return Optional.of(oldCart);
-        }
-
         CartItem cartItem = cart.get().getItems().stream()
             .filter(item -> item.getProduct().getId().equals(productId))
             .findFirst()
             .orElse(new CartItem());
 
-        cartItem.setCart(foundCart);
-        cartItem.setProduct(foundProduct);
-        cartItem.setQuantity(cartItem.getQuantity() + quantity);
-        cartItem.setPriceAtAddition(foundProduct.getPrice());
+        if (quantity == cartItem.getQuantity()) {
+            Set<CartItem> setOfCartItems = new LinkedHashSet<>(foundCart.getItems());
+            setOfCartItems.remove(cartItem);
+            
+            foundCart.getItems().clear();
+            foundCart.getItems().addAll(setOfCartItems);
+            foundCart.setTotalPrice(foundCart.getTotalPrice().subtract(cartItem.getPriceAtAddition().multiply(BigDecimal.valueOf(cartItem.getQuantity()))));
+            foundCart.setUpdatedAt(LocalDateTime.now());
 
-        foundCart.getItems().add(cartItem);
-        foundCart.setTotalPrice(foundCart.getItems().stream()
-            .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
-            .reduce(BigDecimal.ZERO, BigDecimal::add));
-        foundCart.setUpdatedAt(LocalDateTime.now());
+            try {
+                Cart updatedCart = cartRepository.save(foundCart);
+                return Optional.of(updatedCart);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                oldCart = cartRepository.save(oldCart);
+                return Optional.of(oldCart);
+            }
+        }
+        else if (quantity < cartItem.getQuantity()) {
+            cartItem.setCart(foundCart);
+            cartItem.setProduct(foundProduct);
+            cartItem.setQuantity(cartItem.getQuantity() - quantity);
+            cartItem.setPriceAtAddition(foundProduct.getPrice());
+
+            Set<CartItem> setOfCartItems = new LinkedHashSet<>(foundCart.getItems());
+            setOfCartItems.add(cartItem);
+            
+            foundCart.getItems().clear();
+            foundCart.getItems().addAll(setOfCartItems);
+            foundCart.setTotalPrice(foundCart.getItems().stream()
+                .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+            foundCart.setUpdatedAt(LocalDateTime.now());
+
+            try {
+                Cart updatedCart = cartRepository.save(foundCart);
+                return Optional.of(updatedCart);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                oldCart = cartRepository.save(oldCart);
+                return Optional.of(oldCart);
+            }
+        }
+        else {
+            oldCart = cartRepository.save(oldCart);
+            return Optional.of(oldCart);
+        }
+    }
+
+    public Optional<Cart> clearCart(User user) {
+        Optional<Cart> cart = cartRepository.findByUser(user);
+
+        if (!(cart.isPresent())) {
+            Cart newCart = new Cart(user);
+            newCart = cartRepository.save(newCart);
+
+            return Optional.of(newCart);
+        }
+
+        Cart foundCart = cart.get();
+
+        if (foundCart.getItems() == null) {
+            foundCart.setItems(new ArrayList<>());
+        }
+
+        Cart oldCart = foundCart.clone();
+
+        foundCart.getItems().clear();
 
         try {
             Cart updatedCart = cartRepository.save(foundCart);
             return Optional.of(updatedCart);
         }
         catch (Exception e) {
+            e.printStackTrace();
+            oldCart = cartRepository.save(oldCart);
             return Optional.of(oldCart);
         }
     }

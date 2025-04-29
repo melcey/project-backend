@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -148,9 +149,11 @@ public class CartServiceTest {
         User user = new User("John Doe", "123 Main St", Role.customer);
         Cart cart = new Cart(user);
         cart.setId(1L);
+        cart.setItems(new ArrayList<>());
 
         when(cartRepository.findByUser(user)).thenReturn(Optional.of(cart));
         when(productRepository.findById(1L)).thenReturn(Optional.empty());
+        when(cartRepository.save(any(Cart.class))).thenReturn(cart);
 
         // Call the service method
         Optional<Cart> updatedCart = cartService.addItemToCart(user, 1L, 2);
@@ -161,24 +164,50 @@ public class CartServiceTest {
 
         verify(cartRepository, times(1)).findByUser(user);
         verify(productRepository, times(1)).findById(1L);
-        verify(cartRepository, never()).save(any(Cart.class));
+        verify(cartRepository, times(1)).save(any(Cart.class));
     }
 
     @Test
     public void testAddItemToCart_CartNotFound() {
         // Mock data
         User user = new User("John Doe", "123 Main St", Role.customer);
+        Cart newCart = new Cart(user);
+        newCart.setItems(new ArrayList<>()); // Ensure items list is initialized
+
+        Product mockProduct = new Product();
+        mockProduct.setId(1L);
+        mockProduct.setPrice(new BigDecimal("50.00"));
+        mockProduct.setQuantityInStock(10);
+
+        // Add the item to the mock cart
+        CartItem mockItem = new CartItem();
+        mockItem.setCart(newCart);
+        mockItem.setProduct(mockProduct);
+        mockItem.setQuantity(2);
+        mockItem.setPriceAtAddition(mockProduct.getPrice());
+        newCart.getItems().add(mockItem);
+        newCart.setTotalPrice(mockProduct.getPrice().multiply(BigDecimal.valueOf(2)));
 
         when(cartRepository.findByUser(user)).thenReturn(Optional.empty());
+        when(cartRepository.save(any(Cart.class))).thenReturn(newCart);
+        when(productRepository.findById(1L)).thenReturn(Optional.of(mockProduct));
 
         // Call the service method
         Optional<Cart> updatedCart = cartService.addItemToCart(user, 1L, 2);
 
         // Assert
-        assertTrue(updatedCart.isEmpty());
+        assertTrue(updatedCart.isPresent());
+        assertEquals(user, updatedCart.get().getUser());
+        assertEquals(1, updatedCart.get().getItems().size());
+
+        CartItem item = updatedCart.get().getItems().get(0);
+        assertEquals(1L, item.getProduct().getId());
+        assertEquals(2, item.getQuantity());
+        assertEquals(new BigDecimal("50.00"), item.getPriceAtAddition());
+        assertEquals(new BigDecimal("100.00"), updatedCart.get().getTotalPrice());
 
         verify(cartRepository, times(1)).findByUser(user);
-        verify(productRepository, never()).findById(anyLong());
-        verify(cartRepository, never()).save(any(Cart.class));
+        verify(cartRepository, times(1)).save(any(Cart.class));
+        verify(productRepository, times(1)).findById(1L);
     }
 }

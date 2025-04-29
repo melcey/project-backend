@@ -1,6 +1,11 @@
 package com.cs308.backend.controller;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,8 +23,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cs308.backend.config.UploadConfig;
 import com.cs308.backend.dao.Category;
 import com.cs308.backend.dao.Comment;
 import com.cs308.backend.dao.Order;
@@ -31,6 +38,7 @@ import com.cs308.backend.dao.User;
 import com.cs308.backend.dto.CategoryResponse;
 import com.cs308.backend.dto.CommentListResponse;
 import com.cs308.backend.dto.CommentResponse;
+import com.cs308.backend.dto.MessageResponse;
 import com.cs308.backend.dto.OrderItemResponse;
 import com.cs308.backend.dto.OrderListResponse;
 import com.cs308.backend.dto.OrderResponse;
@@ -353,6 +361,69 @@ public class ProductManagerController {
         return ResponseEntity.ok(new ProductResponse(createdProduct.get().getId(), createdProduct.get().getName(), createdProduct.get().getModel(), createdProduct.get().getSerialNumber(), createdProduct.get().getDescription(), createdProduct.get().getQuantityInStock(), createdProduct.get().getPrice(), createdProduct.get().getWarrantyStatus(), createdProduct.get().getDistributorInfo(), createdProduct.get().getIsActive(), createdProduct.get().getImageUrl(), new CategoryResponse(createdProduct.get().getCategory().getId(), createdProduct.get().getCategory().getName(), createdProduct.get().getCategory().getDescription())));
     }
 
+    @PutMapping("/{id}/upload_img")
+    public ResponseEntity<?> uploadProductImage(@RequestParam("file") MultipartFile file, @PathVariable Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ((auth == null) || (!(auth.isAuthenticated()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
+
+        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
+            
+        User user = userDetails.getUser();
+
+        if (user.getRole() != Role.product_manager) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
+        }
+
+        Optional<Product> foundProduct = productService.findProductById(id);
+        if (!(foundProduct.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
+        }
+        else if (!(foundProduct.get().getProductManager().equals(user))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by this product manager");
+        }
+
+        if (file.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File is empty");
+        }
+
+        if (file.getOriginalFilename() == null || file.getOriginalFilename().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid file name");
+        }
+        
+        StringBuilder fileNameBuilder = new StringBuilder();
+        fileNameBuilder.append("P").append(id).append("_").append(file.getOriginalFilename());
+        String fileName = fileNameBuilder.toString();
+        Path uploadPath = Paths.get(UploadConfig.PRODUCT_IMG_DIR);
+
+        try {
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            
+            String oldImageUrl = foundProduct.get().getImageUrl();
+            Optional<Product> updatedProduct = productService.updateProductImageUrl(id, "/uploads/" + fileName);
+
+            if (!updatedProduct.isPresent()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to update product with new image");
+            }
+            
+            actionService.logAction(user, "UPDATE_PRODUCT_IMAGE", 
+            String.format("%d: %s -> %s", id, oldImageUrl != null ? oldImageUrl : "none", fileName));
+
+            return ResponseEntity.ok(new ProductResponse(updatedProduct.get().getId(), updatedProduct.get().getName(), updatedProduct.get().getModel(), updatedProduct.get().getSerialNumber(), updatedProduct.get().getDescription(), updatedProduct.get().getQuantityInStock(), updatedProduct.get().getPrice(), updatedProduct.get().getWarrantyStatus(), updatedProduct.get().getDistributorInfo(), updatedProduct.get().getIsActive(), updatedProduct.get().getImageUrl(), new CategoryResponse(updatedProduct.get().getCategory().getId(), updatedProduct.get().getCategory().getName(), updatedProduct.get().getCategory().getDescription())));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File upload failed.");
+        }
+    }
+    
+
     // Delete a product by its ID
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
@@ -381,10 +452,24 @@ public class ProductManagerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Product is not owned by the user");
         }
 
-        productService.deleteProduct(id);
-        actionService.logAction(user, "DELETE_PRODUCT", Long.toString(id));
+        List<Order> findOrdersWithProduct = orderService.findAllOrdersIncludingProduct(foundProduct.get());
 
-        return ResponseEntity.ok("OK");
+        if (findOrdersWithProduct.size() == 0) {
+            productService.deleteProduct(id);
+            actionService.logAction(user, "DELETE_PRODUCT", Long.toString(id));
+        }
+        else {
+            boolean oldIsActive = foundProduct.get().getIsActive();
+            Optional<Product> updatedProduct = productService.updateProductIsActive(id, false);
+
+            if (!(updatedProduct.isPresent())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            }
+            
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %b -> %b", updatedProduct.get().getId(), oldIsActive, updatedProduct.get().getIsActive()));
+        }
+
+        return ResponseEntity.ok(new MessageResponse("OK"));
     }
 
     // Unified update endpoint for the products

@@ -21,13 +21,13 @@ public class Invoice {
     private Payment payment;
 
     @Column(name = "invoice_date", nullable = false)
-    private LocalDateTime invoiceDate;
+    private LocalDateTime invoiceDate = LocalDateTime.now();
 
     @Column(name = "invoice_number", nullable = false, unique = true)
     private String invoiceNumber;
 
     @Column(name = "total_amount", nullable = false)
-    private BigDecimal totalAmount;
+    private BigDecimal totalAmount = BigDecimal.ZERO;
 
     // Store the generated PDF
     @Column(name = "pdf_content")

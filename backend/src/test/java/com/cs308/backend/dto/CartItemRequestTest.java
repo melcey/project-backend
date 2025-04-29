@@ -5,11 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.Test;
 
-class AddCartItemRequestTest {
+class CartItemRequestTest {
 
     @Test
     void testConstructorAndGetters() {
-        AddCartItemRequest request = new AddCartItemRequest(1L, 5);
+        CartItemRequest request = new CartItemRequest(1L, 5);
 
         assertEquals(1L, request.getProductId());
         assertEquals(5, request.getQuantity());
@@ -17,7 +17,7 @@ class AddCartItemRequestTest {
 
     @Test
     void testSetters() {
-        AddCartItemRequest request = new AddCartItemRequest();
+        CartItemRequest request = new CartItemRequest();
         request.setProductId(2L);
         request.setQuantity(10);
 
@@ -27,17 +27,17 @@ class AddCartItemRequestTest {
 
     @Test
     void testToString() {
-        AddCartItemRequest request = new AddCartItemRequest(3L, 7);
-        String expected = "AddCartItemRequest [productId=3, quantity=7]";
+        CartItemRequest request = new CartItemRequest(3L, 7);
+        String expected = "CartItemRequest [productId=3, quantity=7]";
 
         assertEquals(expected, request.toString());
     }
 
     @Test
     void testHashCodeAndEquals() {
-        AddCartItemRequest request1 = new AddCartItemRequest(4L, 8);
-        AddCartItemRequest request2 = new AddCartItemRequest(4L, 8);
-        AddCartItemRequest request3 = new AddCartItemRequest(5L, 9);
+        CartItemRequest request1 = new CartItemRequest(4L, 8);
+        CartItemRequest request2 = new CartItemRequest(4L, 8);
+        CartItemRequest request3 = new CartItemRequest(5L, 9);
 
         // Test equality for objects with the same fields
         assertEquals(request1, request2);

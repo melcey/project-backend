@@ -1,11 +1,17 @@
 package com.cs308.backend.controller;
 
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cs308.backend.config.UploadConfig;
 import com.cs308.backend.dao.Comment;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Rating;
@@ -163,4 +170,39 @@ public class ProductController {
 
         return ResponseEntity.ok(new ProductListResponse(responseProductList));
     }
+
+    @GetMapping("/{id}/img")
+    public ResponseEntity<?> getProductImage(@PathVariable Long id) {
+        try {
+            Optional<Product> retrievedProduct = productService.findProductById(id);
+
+            if (!(retrievedProduct.isPresent())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product could not be found");
+            }
+
+            Product foundProduct = retrievedProduct.get();
+
+            Path filePath = Paths.get(UploadConfig.PRODUCT_IMG_DIR).resolve(foundProduct.getImageUrl()).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists()) {
+                String contentType = Files.probeContentType(filePath);
+                if (contentType == null) {
+                    contentType = "application/octet-stream";
+                }
+
+                return ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(contentType))
+                        .body(resource);
+            }
+            else {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Image could not be found");
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Image retrieval failed");
+        }
+    }
+    
 }

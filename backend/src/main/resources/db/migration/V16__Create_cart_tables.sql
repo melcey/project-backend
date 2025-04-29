@@ -1,9 +1,9 @@
--- V17__Create_cart_tables.sql
+-- V16__Create_cart_tables.sql
 
 -- Main cart table
 CREATE TABLE carts (
     cart_id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    user_id INT UNIQUE NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     total_price DECIMAL(10, 2) DEFAULT 0.00

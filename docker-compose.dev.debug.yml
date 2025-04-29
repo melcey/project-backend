@@ -24,6 +24,8 @@ services:
       - backend-net-dev
       # The container uses the external network "website-net-dev" to communicate with the frontend container
       - website-net-dev
+    volumes:
+      - ./dev/uploads:/app/uploads
     environment:
       # The container will be run in the dev environment
       - SPRING_PROFILES_ACTIVE=dev

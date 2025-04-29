@@ -35,7 +35,7 @@ public class AnonCartItem implements Cloneable {
     private BigDecimal priceAtAddition;
 
     @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     public AnonCartItem() {}
 

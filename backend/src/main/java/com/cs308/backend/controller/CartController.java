@@ -17,25 +17,29 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cs308.backend.dao.AnonCart;
 import com.cs308.backend.dao.Cart;
 import com.cs308.backend.dao.CartItem;
 import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
-import com.cs308.backend.dto.AddCartItemRequest;
+import com.cs308.backend.dto.CartItemRequest;
 import com.cs308.backend.dto.CartItemResponse;
 import com.cs308.backend.dto.CartResponse;
 import com.cs308.backend.dto.CategoryResponse;
 import com.cs308.backend.dto.ProductResponse;
 import com.cs308.backend.security.UserPrincipal;
+import com.cs308.backend.service.AnonCartService;
 import com.cs308.backend.service.CartService;
 
 @RestController
 @RequestMapping("/cart")
 public class CartController {
     private final CartService cartService;
+    private final AnonCartService anonCartService;
 
-    public CartController(CartService cartService) {
+    public CartController(CartService cartService, AnonCartService anonCartService) {
         this.cartService = cartService;
+        this.anonCartService = anonCartService;
     }
 
     @GetMapping
@@ -97,11 +101,13 @@ public class CartController {
             responseItems.add(new CartItemResponse(item.getId(), createdCart.getId(), new ProductResponse(item.getProduct().getId(), item.getProduct().getName(), item.getProduct().getModel(), item.getProduct().getSerialNumber(), item.getProduct().getDescription(), item.getProduct().getQuantityInStock(), item.getProduct().getPrice(), item.getProduct().getWarrantyStatus(), item.getProduct().getDistributorInfo(), item.getProduct().getIsActive(), item.getProduct().getImageUrl(), new CategoryResponse(item.getProduct().getCategory().getId(), item.getProduct().getCategory().getName(), item.getProduct().getCategory().getDescription())), item.getQuantity(), item.getPriceAtAddition()));
         }
 
+        Optional<AnonCart> clearedAnonCart = anonCartService.clearAnonCart(anonCartId);
+
         return ResponseEntity.ok(new CartResponse(createdCart.getId(), user.getId(), createdCart.getTotalPrice(), responseItems));
     }
 
     @PutMapping("/add")
-    public ResponseEntity<?> addItemToCart(@RequestBody AddCartItemRequest request) {
+    public ResponseEntity<?> addItemToCart(@RequestBody CartItemRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if ((auth == null) || (!(auth.isAuthenticated()))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
@@ -116,6 +122,37 @@ public class CartController {
         }
 
         Optional<Cart> cart = cartService.addItemToCart(user, request.getProductId(), request.getQuantity());
+
+        if (!(cart.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Item addition to cart failed");
+        }
+
+        Cart updatedCart = cart.get();
+        List<CartItemResponse> responseItems = new ArrayList<>();
+
+        for (CartItem item: updatedCart.getItems()) {
+            responseItems.add(new CartItemResponse(item.getId(), updatedCart.getId(), new ProductResponse(item.getProduct().getId(), item.getProduct().getName(), item.getProduct().getModel(), item.getProduct().getSerialNumber(), item.getProduct().getDescription(), item.getProduct().getQuantityInStock(), item.getProduct().getPrice(), item.getProduct().getWarrantyStatus(), item.getProduct().getDistributorInfo(), item.getProduct().getIsActive(), item.getProduct().getImageUrl(), new CategoryResponse(item.getProduct().getCategory().getId(), item.getProduct().getCategory().getName(), item.getProduct().getCategory().getDescription())), item.getQuantity(), item.getPriceAtAddition()));
+        }
+
+        return ResponseEntity.ok(new CartResponse(updatedCart.getId(), user.getId(), updatedCart.getTotalPrice(), responseItems));
+    }
+
+    @PutMapping("/delete")
+    public ResponseEntity<?> deleteItemFromCart(@RequestBody CartItemRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ((auth == null) || (!(auth.isAuthenticated()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
+
+        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
+            
+        User user = userDetails.getUser();
+
+        if (user.getRole() != Role.customer) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
+        }
+
+        Optional<Cart> cart = cartService.deleteItemFromCart(user, request.getProductId(), request.getQuantity());
 
         if (!(cart.isPresent())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Item addition to cart failed");
