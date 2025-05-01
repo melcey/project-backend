@@ -27,7 +27,7 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
     @Override
     public Optional<Product> insertNewProduct(Product product) {
         // Creates the query command in SQL to insert the new record to the table and return the inserted data
-        String sqlQuery = "INSERT INTO products (name, model, serial_number, description, quantity_in_stock, price, warranty_status, distributor_info, category_id, image_url, is_active, product_manager_id) VALUES (:name, :model, :serial_number, :description, :quantity_in_stock, :price, :warranty_status, :distributor_info, :category_id, :image_url, :is_active, :product_manager_id) RETURNING *";
+        String sqlQuery = "INSERT INTO products (name, model, serial_number, description, quantity_in_stock, price, warranty_status, distributor_info, category_id, image_url, is_active, product_manager_id, original_price, cost_price) VALUES (:name, :model, :serial_number, :description, :quantity_in_stock, :price, :warranty_status, :distributor_info, :category_id, :image_url, :is_active, :product_manager_id, :original_price, :cost_price) RETURNING *";
 
         try {
             // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a Product object
@@ -44,6 +44,8 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
                 .setParameter("image_url", product.getImageUrl())
                 .setParameter("is_active", product.getIsActive())
                 .setParameter("product_manager_id", product.getProductManager().getId())
+                .setParameter("original_price", product.getOriginalPrice())
+                .setParameter("cost_price", product.getCostPrice())
                 .getSingleResult();
 
             // Pending changes are written to the database

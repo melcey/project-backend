@@ -82,7 +82,7 @@ public class PaymentController {
             if (!updatedProduct.isPresent()) {
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
-                        "Failed to update stock for product: " + product.getName());
+                        String.format("Failed to update stock for product: %s", product.getName()));
             }
         }
 

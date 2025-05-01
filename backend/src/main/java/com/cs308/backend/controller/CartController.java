@@ -101,7 +101,7 @@ public class CartController {
             responseItems.add(new CartItemResponse(item.getId(), createdCart.getId(), new ProductResponse(item.getProduct().getId(), item.getProduct().getName(), item.getProduct().getModel(), item.getProduct().getSerialNumber(), item.getProduct().getDescription(), item.getProduct().getQuantityInStock(), item.getProduct().getPrice(), item.getProduct().getWarrantyStatus(), item.getProduct().getDistributorInfo(), item.getProduct().getIsActive(), item.getProduct().getImageUrl(), new CategoryResponse(item.getProduct().getCategory().getId(), item.getProduct().getCategory().getName(), item.getProduct().getCategory().getDescription())), item.getQuantity(), item.getPriceAtAddition()));
         }
 
-        Optional<AnonCart> clearedAnonCart = anonCartService.clearAnonCart(anonCartId);
+        anonCartService.clearAnonCart(anonCartId);
 
         return ResponseEntity.ok(new CartResponse(createdCart.getId(), user.getId(), createdCart.getTotalPrice(), responseItems));
     }

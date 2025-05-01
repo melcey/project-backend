@@ -48,6 +48,8 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
 
     List<Product> findByIsActive(boolean isActive);
 
+    List<Product> findByIsPriced(boolean isPriced);
+
     @Query(value = "SELECT * FROM products WHERE category_id = :category_id", nativeQuery = true)
     List<Product> findByCategoryId(@Param("category_id") Long categoryId);
 

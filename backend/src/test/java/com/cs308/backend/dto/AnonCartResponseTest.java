@@ -64,7 +64,10 @@ class AnonCartResponseTest {
         response.setCreatedAt(createdAt);
         response.setUpdatedAt(updatedAt);
 
-        String expected = "AnonCartResponse [id=3, totalPrice=800, items=[AnonCartItemResponse [id=3, anonCartId=3, product=ProductResponse [id=3, name=Tablet, model=null, serialNumber=null, description=null, quantityInStock=8, price=800, warrantyStatus=null, distributorInfo=null, isActive=true, imageUrl=null, category=null], quantity=1, priceAtAddition=800, createdAt=" + createdAt + "]], createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+        StringBuilder expectedBuilder = new StringBuilder();
+        expectedBuilder.append("AnonCartResponse [id=3, totalPrice=800, items=[AnonCartItemResponse [id=3, anonCartId=3, product=ProductResponse [id=3, name=Tablet, model=null, serialNumber=null, description=null, quantityInStock=8, price=800, warrantyStatus=null, distributorInfo=null, isActive=true, imageUrl=null, category=null], quantity=1, priceAtAddition=800, createdAt=").append(createdAt).append("]], createdAt=").append(createdAt).append(", updatedAt=").append(updatedAt).append("]");
+        String expected = expectedBuilder.toString();
+        
         assertEquals(expected, response.toString());
     }
 

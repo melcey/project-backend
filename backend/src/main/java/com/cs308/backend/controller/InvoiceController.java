@@ -111,8 +111,12 @@ public class InvoiceController {
 
         ByteArrayResource resource = new ByteArrayResource(invoice.getPdfContent());
 
+        StringBuilder builder = new StringBuilder();
+        builder.append("attachment; filename=invoice-").append(invoiceNumber).append(".pdf");
+        String attachmentHeader = builder.toString();
+
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=invoice-" + invoiceNumber + ".pdf")
+                .header(HttpHeaders.CONTENT_DISPOSITION, attachmentHeader)
                 .contentType(MediaType.APPLICATION_PDF)
                 .contentLength(invoice.getPdfContent().length)
                 .body(resource);

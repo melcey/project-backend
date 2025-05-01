@@ -17,7 +17,7 @@ public class UserPrincipal implements UserDetails {
         this.user = user;
         // Convert user role to Spring Security authority
         this.authorities = Collections.singletonList(
-                new SimpleGrantedAuthority("ROLE_" + user.getRole().name().toUpperCase()));
+                new SimpleGrantedAuthority(String.format("ROLE_%s", user.getRole().name().toUpperCase())));
     }
 
     // Factory method to create UserPrincipal from User

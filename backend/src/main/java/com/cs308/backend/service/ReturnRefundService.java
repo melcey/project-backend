@@ -10,6 +10,7 @@ import com.cs308.backend.repo.OrderRepository;
 import com.cs308.backend.repo.ProductRepository;
 import com.cs308.backend.repo.RefundRepository;
 import com.cs308.backend.repo.ReturnRequestRepository;
+import com.cs308.backend.repo.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class ReturnRefundService {
     private final RefundRepository refundRepository;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
     private final EmailService emailService;
     
     private static final int MAX_DAYS_FOR_RETURN = 30;
@@ -37,11 +39,13 @@ public class ReturnRefundService {
                               RefundRepository refundRepository,
                               ProductRepository productRepository,
                               OrderRepository orderRepository,
+                              UserRepository userRepository,
                               EmailService emailService) {
         this.returnRequestRepository = returnRequestRepository;
         this.refundRepository = refundRepository;
         this.productRepository = productRepository;
         this.orderRepository = orderRepository;
+        this.userRepository = userRepository;
         this.emailService = emailService;
     }
     
@@ -191,17 +195,21 @@ public class ReturnRefundService {
         Product product = returnRequest.getProduct();
         
         String subject = "Your Return Request Has Been Approved";
-        String text = String.format(
-            "Dear %s,\n\nYour request to return %d units of %s has been approved. " +
-            "A refund of $%s will be processed and credited back to your payment method. " +
-            "Thank you for shopping with us!\n\nBest regards,\nThe Sales Team",
+        String text = String.format("""
+            Dear %s,
+            
+            Your request to return %d units of %s has been approved. A refund of $%s will be processed and credited back to your payment method. Thank you for shopping with us!
+            
+            Best regards,
+            The Sales Team
+            """,
             user.getName(),
             returnRequest.getQuantity(),
             product.getName(),
             refundAmount.toString()
         );
         
-        emailService.sendEmail(user.getEmail(), subject, text);
+        emailService.sendNotificationEmail(userRepository.getEmail(user).get(), subject, text);
     }
     
     /**
@@ -212,14 +220,19 @@ public class ReturnRefundService {
         Product product = returnRequest.getProduct();
         
         String subject = "Your Return Request Status";
-        String text = String.format(
-            "Dear %s,\n\nUnfortunately, your request to return %d units of %s could not be approved. " +
-            "If you have any questions, please contact our customer service.\n\nBest regards,\nThe Sales Team",
+        String text = String.format("""
+            Dear %s,
+            
+            Unfortunately, your request to return %d units of %s could not be approved. If you have any questions, please contact our customer service.
+            
+            Best regards,
+            The Sales Team
+            """,
             user.getName(),
             returnRequest.getQuantity(),
             product.getName()
         );
         
-        emailService.sendEmail(user.getEmail(), subject, text);
+        emailService.sendNotificationEmail(userRepository.getEmail(user).get(), subject, text);
     }
 }

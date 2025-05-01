@@ -50,7 +50,10 @@ class CommentListResponseTest {
 
         CommentListResponse response = new CommentListResponse(comments);
 
-        String expected = "CommentListResponse [comments=" + comments + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("CommentListResponse [comments=").append(comments).append("]");
+        String expected = builder.toString();
+
         assertEquals(expected, response.toString());
     }
 

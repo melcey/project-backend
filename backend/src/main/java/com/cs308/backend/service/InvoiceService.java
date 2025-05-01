@@ -2,7 +2,9 @@ package com.cs308.backend.service;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -69,7 +71,10 @@ public class InvoiceService {
     }
 
     private String generateInvoiceNumber() {
-        return "INV-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        StringBuilder invoiceNumberBuilder = new StringBuilder();
+        invoiceNumberBuilder.append("INV-").append(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+
+        return invoiceNumberBuilder.toString();
     }
 
     public Optional<Invoice> findByInvoiceNumber(String invoiceNumber) {
@@ -78,6 +83,10 @@ public class InvoiceService {
 
     public Optional<Invoice> findByOrder(Order order) {
         return invoiceRepository.findByOrder(order);
+    }
+
+    public List<Invoice> findByInvoiceDateBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        return invoiceRepository.findByInvoiceDateBetween(startDate, endDate);
     }
 
     private byte[] generatePDF(Invoice invoice) {
@@ -96,9 +105,9 @@ public class InvoiceService {
             document.add(new Paragraph(" ")); // Spacing
 
             // Add invoice details
-            document.add(new Paragraph("Invoice Number: " + invoice.getInvoiceNumber()));
-            document.add(new Paragraph("Date: " +
-                    invoice.getInvoiceDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
+            document.add(new Paragraph(String.format("Invoice Number: %s", invoice.getInvoiceNumber())));
+            document.add(new Paragraph(String.format("Date: %s",
+                    invoice.getInvoiceDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))));
             document.add(new Paragraph(" ")); // Spacing
 
             // Add customer details
@@ -133,9 +142,13 @@ public class InvoiceService {
             document.add(table);
             document.add(new Paragraph(" ")); // Spacing
 
+            StringBuilder builder = new StringBuilder();
+            builder.append("Total Amount: $").append(invoice.getTotalAmount());
+            String totalAmount = builder.toString();
+
             // Add total
             Paragraph total = new Paragraph(
-                    "Total Amount: $" + invoice.getTotalAmount(),
+                    totalAmount,
                     new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD));
             total.setAlignment(Element.ALIGN_RIGHT);
             document.add(total);
@@ -149,10 +162,17 @@ public class InvoiceService {
 
     private void sendInvoiceEmail(Invoice invoice) {
         String to = userService.getEmail(invoice.getOrder().getUser()).get();
-        String subject = "Your Invoice #" + invoice.getInvoiceNumber();
-        String text = "Dear " + invoice.getOrder().getUser().getName() + ",\n\n" +
-                "Thank you for your purchase. Please find your invoice attached.\n\n" +
-                "Best regards,\nYour Store Team";
+        
+        StringBuilder subjectBuilder = new StringBuilder();
+        subjectBuilder.append("Your Invoice #").append(invoice.getInvoiceNumber());
+        String subject = subjectBuilder.toString();
+
+        StringBuilder textBuilder = new StringBuilder();
+        textBuilder.append("Dear ").append(invoice.getOrder().getUser().getName()).append(",\n\n")
+            .append("Thank you for your purchase. Please find your invoice attached.\n\n")
+            .append("Best regards,\nIllumion Shop Team");
+
+        String text = textBuilder.toString();
 
         emailService.sendInvoiceEmail(to, subject, text, invoice.getPdfContent(), invoice.getInvoiceNumber());
     }

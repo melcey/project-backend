@@ -44,7 +44,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(Long.toString(userPrincipal.getUser().getId()))
-                .claim("role", "ROLE_" + userPrincipal.getUser().getRole().name().toUpperCase())
+                .claim("role", String.format("ROLE_%s", userPrincipal.getUser().getRole().name().toUpperCase()))
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(key)

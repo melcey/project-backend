@@ -14,16 +14,19 @@ CREATE TABLE return_requests (
     quantity INT NOT NULL,
     original_price DECIMAL(10,2) NOT NULL,
     reason TEXT,
-    status VARCHAR(20) DEFAULT 'PENDING',
+    status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED')),
     request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     resolution_date TIMESTAMP,
     resolved_by INT REFERENCES users(user_id)
 );
+
+-- Drop the previously created refunds table
+DROP TABLE refunds;
 
 CREATE TABLE refunds (
     refund_id SERIAL PRIMARY KEY,
     request_id INT REFERENCES return_requests(request_id),
     amount DECIMAL(10,2) NOT NULL,
     refund_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status VARCHAR(20) DEFAULT 'PROCESSING'
+    status VARCHAR(20) DEFAULT 'PROCESSING' CHECK (status IN ('PROCESSING', 'COMPLETED', 'FAILED'))
 );

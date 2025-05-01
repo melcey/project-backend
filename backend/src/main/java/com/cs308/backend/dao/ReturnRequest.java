@@ -42,8 +42,8 @@ public class ReturnRequest {
     @Column(name = "quantity")
     private int quantity;
     
-    @Column(name = "original_price")
-    private BigDecimal originalPrice;
+    @Column(name = "original_price", precision = 10, scale = 2)
+    private BigDecimal originalPrice = BigDecimal.ZERO;
     
     @Column(name = "reason")
     private String reason;
@@ -53,13 +53,13 @@ public class ReturnRequest {
     private Status status = Status.PENDING;
     
     @Column(name = "request_date")
-    private LocalDateTime requestDate;
+    private LocalDateTime requestDate = LocalDateTime.now();
     
     @Column(name = "resolution_date")
     private LocalDateTime resolutionDate;
     
     @ManyToOne
-    @JoinColumn(name = "resolved_by")
+    @JoinColumn(name = "resolved_by", referencedColumnName = "user_id")
     private User resolvedBy;
 
     // Constructors, getters, setters
@@ -163,4 +163,48 @@ public class ReturnRequest {
     public void setResolvedBy(User resolvedBy) {
         this.resolvedBy = resolvedBy;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ReturnRequest [id=").append(id)
+            .append(", order=").append(order)
+            .append(", user=").append(user)
+            .append(", product=").append(product)
+            .append(", quantity=").append(quantity)
+            .append(", originalPrice=").append(originalPrice)
+            .append(", reason=").append(reason)
+            .append(", status=").append(status)
+            .append(", requestDate=").append(requestDate)
+            .append(", resolutionDate=").append(resolutionDate)
+            .append(", resolvedBy=").append(resolvedBy)
+            .append("]");
+
+        return builder.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ReturnRequest other = (ReturnRequest) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        return true;
+    }    
 }

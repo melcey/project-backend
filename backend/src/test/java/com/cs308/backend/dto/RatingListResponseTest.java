@@ -50,7 +50,10 @@ class RatingListResponseTest {
 
         RatingListResponse response = new RatingListResponse(ratings);
 
-        String expected = "RatingListResponse [ratings=" + ratings + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("RatingListResponse [ratings=").append(ratings).append("]");
+        String expected = builder.toString();
+
         assertEquals(expected, response.toString());
     }
 

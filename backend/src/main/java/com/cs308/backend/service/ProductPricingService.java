@@ -1,20 +1,25 @@
 package com.cs308.backend.service;
 
+import com.cs308.backend.dao.Invoice;
+import com.cs308.backend.dao.OrderItem;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.User;
 import com.cs308.backend.repo.ProductRepository;
+import com.cs308.backend.repo.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -24,17 +29,20 @@ public class ProductPricingService {
     private final EmailService emailService;
     private final InvoiceService invoiceService;
     private final OrderService orderService;
+    private final UserRepository userRepository;
     
     public ProductPricingService(ProductRepository productRepository,
                                WishlistService wishlistService,
                                EmailService emailService,
                                InvoiceService invoiceService,
-                               OrderService orderService) {
+                               OrderService orderService,
+                               UserRepository userRepository) {
         this.productRepository = productRepository;
         this.wishlistService = wishlistService;
         this.emailService = emailService;
         this.invoiceService = invoiceService;
         this.orderService = orderService;
+        this.userRepository = userRepository;
     }
     
     /**
@@ -106,7 +114,8 @@ public class ProductPricingService {
                 product.getDiscountRate(),
                 product.getPrice()
             );
-            emailService.sendEmail(user.getEmail(), subject, text);
+
+            emailService.sendNotificationEmail(userRepository.getEmail(user).get(), subject, text);
         }
     }
     
@@ -129,7 +138,7 @@ public class ProductPricingService {
      * @return list of priced products
      */
     public List<Product> getAllPricedProducts() {
-        return productRepository.findByIsPricedTrue();
+        return productRepository.findByIsPriced(true);
     }
     
     /**
@@ -137,7 +146,7 @@ public class ProductPricingService {
      * @return list of unpriced products
      */
     public List<Product> getAllUnpricedProducts() {
-        return productRepository.findByIsPricedFalse();
+        return productRepository.findByIsPriced(false);
     }
     
     /**
@@ -149,7 +158,7 @@ public class ProductPricingService {
     public List<Invoice> getInvoicesInDateRange(LocalDate startDate, LocalDate endDate) {
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay().minusNanos(1);
-        return invoiceService.findInvoicesByDateRange(startDateTime, endDateTime);
+        return invoiceService.findByInvoiceDateBetween(startDateTime, endDateTime);
     }
     
     /**

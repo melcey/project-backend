@@ -58,7 +58,7 @@ public class JwtAuthenticationFilterTest {
         Long userId = 1L;
         UserDetails userDetails = mock(UserDetails.class);
 
-        request.addHeader("Authorization", "Bearer " + jwt);
+        request.addHeader("Authorization", String.format("Bearer %s", jwt));
 
         when(tokenProvider.validateToken(jwt)).thenReturn(true);
         when(tokenProvider.getUserIdFromToken(jwt)).thenReturn(userId);
@@ -83,7 +83,7 @@ public class JwtAuthenticationFilterTest {
         // Arrange
         String jwt = "invalid.jwt.token";
 
-        request.addHeader("Authorization", "Bearer " + jwt);
+        request.addHeader("Authorization", String.format("Bearer %s", jwt));
 
         when(tokenProvider.validateToken(jwt)).thenReturn(false);
 

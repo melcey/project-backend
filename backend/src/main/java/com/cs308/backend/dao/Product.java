@@ -98,6 +98,29 @@ public class Product {
         this.imageUrl = imageUrl;
         this.category = null;
         this.productManager = null;
+        this.originalPrice = price;
+        this.costPrice = price;
+    }
+
+    public Product(String name, String model, String serialNumber, String description, int quantityInStock,
+            BigDecimal price, String warrantyStatus, String distributorInfo, boolean isActive, String imageUrl,
+            boolean isPriced, BigDecimal originalPrice, BigDecimal discountRate, BigDecimal costPrice) {
+        this.name = name;
+        this.model = model;
+        this.serialNumber = serialNumber;
+        this.description = description;
+        this.quantityInStock = quantityInStock;
+        this.price = price;
+        this.warrantyStatus = warrantyStatus;
+        this.distributorInfo = distributorInfo;
+        this.isActive = isActive;
+        this.imageUrl = imageUrl;
+        this.category = null;
+        this.productManager = null;
+        this.isPriced = isPriced;
+        this.originalPrice = price;
+        this.discountRate = discountRate != null ? discountRate : BigDecimal.ZERO;
+        this.costPrice = price;
     }
 
     public Product(Long id, String name, String model, String serialNumber, String description, int quantityInStock,
@@ -116,6 +139,8 @@ public class Product {
         this.imageUrl = imageUrl;
         this.category = category;
         this.productManager = productManager;
+        this.originalPrice = price;
+        this.costPrice = price;
     }
     
     // New constructor with pricing fields
