@@ -1,6 +1,7 @@
 package com.cs308.backend.dao;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,6 +56,19 @@ public class Product {
 
     @Column(name = "image_url")
     private String imageUrl;
+    
+    // New pricing fields
+    @Column(name = "is_priced")
+    private boolean isPriced = false;
+    
+    @Column(name = "original_price", precision = 10, scale = 2)
+    private BigDecimal originalPrice;
+    
+    @Column(name = "discount_rate", precision = 5, scale = 2)
+    private BigDecimal discountRate = BigDecimal.ZERO;
+    
+    @Column(name = "cost_price", precision = 10, scale = 2)
+    private BigDecimal costPrice;
 
     // Many-to-one association with the Category class
     @ManyToOne
@@ -102,6 +116,30 @@ public class Product {
         this.imageUrl = imageUrl;
         this.category = category;
         this.productManager = productManager;
+    }
+    
+    // New constructor with pricing fields
+    public Product(Long id, String name, String model, String serialNumber, String description, int quantityInStock,
+            BigDecimal price, String warrantyStatus, String distributorInfo, boolean isActive, String imageUrl,
+            Category category, User productManager, boolean isPriced, BigDecimal originalPrice, 
+            BigDecimal discountRate, BigDecimal costPrice) {
+        this.id = id;
+        this.name = name;
+        this.model = model;
+        this.serialNumber = serialNumber;
+        this.description = description;
+        this.quantityInStock = quantityInStock;
+        this.price = price;
+        this.warrantyStatus = warrantyStatus;
+        this.distributorInfo = distributorInfo;
+        this.isActive = isActive;
+        this.imageUrl = imageUrl;
+        this.category = category;
+        this.productManager = productManager;
+        this.isPriced = isPriced;
+        this.originalPrice = originalPrice;
+        this.discountRate = discountRate != null ? discountRate : BigDecimal.ZERO;
+        this.costPrice = costPrice;
     }
 
     public Long getId() {
@@ -207,6 +245,77 @@ public class Product {
     public void setProductManager(User productManager) {
         this.productManager = productManager;
     }
+    
+    // Getters and setters for new pricing fields
+    public boolean getIsPriced() {
+        return isPriced;
+    }
+
+    public void setIsPriced(boolean isPriced) {
+        this.isPriced = isPriced;
+    }
+
+    public BigDecimal getOriginalPrice() {
+        return originalPrice;
+    }
+
+    public void setOriginalPrice(BigDecimal originalPrice) {
+        this.originalPrice = originalPrice;
+    }
+
+    public BigDecimal getDiscountRate() {
+        return discountRate;
+    }
+
+    public void setDiscountRate(BigDecimal discountRate) {
+        this.discountRate = discountRate;
+    }
+
+    public BigDecimal getCostPrice() {
+        return costPrice;
+    }
+
+    public void setCostPrice(BigDecimal costPrice) {
+        this.costPrice = costPrice;
+    }
+    
+    /**
+     * Apply a discount to the product's price.
+     * @param discountRate the discount rate as a percentage (e.g., 20 for 20%)
+     */
+    public void applyDiscount(BigDecimal discountRate) {
+        if (originalPrice == null) {
+            originalPrice = this.price;
+        }
+        this.discountRate = discountRate;
+        this.price = originalPrice.multiply(
+            BigDecimal.ONE.subtract(discountRate.divide(new BigDecimal(100), 4, RoundingMode.HALF_UP))
+        ).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    /**
+     * Remove any applied discount and restore the original price.
+     */
+    public void removeDiscount() {
+        if (originalPrice != null) {
+            this.price = originalPrice;
+            this.discountRate = BigDecimal.ZERO;
+        }
+    }
+
+    /**
+     * Calculate the profit margin percentage based on cost price and selling price
+     * @return profit margin as a percentage, or null if costPrice is not set
+     */
+    public BigDecimal calculateProfitMargin() {
+        if (costPrice == null || costPrice.compareTo(BigDecimal.ZERO) == 0) {
+            return null;
+        }
+        return price.subtract(costPrice)
+                .divide(price, 4, RoundingMode.HALF_UP)
+                .multiply(new BigDecimal(100))
+                .setScale(2, RoundingMode.HALF_UP);
+    }
 
     @Override
     public String toString() {
@@ -222,6 +331,10 @@ public class Product {
             .append(", distributorInfo=").append(distributorInfo)
             .append(", isActive=").append(isActive)
             .append(", imageUrl=").append(imageUrl)
+            .append(", isPriced=").append(isPriced)
+            .append(", originalPrice=").append(originalPrice)
+            .append(", discountRate=").append(discountRate)
+            .append(", costPrice=").append(costPrice)
             .append(", category=").append(category)
             .append(", productManager=").append(productManager)
             .append("]");
