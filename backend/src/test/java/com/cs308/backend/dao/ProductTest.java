@@ -61,7 +61,7 @@ class ProductTest {
         Product product = new Product("Laptop", "Model X", "12345", "High-end laptop", 10, BigDecimal.valueOf(1200.00),
                 "1 year", "Distributor Inc.", true, "image.jpg");
 
-        String expected = "Product [id=null, name=Laptop, model=Model X, serialNumber=12345, description=High-end laptop, quantityInStock=10, price=1200.0, warrantyStatus=1 year, distributorInfo=Distributor Inc., isActive=true, imageUrl=image.jpg, category=null, productManager=null]";
+        String expected = "Product [id=null, name=Laptop, model=Model X, serialNumber=12345, description=High-end laptop, quantityInStock=10, price=1200.0, warrantyStatus=1 year, distributorInfo=Distributor Inc., isActive=true, imageUrl=image.jpg, isPriced=false, originalPrice=1200.0, discountRate=0, costPrice=1200.0, category=null, productManager=null]";
         assertEquals(expected, product.toString());
     }
 

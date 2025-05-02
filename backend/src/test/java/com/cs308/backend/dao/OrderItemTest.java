@@ -45,7 +45,7 @@ class OrderItemTest {
         product.setName("Laptop");
         OrderItem orderItem = new OrderItem(order, product, 3, BigDecimal.valueOf(150.00));
 
-        String expected = "OrderItem [id=null, order=Order [id=null, user=null, orderDate=null, status=null, totalPrice=null, deliveryAddress=null, orderItems=[]], product=Product [id=null, name=Laptop, model=null, serialNumber=null, description=null, quantityInStock=0, price=null, warrantyStatus=null, distributorInfo=null, isActive=true, imageUrl=null, category=null, productManager=null], quantity=3, price=150.0]";
+        String expected = "OrderItem [id=null, order=Order [id=null, user=null, orderDate=null, status=null, totalPrice=null, deliveryAddress=null, orderItems=[]], product=Product [id=null, name=Laptop, model=null, serialNumber=null, description=null, quantityInStock=0, price=null, warrantyStatus=null, distributorInfo=null, isActive=true, imageUrl=null, isPriced=false, originalPrice=null, discountRate=0, costPrice=null, category=null, productManager=null], quantity=3, price=150.0]";
         assertEquals(expected, orderItem.toString());
     }
 

@@ -52,7 +52,7 @@ class CartItemTest {
         cart.setCreatedAt(LocalDateTime.of(2025, 4, 19, 11, 0));
         cart.setUpdatedAt(LocalDateTime.of(2025, 4, 19, 13, 0));
 
-        String expected = "CartItem [id=null, cart=Cart [id=null, user=null, totalPrice=0, items=[], createdAt=2025-04-19T11:00, updatedAt=2025-04-19T13:00], product=Product [id=null, name=Laptop, model=null, serialNumber=null, description=null, quantityInStock=0, price=null, warrantyStatus=null, distributorInfo=null, isActive=true, imageUrl=null, category=null, productManager=null], quantity=2, priceAtAddition=50.25, createdAt=2025-04-19T12:00]";
+        String expected = "CartItem [id=null, cart=Cart [id=null, user=null, totalPrice=0, items=[], createdAt=2025-04-19T11:00, updatedAt=2025-04-19T13:00], product=Product [id=null, name=Laptop, model=null, serialNumber=null, description=null, quantityInStock=0, price=null, warrantyStatus=null, distributorInfo=null, isActive=true, imageUrl=null, isPriced=false, originalPrice=null, discountRate=0, costPrice=null, category=null, productManager=null], quantity=2, priceAtAddition=50.25, createdAt=2025-04-19T12:00]";
         assertEquals(expected, cartItem.toString());
     }
 

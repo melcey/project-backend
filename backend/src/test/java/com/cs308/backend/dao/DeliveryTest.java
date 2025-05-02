@@ -51,7 +51,7 @@ class DeliveryTest {
         product.setName("Laptop");
         Delivery delivery = new Delivery(order, product, 5, BigDecimal.valueOf(250.75), "123 Street", "Pending");
 
-        String expected = "Delivery [id=null, order=Order [id=null, user=null, orderDate=null, status=null, totalPrice=null, deliveryAddress=null, orderItems=[]], product=Product [id=null, name=Laptop, model=null, serialNumber=null, description=null, quantityInStock=0, price=null, warrantyStatus=null, distributorInfo=null, isActive=true, imageUrl=null, category=null, productManager=null], quantity=5, totalPrice=250.75, deliveryAddress=123 Street, deliveryStatus=Pending]";
+        String expected = "Delivery [id=null, order=Order [id=null, user=null, orderDate=null, status=null, totalPrice=null, deliveryAddress=null, orderItems=[]], product=Product [id=null, name=Laptop, model=null, serialNumber=null, description=null, quantityInStock=0, price=null, warrantyStatus=null, distributorInfo=null, isActive=true, imageUrl=null, isPriced=false, originalPrice=null, discountRate=0, costPrice=null, category=null, productManager=null], quantity=5, totalPrice=250.75, deliveryAddress=123 Street, deliveryStatus=Pending]";
         assertEquals(expected, delivery.toString());
     }
 
