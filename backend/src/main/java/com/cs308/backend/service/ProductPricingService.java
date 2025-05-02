@@ -28,7 +28,6 @@ public class ProductPricingService {
     private final WishlistService wishlistService;
     private final EmailService emailService;
     private final InvoiceService invoiceService;
-    private final OrderService orderService;
     private final UserRepository userRepository;
     
     public ProductPricingService(ProductRepository productRepository,
@@ -41,7 +40,6 @@ public class ProductPricingService {
         this.wishlistService = wishlistService;
         this.emailService = emailService;
         this.invoiceService = invoiceService;
-        this.orderService = orderService;
         this.userRepository = userRepository;
     }
     

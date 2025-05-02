@@ -34,6 +34,7 @@ public class UserRepositoryImpl implements UserRepositoryObj {
             return Optional.of(email);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -63,6 +64,7 @@ public class UserRepositoryImpl implements UserRepositoryObj {
             return Optional.of(newUser);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -103,6 +105,7 @@ public class UserRepositoryImpl implements UserRepositoryObj {
             return Optional.of(updatedUser);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -128,6 +131,7 @@ public class UserRepositoryImpl implements UserRepositoryObj {
             return Optional.of(updatedUser);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -152,6 +156,7 @@ public class UserRepositoryImpl implements UserRepositoryObj {
             return Optional.of(updatedUser);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -176,6 +181,7 @@ public class UserRepositoryImpl implements UserRepositoryObj {
             return Optional.of(updatedUser);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }

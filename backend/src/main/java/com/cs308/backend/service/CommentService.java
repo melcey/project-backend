@@ -48,6 +48,7 @@ public class CommentService {
             return Optional.of(submittedComment);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -60,6 +61,7 @@ public class CommentService {
             return Optional.of(approvedComment);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -72,6 +74,7 @@ public class CommentService {
             return Optional.of(disapprovedComment);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }

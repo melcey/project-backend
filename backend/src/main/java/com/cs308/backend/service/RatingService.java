@@ -24,6 +24,7 @@ public class RatingService {
             return Optional.of(submittedRating);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }

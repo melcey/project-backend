@@ -1,53 +1,92 @@
 package com.cs308.backend.dto;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WishlistResponse {
-    private Long productId;
-    private String productName;
-    private BigDecimal price;
-    private String imageUrl;
+    private Long id;
+    private Long userId;
+    private List<WishlistItemResponse> wishlistItems;
 
-    public WishlistResponse() {}
-
-    public WishlistResponse(Long productId, String productName, BigDecimal price, String imageUrl) {
-        this.productId = productId;
-        this.productName = productName;
-        this.price = price;
-        this.imageUrl = imageUrl;
+    public WishlistResponse() {
+        this.wishlistItems = new ArrayList<>();
     }
 
-    // Getters and Setters
-
-    public Long getProductId() {
-        return productId;
+    public WishlistResponse(Long id, Long userId, List<WishlistItemResponse> wishlistItems) {
+        this.id = id;
+        this.userId = userId;
+        this.wishlistItems = wishlistItems;
     }
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
+    public Long getId() {
+        return id;
     }
 
-    public String getProductName() {
-        return productName;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
+    public Long getUserId() {
+        return userId;
     }
 
-    public BigDecimal getPrice() {
-        return price;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public List<WishlistItemResponse> getWishlistItems() {
+        return wishlistItems;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public void setWishlistItems(List<WishlistItemResponse> wishlistItems) {
+        this.wishlistItems = wishlistItems;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("WishlistResponse [id=").append(id)
+            .append(", userId=").append(userId)
+            .append(", wishlistItems=").append(wishlistItems)
+            .append("]");
+
+        return builder.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((userId == null) ? 0 : userId.hashCode());
+        result = prime * result + ((wishlistItems == null) ? 0 : wishlistItems.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        WishlistResponse other = (WishlistResponse) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (userId == null) {
+            if (other.userId != null)
+                return false;
+        } else if (!userId.equals(other.userId))
+            return false;
+        if (wishlistItems == null) {
+            if (other.wishlistItems != null)
+                return false;
+        } else if (!wishlistItems.equals(other.wishlistItems))
+            return false;
+        return true;
     }
 }

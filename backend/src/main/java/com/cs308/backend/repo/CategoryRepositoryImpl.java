@@ -41,6 +41,7 @@ public class CategoryRepositoryImpl implements CategoryRepositoryObj {
             return Optional.of(newCategory);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -81,6 +82,7 @@ public class CategoryRepositoryImpl implements CategoryRepositoryObj {
             return Optional.of(updatedCategory);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -105,6 +107,7 @@ public class CategoryRepositoryImpl implements CategoryRepositoryObj {
             return Optional.of(updatedCategory);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }

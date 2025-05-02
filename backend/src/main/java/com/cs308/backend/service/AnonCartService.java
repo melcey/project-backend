@@ -34,6 +34,7 @@ public class AnonCartService {
             // AnonCart's ID should be kept in the frontend
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }

@@ -203,6 +203,7 @@ public class OrderController {
             return ResponseEntity.ok(new OrderResponse(addedOrder.get().getId(), user.getId(), addedOrder.get().getOrderDate(), addedOrder.get().getStatus(), addedOrder.get().getTotalPrice(), addedOrder.get().getDeliveryAddress(), responseItems));
         }
         catch (Exception e) {
+            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order creation failed");
         }
     }

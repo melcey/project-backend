@@ -37,6 +37,7 @@ public class CreditCardRepositoryImpl implements CreditCardRepositoryObj {
 
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }

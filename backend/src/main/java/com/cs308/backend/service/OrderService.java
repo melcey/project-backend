@@ -29,6 +29,7 @@ public class OrderService {
             return Optional.of(orderRepository.save(orderToAdd));
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -39,6 +40,7 @@ public class OrderService {
             return Optional.of(orderRepository.save(orderToUpdate));
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }

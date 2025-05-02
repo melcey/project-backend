@@ -56,6 +56,7 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
             return Optional.of(newProduct);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -112,6 +113,7 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
             return Optional.of(updatedProduct);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -136,6 +138,7 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
             return Optional.of(updatedProduct);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -160,6 +163,7 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
             return Optional.of(updatedProduct);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -184,6 +188,7 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
             return Optional.of(updatedProduct);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -208,6 +213,7 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
             return Optional.of(updatedProduct);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -232,6 +238,7 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
             return Optional.of(updatedProduct);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -256,6 +263,7 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
             return Optional.of(updatedProduct);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -280,6 +288,7 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
             return Optional.of(updatedProduct);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -304,6 +313,7 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
             return Optional.of(updatedProduct);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -328,6 +338,7 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
             return Optional.of(updatedProduct);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -352,6 +363,7 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
             return Optional.of(updatedProduct);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -377,6 +389,7 @@ public class ProductRepositoryImpl implements ProductRepositoryObj {
             return Optional.of(updatedProduct);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }

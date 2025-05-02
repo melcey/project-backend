@@ -95,6 +95,7 @@ public class PaymentService {
                 return Optional.of(paymentRepository.save(payment));
             }
         } catch (Exception e) {
+            e.printStackTrace();
             payment.setPaymentStatus("FAILED");
             return Optional.of(paymentRepository.save(payment));
         }

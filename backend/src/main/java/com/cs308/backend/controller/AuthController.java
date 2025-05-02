@@ -70,6 +70,7 @@ public class AuthController {
             return ResponseEntity.ok(new AuthResponse(jwt));
         }
         catch (Exception e) {
+            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication failed");
         }
     }
@@ -106,6 +107,7 @@ public class AuthController {
             return ResponseEntity.ok(new MessageResponse("OK"));
         }
         catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body(new MessageResponse("User registration failed"));
         }
     }

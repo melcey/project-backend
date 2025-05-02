@@ -66,7 +66,6 @@ public class JwtSecurityConfig {
                 // Set session management to stateless
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 
-                // Need to add the new controllers
                 // Set permissions on endpoints
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
@@ -85,6 +84,7 @@ public class JwtSecurityConfig {
                         .requestMatchers("/invoices/**").hasRole("CUSTOMER")
                         .requestMatchers("/invoices/**").hasRole("PRODUCT_MANAGER")
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/wishlist/**").hasRole("CUSTOMER")
                         .anyRequest().authenticated())
 
                 .authenticationProvider(authenticationProvider);

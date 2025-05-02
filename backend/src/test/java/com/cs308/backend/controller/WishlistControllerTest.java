@@ -3,7 +3,8 @@ package com.cs308.backend.controller;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
-import com.cs308.backend.dto.WishlistRequest;
+import com.cs308.backend.dao.Wishlist;
+import com.cs308.backend.dto.WishlistItemRequest;
 import com.cs308.backend.dto.WishlistResponse;
 import com.cs308.backend.security.UserPrincipal;
 import com.cs308.backend.service.WishlistService;
@@ -25,7 +26,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -66,40 +70,35 @@ public class WishlistControllerTest {
     @Test
     @WithMockUser(roles = "CUSTOMER")
     public void testAddToWishlist() throws Exception {
-        WishlistRequest request = new WishlistRequest(1L);
-        doNothing().when(wishlistService).addToWishlist(any(), any());
+        WishlistItemRequest request = new WishlistItemRequest(1L);
+        WishlistResponse response = new WishlistResponse(1L, mockUser.getId(), List.of());
 
-        mockMvc.perform(post("/wishlist/add")
+        when(wishlistService.addToWishlist(any(), eq(1L))).thenReturn(Optional.of(new Wishlist()));
+
+        mockMvc.perform(put("/wishlist/add")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Product added to wishlist."));
+                .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser(roles = "CUSTOMER")
     public void testGetWishlist() throws Exception {
-        Product mockProduct = new Product();
-        mockProduct.setId(1L);
-        mockProduct.setName("Mock Product");
-        mockProduct.setPrice(new BigDecimal("100.00"));
-        mockProduct.setImageUrl("image.jpg");
-
-        WishlistResponse response = new WishlistResponse(1L, "Mock Product", new BigDecimal("100.00"), "image.jpg");
-        when(wishlistService.getWishlist(any())).thenReturn(List.of(response));
+        when(wishlistService.getWishlist(any())).thenReturn(Optional.of(new Wishlist()));
 
         mockMvc.perform(get("/wishlist"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].productName").value("Mock Product"));
+                .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser(roles = "CUSTOMER")
     public void testRemoveFromWishlist() throws Exception {
-        doNothing().when(wishlistService).removeFromWishlist(any(), any());
+        WishlistItemRequest request = new WishlistItemRequest(1L);
+        when(wishlistService.removeFromWishlist(any(), eq(1L))).thenReturn(Optional.of(new Wishlist()));
 
-        mockMvc.perform(delete("/wishlist/remove/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Product removed from wishlist."));
+        mockMvc.perform(delete("/wishlist/remove")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
     }
 }
