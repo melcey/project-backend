@@ -22,16 +22,19 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.cs308.backend.config.UploadConfig;
 import com.cs308.backend.dao.Comment;
+import com.cs308.backend.dao.Order;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Rating;
 import com.cs308.backend.dto.CategoryResponse;
 import com.cs308.backend.dto.CommentListResponse;
 import com.cs308.backend.dto.CommentResponse;
+import com.cs308.backend.dto.PopularityResponse;
 import com.cs308.backend.dto.ProductListResponse;
 import com.cs308.backend.dto.ProductResponse;
 import com.cs308.backend.dto.RatingListResponse;
 import com.cs308.backend.dto.RatingResponse;
 import com.cs308.backend.service.CommentService;
+import com.cs308.backend.service.OrderService;
 import com.cs308.backend.service.ProductService;
 import com.cs308.backend.service.RatingService;
 
@@ -42,11 +45,13 @@ public class ProductController {
     private final ProductService productService;
     private final CommentService commentService;
     private final RatingService ratingService;
+    private final OrderService orderService;
 
-    public ProductController(ProductService productService, CommentService commentService, RatingService ratingService) {
+    public ProductController(ProductService productService, CommentService commentService, RatingService ratingService, OrderService orderService) {
         this.productService = productService;
         this.commentService = commentService;
         this.ratingService = ratingService;
+        this.orderService = orderService;
     }
 
     // Retrieve a product by its ID
@@ -99,6 +104,22 @@ public class ProductController {
 
         return ResponseEntity.ok(new RatingListResponse(responseRatings));
     }
+
+    @GetMapping("/{id}/popularity")
+    public ResponseEntity<?> getPopularityForProduct(@PathVariable Long id) {
+        Optional<Product> productOpt = productService.findProductById(id);
+
+        if (!productOpt.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
+        }
+
+        List<Order> ordersForProduct = orderService.findAllOrdersIncludingProduct(productOpt.get());
+
+        ProductResponse productResponse = new ProductResponse(productOpt.get().getId(), productOpt.get().getName(), productOpt.get().getModel(), productOpt.get().getSerialNumber(), productOpt.get().getDescription(), productOpt.get().getQuantityInStock(), productOpt.get().getPrice(), productOpt.get().getWarrantyStatus(), productOpt.get().getDistributorInfo(), productOpt.get().getIsActive(), productOpt.get().getImageUrl(), new CategoryResponse(productOpt.get().getCategory().getId(), productOpt.get().getCategory().getName(), productOpt.get().getCategory().getDescription()));
+
+        return ResponseEntity.ok(new PopularityResponse(ordersForProduct.size(), productResponse));
+    }
+    
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllProducts() {
