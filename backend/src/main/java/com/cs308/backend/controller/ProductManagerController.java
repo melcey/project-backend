@@ -982,6 +982,9 @@ public class ProductManagerController {
         else if (foundProduct.get().getIsActive()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product is already activated");
         }
+        else if (!(foundProduct.get().getIsPriced())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "A sales manager must approve the price of the product");
+        }
 
         boolean oldIsActive = foundProduct.get().getIsActive();
         Optional<Product> updatedProduct = productService.updateProductIsActive(id, true);
