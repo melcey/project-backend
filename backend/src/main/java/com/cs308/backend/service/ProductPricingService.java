@@ -58,6 +58,7 @@ public class ProductPricingService {
         product.setOriginalPrice(price);
         product.setCostPrice(costPrice != null ? costPrice : price.multiply(new BigDecimal("0.5")));
         product.setIsPriced(true);
+        product.setIsActive(true);
         
         return productRepository.save(product);
     }

@@ -36,12 +36,14 @@ import com.cs308.backend.dto.CategoryResponse;
 import com.cs308.backend.dto.InvoiceResponse;
 import com.cs308.backend.dto.MessageResponse;
 import com.cs308.backend.dto.PricingRequest;
+import com.cs308.backend.dto.ProductListResponse;
 import com.cs308.backend.dto.ProductResponse;
 import com.cs308.backend.dto.RefundResponse;
 import com.cs308.backend.dto.ReturnRequestResponse;
 import com.cs308.backend.security.UserPrincipal;
 import com.cs308.backend.service.InvoiceService;
 import com.cs308.backend.service.ProductPricingService;
+import com.cs308.backend.service.ProductService;
 import com.cs308.backend.service.ReturnRefundService;
 
 @RestController
@@ -51,13 +53,16 @@ public class SalesManagerController {
     private final ProductPricingService pricingService;
     private final InvoiceService invoiceService;
     private final ReturnRefundService returnRefundService;
+    private final ProductService productService;
     
     public SalesManagerController(ProductPricingService pricingService,
                                 InvoiceService invoiceService,
-                                ReturnRefundService returnRefundService) {
+                                ReturnRefundService returnRefundService,
+                                ProductService productService) {
         this.pricingService = pricingService;
         this.invoiceService = invoiceService;
         this.returnRefundService = returnRefundService;
+        this.productService = productService;
     }
     
     private User getCurrentUser() {
@@ -76,6 +81,20 @@ public class SalesManagerController {
         return user;
     }
     
+    @GetMapping("/all-products")
+    public ResponseEntity<?> getAllProducts() {
+        List<Product> allRetrieved = productService.findAllProducts();
+        allRetrieved.sort(Comparator.comparing(Product::getId));
+
+        List<ProductResponse> allProducts = new ArrayList<>();
+
+        for (Product retrieved: allRetrieved) {
+            allProducts.add(new ProductResponse(retrieved.getId(), retrieved.getName(), retrieved.getModel(), retrieved.getSerialNumber(), retrieved.getDescription(), retrieved.getQuantityInStock(), retrieved.getPrice(), retrieved.getWarrantyStatus(), retrieved.getDistributorInfo(), retrieved.getIsActive(), retrieved.getImageUrl(), new CategoryResponse(retrieved.getCategory().getId(), retrieved.getCategory().getName(), retrieved.getCategory().getDescription())));
+        }
+
+        return ResponseEntity.ok(new ProductListResponse(allProducts));
+    }
+
     @GetMapping("/unpriced-products")
     public ResponseEntity<?> getUnpricedProducts() {
         getCurrentUser();

@@ -348,7 +348,7 @@ public class ProductManagerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
         }
 
-        Product product = new Product(createProductRequest.getName(), createProductRequest.getModel(), createProductRequest.getSerialNumber(), createProductRequest.getDescription(), createProductRequest.getQuantityInStock(), createProductRequest.getPrice(), createProductRequest.getWarrantyStatus(), createProductRequest.getDistributorInfo(), createProductRequest.getIsActive(), createProductRequest.getImageUrl());
+        Product product = new Product(createProductRequest.getName(), createProductRequest.getModel(), createProductRequest.getSerialNumber(), createProductRequest.getDescription(), createProductRequest.getQuantityInStock(), createProductRequest.getPrice(), createProductRequest.getWarrantyStatus(), createProductRequest.getDistributorInfo(), false, createProductRequest.getImageUrl());
         Optional<Category> category = productService.findCategoryById(createProductRequest.getCategoryId());
 
         if (!(category.isPresent())) {
