@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -125,6 +126,11 @@ public class ProductControllerTest {
         mockComment2.setCommentedProduct(mockProduct);
         mockComment2.setCommentingUser(mockUser);
 
+        // Set comment dates so that after sorting (descending) mockComment1 comes first.
+        LocalDateTime now = LocalDateTime.now();
+        mockComment1.setCommentDate(now.plusSeconds(1));
+        mockComment2.setCommentDate(now);
+
         List<Comment> mockComments = Arrays.asList(mockComment1, mockComment2);
 
         when(productService.findProductById(1L)).thenReturn(Optional.of(mockProduct));
@@ -171,6 +177,11 @@ public class ProductControllerTest {
         mockRating2.setRating(4);
         mockRating2.setRatedProduct(mockProduct);
         mockRating2.setRatingUser(mockUser);
+
+        // Set rating dates so that descending sort places mockRating1 first.
+        LocalDateTime now = LocalDateTime.now();
+        mockRating1.setRatingDate(now.plusSeconds(1));
+        mockRating2.setRatingDate(now);
 
         List<Rating> mockRatings = Arrays.asList(mockRating1, mockRating2);
 
