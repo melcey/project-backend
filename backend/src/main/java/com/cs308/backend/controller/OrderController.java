@@ -2,6 +2,7 @@ package com.cs308.backend.controller;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,6 +70,7 @@ public class OrderController {
         }
 
         List<Order> ordersByUser = orderService.findAllOrdersByUser(user);
+        ordersByUser.sort(Comparator.comparing(Order::getOrderDate).reversed());
 
         List<OrderItemResponse> orderItems = new ArrayList<>();
         List<OrderResponse> response = new ArrayList<>();

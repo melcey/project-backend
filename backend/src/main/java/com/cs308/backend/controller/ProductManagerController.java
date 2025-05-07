@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -95,6 +96,8 @@ public class ProductManagerController {
         }
 
         List<Product> managedProducts = productService.findProductsByProductManager(user);
+        managedProducts.sort(Comparator.comparing(Product::getId));
+
         List<ProductResponse> managedProductResponse = new ArrayList<>();
 
         for (Product managedProduct: managedProducts) {
@@ -177,6 +180,8 @@ public class ProductManagerController {
 
         List<Product> foundProducts = productService.searchManagedProducts(user, name, model, serialNumber, description, distributorInfo, isActive,
                 warrantyStatus, minPrice, maxPrice, minQuantity, maxQuantity, categoryId);
+        foundProducts.sort(Comparator.comparing(Product::getId));
+
         List<ProductResponse> responseProductList = new ArrayList<>();
 
         for (Product foundProduct: foundProducts) {
@@ -232,6 +237,7 @@ public class ProductManagerController {
         }
 
         List<Order> foundOrders = orderService.findAllOrdersIncludingProduct(foundProduct.get());
+        foundOrders.sort(Comparator.comparing(Order::getOrderDate).reversed());
 
         List<OrderResponse> responseOrders = new ArrayList<>();
 
@@ -275,6 +281,7 @@ public class ProductManagerController {
         }
 
         List<Comment> commentsForProduct = commentService.findAllCommentsForProduct(foundProduct.get());
+        commentsForProduct.sort(Comparator.comparing(Comment::getCommentDate).reversed());
 
         List<CommentResponse> responseComments = new ArrayList<>();
 
@@ -312,6 +319,7 @@ public class ProductManagerController {
         }
 
         List<Rating> ratingsForProduct = ratingService.findRatingsForProduct(foundProduct.get());
+        ratingsForProduct.sort(Comparator.comparing(Rating::getRatingDate).reversed());
 
         List<RatingResponse> responseRatings = new ArrayList<>();
 
