@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,6 +77,7 @@ public class ProductController {
         }
 
         List<Comment> commentsForProduct = commentService.findApprovedCommentsForProduct(productOpt.get());
+        commentsForProduct.sort(Comparator.comparing(Comment::getCommentDate).reversed());
 
         List<CommentResponse> responseComments = new ArrayList<>();
 
@@ -95,6 +97,7 @@ public class ProductController {
         }
 
         List<Rating> ratingsForProduct = ratingService.findRatingsForProduct(productOpt.get());
+        ratingsForProduct.sort(Comparator.comparing(Rating::getRatingDate).reversed());
 
         List<RatingResponse> responseRatings = new ArrayList<>();
 
@@ -124,6 +127,8 @@ public class ProductController {
     @GetMapping("/all")
     public ResponseEntity<?> getAllProducts() {
         List<Product> allRetrieved = productService.findAllProducts();
+        allRetrieved.sort(Comparator.comparing(Product::getId));
+
         List<ProductResponse> allProducts = new ArrayList<>();
 
         for (Product retrieved: allRetrieved) {
@@ -162,6 +167,8 @@ public class ProductController {
 
         List<Product> foundProducts = productService.searchProducts(name, model, serialNumber, description, distributorInfo, isActive,
                 warrantyStatus, minPrice, maxPrice, minQuantity, maxQuantity, categoryId);
+        foundProducts.sort(Comparator.comparing(Product::getId));
+
         List<ProductResponse> responseProductList = new ArrayList<>();
 
         for (Product foundProduct: foundProducts) {

@@ -3,6 +3,7 @@ package com.cs308.backend.controller;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -80,6 +81,7 @@ public class SalesManagerController {
         getCurrentUser();
         
         List<Product> unpricedProducts = pricingService.getAllUnpricedProducts();
+        unpricedProducts.sort(Comparator.comparing(Product::getId));
 
         List<ProductResponse> responseUnpricedProducts = new ArrayList<>();
 
@@ -114,6 +116,7 @@ public class SalesManagerController {
         BigDecimal discountRate = new BigDecimal(request.get("discountRate").toString());
         
         List<Product> updatedProducts = pricingService.applyDiscountToProducts(productIds, discountRate);
+        updatedProducts.sort(Comparator.comparing(Product::getId));
 
         List<ProductResponse> responseUpdatedProducts = new ArrayList<>();
 
@@ -132,6 +135,7 @@ public class SalesManagerController {
         List<Long> productIds = (List<Long>) request.get("productIds");
         
         List<Product> updatedProducts = pricingService.removeDiscountsFromProducts(productIds);
+        updatedProducts.sort(Comparator.comparing(Product::getId));
         
         List<ProductResponse> responseUpdatedProducts = new ArrayList<>();
 
@@ -149,6 +153,7 @@ public class SalesManagerController {
         getCurrentUser();
         
         List<Invoice> invoices = pricingService.getInvoicesInDateRange(startDate, endDate);
+        invoices.sort(Comparator.comparing(Invoice::getInvoiceDate).reversed());
         
         List<InvoiceResponse> responseInvoices = new ArrayList<>();
 
