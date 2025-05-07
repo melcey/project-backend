@@ -2,6 +2,7 @@ package com.cs308.backend.service;
 
 import com.cs308.backend.dao.Order;
 import com.cs308.backend.dao.OrderItem;
+import com.cs308.backend.dao.OrderStatus;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Refund;
 import com.cs308.backend.dao.ReturnRequest;
@@ -77,7 +78,7 @@ public class ReturnRefundService {
         }
         
         // Check if order has been delivered
-        if (!order.getStatus().equals("DELIVERED")) {
+        if (!order.getStatus().equals(OrderStatus.delivered)) {
             throw new IllegalArgumentException("Order has not been delivered yet");
         }
         
