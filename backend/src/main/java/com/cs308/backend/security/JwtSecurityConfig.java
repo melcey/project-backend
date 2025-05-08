@@ -69,22 +69,27 @@ public class JwtSecurityConfig {
                 // Set permissions on endpoints
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/products/**").permitAll()
                         .requestMatchers("/anoncart/**").permitAll()
-                        .requestMatchers("/order/customer/**").hasRole("CUSTOMER")
-                        .requestMatchers("/order/manager/**").hasRole("PRODUCT_MANAGER")
-                        .requestMatchers("/sales/**").hasRole("SALES_MANAGER")
-                        .requestMatchers("/prodman/**").hasRole("PRODUCT_MANAGER")
+
                         .requestMatchers("/cart/**").hasRole("CUSTOMER")
+                        .requestMatchers("/order/customer/**").hasRole("CUSTOMER")
                         .requestMatchers("/comment/submit").hasRole("CUSTOMER")
-                        .requestMatchers("/comment/approve").hasRole("PRODUCT_MANAGER")
-                        .requestMatchers("/comment/disapprove").hasRole("PRODUCT_MANAGER")
                         .requestMatchers("/rating/**").hasRole("CUSTOMER")
                         .requestMatchers("/payments/**").hasRole("CUSTOMER")
                         .requestMatchers("/invoices/**").hasRole("CUSTOMER")
-                        .requestMatchers("/invoices/**").hasRole("PRODUCT_MANAGER")
-                        .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/wishlist/**").hasRole("CUSTOMER")
+                        .requestMatchers("/returns/**").hasRole("CUSTOMER")
+
+                        .requestMatchers("/prodman/**").hasRole("PRODUCT_MANAGER")
+                        .requestMatchers("/order/manager/**").hasRole("PRODUCT_MANAGER")
+                        .requestMatchers("/comment/approve").hasRole("PRODUCT_MANAGER")
+                        .requestMatchers("/comment/disapprove").hasRole("PRODUCT_MANAGER")
+                        .requestMatchers("/invoices/**").hasRole("PRODUCT_MANAGER")
+
+                        .requestMatchers("/sales/**").hasRole("SALES_MANAGER")
+
                         .anyRequest().authenticated())
 
                 .authenticationProvider(authenticationProvider);
