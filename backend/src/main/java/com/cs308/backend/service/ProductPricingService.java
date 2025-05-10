@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-@Transactional
 public class ProductPricingService {
     private final ProductRepository productRepository;
     private final WishlistService wishlistService;
@@ -50,6 +49,7 @@ public class ProductPricingService {
      * @param costPrice cost price (can be null)
      * @return updated product entity
      */
+    @Transactional
     public Product approveProductPrice(Long productId, BigDecimal price, BigDecimal costPrice) {
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new EntityNotFoundException("Product not found"));
@@ -69,6 +69,7 @@ public class ProductPricingService {
      * @param discountRate discount percentage (e.g., 20 for 20%)
      * @return list of updated products
      */
+    @Transactional
     public List<Product> applyDiscountToProducts(List<Long> productIds, BigDecimal discountRate) {
         List<Product> products = productRepository.findAllById(productIds);
         List<Product> updatedProducts = new ArrayList<>();
@@ -87,6 +88,7 @@ public class ProductPricingService {
      * @param productIds list of product IDs to remove discounts from
      * @return list of updated products
      */
+    @Transactional
     public List<Product> removeDiscountsFromProducts(List<Long> productIds) {
         List<Product> products = productRepository.findAllById(productIds);
         List<Product> updatedProducts = new ArrayList<>();
@@ -124,6 +126,7 @@ public class ProductPricingService {
      * @param costPrice new cost price
      * @return updated product entity
      */
+    @Transactional
     public Product updateProductCostPrice(Long productId, BigDecimal costPrice) {
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new EntityNotFoundException("Product not found"));
