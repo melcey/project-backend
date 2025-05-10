@@ -99,7 +99,7 @@ public class Product {
         this.category = null;
         this.productManager = null;
         this.originalPrice = price;
-        this.costPrice = price;
+        this.costPrice = price.divide(BigDecimal.valueOf(2));
     }
 
     public Product(String name, String model, String serialNumber, String description, int quantityInStock,
@@ -120,7 +120,7 @@ public class Product {
         this.isPriced = isPriced;
         this.originalPrice = price;
         this.discountRate = discountRate != null ? discountRate : BigDecimal.ZERO;
-        this.costPrice = price;
+        this.costPrice = price.divide(BigDecimal.valueOf(2));
     }
 
     public Product(Long id, String name, String model, String serialNumber, String description, int quantityInStock,
@@ -140,7 +140,7 @@ public class Product {
         this.category = category;
         this.productManager = productManager;
         this.originalPrice = price;
-        this.costPrice = price;
+        this.costPrice = price.divide(BigDecimal.valueOf(2));
     }
     
     // New constructor with pricing fields
