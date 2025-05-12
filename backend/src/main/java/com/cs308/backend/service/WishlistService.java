@@ -109,6 +109,12 @@ public class WishlistService {
             wishlistItem.setWishlist(foundWishlist);
             wishlistItem.setProduct(foundProduct);
 
+            Set<WishlistItem> setOfWishlistItems = new LinkedHashSet<>(foundWishlist.getWishlistItems());
+            setOfWishlistItems.add(wishlistItem);
+
+            foundWishlist.getWishlistItems().clear();
+            foundWishlist.getWishlistItems().addAll(setOfWishlistItems);
+
             try {
                 Wishlist updatedWishlist = wishlistRepository.save(foundWishlist);
                 return Optional.of(updatedWishlist);
