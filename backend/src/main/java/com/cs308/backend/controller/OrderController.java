@@ -323,9 +323,8 @@ public class OrderController {
         return ResponseEntity.ok(new OrderResponse(updatedOrder.get().getId(), user.getId(), updatedOrder.get().getOrderDate(), updatedOrder.get().getStatus(), updatedOrder.get().getTotalPrice(), updatedOrder.get().getDeliveryAddress(), responseItems));
     }
 
-    // To be unused right now
-    /*@DeleteMapping("/customer/{id}")
-    public ResponseEntity<?> deleteOrder(@PathVariable Long id) {
+    @DeleteMapping("/customer/{id}")
+    public ResponseEntity<?> cancelOrder(@PathVariable Long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if ((auth == null) || (!(auth.isAuthenticated()))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
@@ -351,6 +350,10 @@ public class OrderController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Order does not belong to the user");
         }
 
+        if (!(orderToDelete.getStatus().equals(OrderStatus.processing))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Order cannot be cancelled anymore");
+        }
+
         Optional<Order> deletedOrder = orderService.updateOrderStatus(orderToDelete, "cancelled");
 
         if (!(deletedOrder.isPresent())) {
@@ -364,5 +367,5 @@ public class OrderController {
         }
 
         return ResponseEntity.ok(new OrderResponse(deletedOrder.get().getId(), user.getId(), deletedOrder.get().getOrderDate(), deletedOrder.get().getStatus(), deletedOrder.get().getTotalPrice(), deletedOrder.get().getDeliveryAddress(), responseItems));
-    }*/
+    }
 }

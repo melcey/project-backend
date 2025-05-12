@@ -6,7 +6,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum OrderStatus {
     processing("processing"),
     intransit("in-transit"),
-    delivered("delivered");
+    delivered("delivered"),
+    cancelled("cancelled");
 
     private final String value;
 
