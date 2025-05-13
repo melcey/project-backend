@@ -36,9 +36,12 @@ import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Rating;
 import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
+import com.cs308.backend.dto.CategoryListResponse;
 import com.cs308.backend.dto.CategoryResponse;
 import com.cs308.backend.dto.CommentListResponse;
 import com.cs308.backend.dto.CommentResponse;
+import com.cs308.backend.dto.CreateCategoryRequest;
+import com.cs308.backend.dto.DeleteCategoryRequest;
 import com.cs308.backend.dto.MessageResponse;
 import com.cs308.backend.dto.OrderItemResponse;
 import com.cs308.backend.dto.OrderListResponse;
@@ -51,6 +54,7 @@ import com.cs308.backend.dto.RatingListResponse;
 import com.cs308.backend.dto.RatingResponse;
 import com.cs308.backend.dto.UpdateProductRequest;
 import com.cs308.backend.security.UserPrincipal;
+import com.cs308.backend.service.CategoryService;
 import com.cs308.backend.service.CommentService;
 import com.cs308.backend.service.OrderService;
 import com.cs308.backend.service.ProductManagerActionService;
@@ -67,14 +71,16 @@ public class ProductManagerController {
     private final CommentService commentService;
     private final RatingService ratingService;
     private final ProductManagerActionService actionService;
+    private final CategoryService categoryService;
 
-    public ProductManagerController(ProductService productService, UserService userService, OrderService orderService, CommentService commentService, RatingService ratingService, ProductManagerActionService actionService) {
+    public ProductManagerController(ProductService productService, UserService userService, OrderService orderService, CommentService commentService, RatingService ratingService, ProductManagerActionService actionService, CategoryService categoryService) {
         this.productService = productService;
         this.userService = userService;
         this.orderService = orderService;
         this.commentService = commentService;
         this.ratingService = ratingService;
         this.actionService = actionService;
+        this.categoryService = categoryService;
     }
 
     // Get all the products you manage as a product manager
@@ -349,7 +355,7 @@ public class ProductManagerController {
         }
 
         Product product = new Product(createProductRequest.getName(), createProductRequest.getModel(), createProductRequest.getSerialNumber(), createProductRequest.getDescription(), createProductRequest.getQuantityInStock(), createProductRequest.getPrice(), createProductRequest.getWarrantyStatus(), createProductRequest.getDistributorInfo(), false, createProductRequest.getImageUrl());
-        Optional<Category> category = productService.findCategoryById(createProductRequest.getCategoryId());
+        Optional<Category> category = categoryService.findCategoryById(createProductRequest.getCategoryId());
 
         if (!(category.isPresent())) {
             // Automatically handled by Spring Boot; no need to implement an error controller
@@ -1163,5 +1169,109 @@ public class ProductManagerController {
 
         actionService.logAction(user, "CHANGE_PRODUCTMANAGER", String.format("%d: %s -> %s", updatedProduct.get().getId(), oldProductManager, updatedProduct.get().getProductManager().toString()));
         return ResponseEntity.ok(new ProductResponse(updatedProduct.get().getId(), updatedProduct.get().getName(), updatedProduct.get().getModel(), updatedProduct.get().getSerialNumber(), updatedProduct.get().getDescription(), updatedProduct.get().getQuantityInStock(), updatedProduct.get().getPrice(), updatedProduct.get().getWarrantyStatus(), updatedProduct.get().getDistributorInfo(), updatedProduct.get().getIsActive(), updatedProduct.get().getImageUrl(), new CategoryResponse(updatedProduct.get().getCategory().getId(), updatedProduct.get().getCategory().getName(), updatedProduct.get().getCategory().getDescription())));
+    }
+
+    @PostMapping("/category")
+    public ResponseEntity<?> createNewCategory(@RequestBody CreateCategoryRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ((auth == null) || (!(auth.isAuthenticated()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
+
+        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
+            
+        User user = userDetails.getUser();
+
+        if (user.getRole() != Role.product_manager) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
+        }
+
+        Optional<Category> createdCategory = categoryService.createNewCategory(request.getName(), request.getDescription());
+
+        if (createdCategory.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category creation failed");
+        }
+
+        Category newCategory = createdCategory.get();
+
+        actionService.logAction(user, "CREATE_CATEGORY", String.format("%s: %s, %s", newCategory.getId(), newCategory.getName(), newCategory.getDescription()));
+        return ResponseEntity.ok(new CategoryResponse(newCategory.getId(), newCategory.getName(), newCategory.getDescription()));
+    }
+
+    @GetMapping("/category")
+    public ResponseEntity<?> getCategories() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ((auth == null) || (!(auth.isAuthenticated()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
+
+        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
+            
+        User user = userDetails.getUser();
+
+        if (user.getRole() != Role.product_manager) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
+        }
+
+        List<Category> allCategories = categoryService.findAllCategories();
+
+        List<CategoryResponse> allCategoryResponses = new ArrayList<>();
+
+        for (Category category: allCategories) {
+            allCategoryResponses.add(new CategoryResponse(category.getId(), category.getName(), category.getDescription()));
+        }
+
+        return ResponseEntity.ok(new CategoryListResponse(allCategoryResponses));
+    }
+
+    @GetMapping("/category/{id}")
+    public ResponseEntity<?> getCategory(@PathVariable("id") Long categoryId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ((auth == null) || (!(auth.isAuthenticated()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
+
+        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
+            
+        User user = userDetails.getUser();
+
+        if (user.getRole() != Role.product_manager) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
+        }
+
+        Optional<Category> retrievedCategory = categoryService.findCategoryById(categoryId);
+
+        if (!(retrievedCategory.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There is no such category");
+        }
+
+        return ResponseEntity.ok(new CategoryResponse(retrievedCategory.get().getId(), retrievedCategory.get().getName(), retrievedCategory.get().getDescription()));
+    }
+
+    @DeleteMapping("/category")
+    public ResponseEntity<?> deleteCategory(@RequestBody DeleteCategoryRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ((auth == null) || (!(auth.isAuthenticated()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
+
+        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
+            
+        User user = userDetails.getUser();
+
+        if (user.getRole() != Role.product_manager) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
+        }
+
+        Optional<Category> retrievedCategory = categoryService.findCategoryById(request.getCategoryId());
+
+        if (!(retrievedCategory.isPresent())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There is no such category");
+        }
+
+        actionService.logAction(user, "DELETE_CATEGORY", String.format("%s: %s, %s", retrievedCategory.get().getId(), retrievedCategory.get().getName(), retrievedCategory.get().getDescription()));
+        categoryService.deleteCategory(request.getCategoryId());
+
+        return ResponseEntity.ok(new MessageResponse("Category is successfully deleted"));
     }
 }

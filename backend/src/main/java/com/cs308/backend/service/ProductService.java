@@ -70,7 +70,7 @@ public class ProductService {
         if ((categoryIds != null) && (!categoryIds.isEmpty())) {
             Set<Product> categoryFilteredProducts = new HashSet<>();
             for (Long categoryId : categoryIds) {
-                categoryFilteredProducts.addAll(findProductsByCategory(findCategoryById(categoryId).get()));
+                categoryFilteredProducts.addAll(findProductsByCategory(categoryRepository.findById(categoryId).get()));
             }
             
             resultSet.retainAll(categoryFilteredProducts);
@@ -119,7 +119,7 @@ public class ProductService {
         if ((categoryIds != null) && (!(categoryIds.isEmpty()))) {
             Set<Product> categoryFilteredProducts = new HashSet<>();
             for (Long categoryId: categoryIds) {
-                categoryFilteredProducts.addAll(findManagedProductsByCategory(findCategoryById(categoryId).get(), productManager));
+                categoryFilteredProducts.addAll(findManagedProductsByCategory(categoryRepository.findById(categoryId).get(), productManager));
             }
 
             resultSet.retainAll(categoryFilteredProducts);
@@ -378,18 +378,6 @@ public class ProductService {
     
     public List<Product> findManagedProductsByCategory(Category category, User productManager) {
         return productRepository.findManagedByCategoryId(category.getId(), productManager.getId());
-    }
-
-    public Optional<Category> findCategoryById(Long categoryId) {
-        return categoryRepository.findById(categoryId);
-    }
-    
-    public List<Category> findCategoryByName(String name) {
-        return categoryRepository.findByName(name);
-    }
-
-    public List<Category> findCategoriesByNameContains(String name) {
-        return categoryRepository.findByNameContains(name);
     }
 
     
