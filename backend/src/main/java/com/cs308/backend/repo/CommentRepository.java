@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.cs308.backend.dao.Comment;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.User;
 
+@Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByCommentingUser(User commentingUser);
 
@@ -38,4 +40,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByApprovedAndCommentDateBefore(boolean approved, LocalDateTime beforeDate);
 
     List<Comment> findByApprovedAndCommentDateAfter(boolean approved, LocalDateTime afterDate);
+
+    List<Comment> findByApprovedFalse();
 }

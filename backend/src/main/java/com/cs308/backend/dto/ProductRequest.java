@@ -16,7 +16,8 @@ public class ProductRequest {
     private String imageUrl;
     private Long categoryId;
 
-    public ProductRequest() {}
+    public ProductRequest() {
+    }
 
     public ProductRequest(String name, String model, String serialNumber, String description, int quantityInStock,
             BigDecimal price, String warrantyStatus, String distributorInfo, boolean isActive, String imageUrl,
@@ -118,7 +119,7 @@ public class ProductRequest {
         return categoryId;
     }
 
-    public void setCategory(Long categoryId) {
+    public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
 
@@ -126,17 +127,17 @@ public class ProductRequest {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("ProductRequest [name=").append(name)
-            .append(", model=").append(model)
-            .append(", serialNumber=").append(serialNumber)
-            .append(", description=").append(description)
-            .append(", quantityInStock=").append(quantityInStock)
-            .append(", price=").append(price)
-            .append(", warrantyStatus=").append(warrantyStatus)
-            .append(", distributorInfo=").append(distributorInfo)
-            .append(", isActive=").append(isActive)
-            .append(", imageUrl=").append(imageUrl)
-            .append(", categoryId=").append(categoryId)
-            .append("]");
+                .append(", model=").append(model)
+                .append(", serialNumber=").append(serialNumber)
+                .append(", description=").append(description)
+                .append(", quantityInStock=").append(quantityInStock)
+                .append(", price=").append(price)
+                .append(", warrantyStatus=").append(warrantyStatus)
+                .append(", distributorInfo=").append(distributorInfo)
+                .append(", isActive=").append(isActive)
+                .append(", imageUrl=").append(imageUrl)
+                .append(", categoryId=").append(categoryId)
+                .append("]");
 
         return builder.toString();
     }
@@ -220,5 +221,4 @@ public class ProductRequest {
         return true;
     }
 
-    
 }

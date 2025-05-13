@@ -1,27 +1,28 @@
 package com.cs308.backend.dto;
 
 public class UpdateOrderStateRequest {
-    private String status;
+    private String newStatus;
 
-    public UpdateOrderStateRequest() {}
-
-    public UpdateOrderStateRequest(String status) {
-        this.status = status;
+    public UpdateOrderStateRequest() {
     }
 
-    public String getStatus() {
-        return status;
+    public UpdateOrderStateRequest(String newStatus) {
+        this.newStatus = newStatus;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public String getNewStatus() {
+        return newStatus;
+    }
+
+    public void setNewStatus(String newStatus) {
+        this.newStatus = newStatus;
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("UpdateOrderStateRequest [status=").append(status)
-            .append("]");
+        builder.append("UpdateOrderStateRequest [newStatus=").append(newStatus)
+                .append("]");
 
         return builder.toString();
     }
@@ -30,7 +31,7 @@ public class UpdateOrderStateRequest {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((status == null) ? 0 : status.hashCode());
+        result = prime * result + ((newStatus == null) ? 0 : newStatus.hashCode());
         return result;
     }
 
@@ -43,10 +44,10 @@ public class UpdateOrderStateRequest {
         if (getClass() != obj.getClass())
             return false;
         UpdateOrderStateRequest other = (UpdateOrderStateRequest) obj;
-        if (status == null) {
-            if (other.status != null)
+        if (newStatus == null) {
+            if (other.newStatus != null)
                 return false;
-        } else if (!status.equals(other.status))
+        } else if (!newStatus.equals(other.newStatus))
             return false;
         return true;
     }

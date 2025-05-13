@@ -3,6 +3,7 @@ package com.cs308.backend.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.cs308.backend.dao.Comment;
@@ -46,8 +47,7 @@ public class CommentService {
         try {
             Comment submittedComment = commentRepository.save(commentToSubmit);
             return Optional.of(submittedComment);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();
         }
@@ -59,8 +59,7 @@ public class CommentService {
         try {
             Comment approvedComment = commentRepository.save(commentToApprove);
             return Optional.of(approvedComment);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();
         }
@@ -72,10 +71,44 @@ public class CommentService {
         try {
             Comment disapprovedComment = commentRepository.save(commentToDisapprove);
             return Optional.of(disapprovedComment);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();
+        }
+    }
+
+    public ResponseEntity<List<Comment>> getPendingComments() {
+        try {
+            List<Comment> pendingComments = commentRepository.findByApprovedFalse();
+            return ResponseEntity.ok(pendingComments);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    public ResponseEntity<?> approveComment(Long commentId) {
+        try {
+            Comment comment = commentRepository.findById(commentId)
+                    .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+            comment.setApproved(true);
+            Comment updatedComment = commentRepository.save(comment);
+            return ResponseEntity.ok(updatedComment);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error approving comment: " + e.getMessage());
+        }
+    }
+
+    public ResponseEntity<?> disapproveComment(Long commentId) {
+        try {
+            Comment comment = commentRepository.findById(commentId)
+                    .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+            comment.setApproved(false);
+            Comment updatedComment = commentRepository.save(comment);
+            return ResponseEntity.ok(updatedComment);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error disapproving comment: " + e.getMessage());
         }
     }
 }
