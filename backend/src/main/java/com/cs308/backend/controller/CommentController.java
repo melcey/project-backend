@@ -1,5 +1,6 @@
 package com.cs308.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,7 @@ import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Role;
 import com.cs308.backend.dao.User;
 import com.cs308.backend.dto.CategoryResponse;
+import com.cs308.backend.dto.CommentListResponse;
 import com.cs308.backend.dto.CommentRequest;
 import com.cs308.backend.dto.CommentResponse;
 import com.cs308.backend.dto.CommentStateRequest;
@@ -42,6 +45,33 @@ public class CommentController {
         this.commentService = commentService;
         this.productService = productService;
         this.orderService = orderService;
+    }
+
+    // Works per product manager
+    @GetMapping("/pending")
+    public ResponseEntity<?> getPendingComments() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
+
+        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
+        User user = userDetails.getUser();
+
+        if (user.getRole() != Role.product_manager) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
+        }
+
+        List<Comment> pendingComments = commentService.getPendingComments();
+        List<CommentResponse> responseComments = new ArrayList<>();
+
+        for (Comment pendingComment: pendingComments) {
+            if (pendingComment.getCommentedProduct().getProductManager().equals(user)) {
+                responseComments.add(new CommentResponse(pendingComment.getId(), new ProductResponse(pendingComment.getCommentedProduct().getId(), pendingComment.getCommentedProduct().getName(), pendingComment.getCommentedProduct().getModel(), pendingComment.getCommentedProduct().getSerialNumber(), pendingComment.getCommentedProduct().getDescription(), pendingComment.getCommentedProduct().getQuantityInStock(), pendingComment.getCommentedProduct().getPrice(), pendingComment.getCommentedProduct().getWarrantyStatus(), pendingComment.getCommentedProduct().getDistributorInfo(), pendingComment.getCommentedProduct().getIsActive(), pendingComment.getCommentedProduct().getImageUrl(), new CategoryResponse(pendingComment.getCommentedProduct().getCategory().getId(), pendingComment.getCommentedProduct().getCategory().getName(), pendingComment.getCommentedProduct().getCategory().getDescription())), pendingComment.getCommentingUser().getId(), pendingComment.getApproved(), pendingComment.getComment(), pendingComment.getCommentDate()));
+            }
+        }
+
+        return ResponseEntity.ok(new CommentListResponse(responseComments));
     }
 
     @PostMapping("/submit")

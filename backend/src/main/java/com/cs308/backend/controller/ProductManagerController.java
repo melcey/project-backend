@@ -31,7 +31,6 @@ import com.cs308.backend.config.UploadConfig;
 import com.cs308.backend.dao.Category;
 import com.cs308.backend.dao.Comment;
 import com.cs308.backend.dao.Delivery;
-import com.cs308.backend.dao.Invoice;
 import com.cs308.backend.dao.Order;
 import com.cs308.backend.dao.OrderItem;
 import com.cs308.backend.dao.Product;
@@ -54,11 +53,11 @@ import com.cs308.backend.dto.ProductRequest;
 import com.cs308.backend.dto.ProductResponse;
 import com.cs308.backend.dto.RatingListResponse;
 import com.cs308.backend.dto.RatingResponse;
-import com.cs308.backend.dto.UpdateOrderStateRequest;
 import com.cs308.backend.dto.UpdateProductRequest;
 import com.cs308.backend.security.UserPrincipal;
 import com.cs308.backend.service.CategoryService;
 import com.cs308.backend.service.CommentService;
+import com.cs308.backend.service.DeliveryService;
 import com.cs308.backend.service.OrderService;
 import com.cs308.backend.service.ProductManagerActionService;
 import com.cs308.backend.service.ProductService;
@@ -66,7 +65,7 @@ import com.cs308.backend.service.RatingService;
 import com.cs308.backend.service.UserService;
 
 @RestController
-@RequestMapping("/api/product-manager")
+@RequestMapping("/prodman")
 public class ProductManagerController {
     private final ProductService productService;
     private final UserService userService;
@@ -75,10 +74,11 @@ public class ProductManagerController {
     private final RatingService ratingService;
     private final ProductManagerActionService actionService;
     private final CategoryService categoryService;
+    private final DeliveryService deliveryService;
 
     public ProductManagerController(ProductService productService, UserService userService, OrderService orderService,
             CommentService commentService, RatingService ratingService, ProductManagerActionService actionService,
-            CategoryService categoryService) {
+            CategoryService categoryService, DeliveryService deliveryService) {
         this.productService = productService;
         this.userService = userService;
         this.orderService = orderService;
@@ -86,88 +86,7 @@ public class ProductManagerController {
         this.ratingService = ratingService;
         this.actionService = actionService;
         this.categoryService = categoryService;
-    }
-
-    // Product Management Endpoints
-    @PostMapping("/products")
-    public ResponseEntity<?> addProduct(@RequestBody ProductRequest request) {
-        return productService.addProduct(request);
-    }
-
-    @DeleteMapping("/products/{productId}")
-    public ResponseEntity<?> removeProduct(@PathVariable Long productId) {
-        return productService.removeProduct(productId);
-    }
-
-    @PutMapping("/products/{productId}/stock")
-    public ResponseEntity<?> updateStock(@PathVariable Long productId, @RequestBody int newStock) {
-        return productService.updateStock(productId, newStock);
-    }
-
-    // Category Management Endpoints
-    @PostMapping("/categories")
-    public ResponseEntity<?> addCategory(@RequestBody CreateCategoryRequest request) {
-        Optional<Category> category = categoryService.createNewCategory(request.getName(), request.getDescription());
-        return category.map(c -> ResponseEntity.ok(new CategoryResponse(c.getId(), c.getName(), c.getDescription())))
-                .orElse(ResponseEntity.badRequest().build());
-    }
-
-    @DeleteMapping("/categories/{categoryId}")
-    public ResponseEntity<?> removeCategory(@PathVariable Long categoryId) {
-        categoryService.deleteCategory(categoryId);
-        return ResponseEntity.ok().build();
-    }
-
-    // Delivery Management Endpoints
-    @GetMapping("/deliveries")
-    public ResponseEntity<List<Delivery>> getAllDeliveries() {
-        return orderService.getAllDeliveries();
-    }
-
-    @GetMapping("/deliveries/pending")
-    public ResponseEntity<List<Delivery>> getPendingDeliveries() {
-        return orderService.getPendingDeliveries();
-    }
-
-    @PutMapping("/deliveries/{deliveryId}/status")
-    public ResponseEntity<?> updateDeliveryStatus(
-            @PathVariable Long deliveryId,
-            @RequestBody String newStatus) {
-        return orderService.updateDeliveryStatus(deliveryId, newStatus);
-    }
-
-    @PutMapping("/orders/{orderId}/status")
-    public ResponseEntity<?> updateOrderStatus(
-            @PathVariable Long orderId,
-            @RequestBody UpdateOrderStateRequest request) {
-        return orderService.updateOrderStatus(orderId, request);
-    }
-
-    // Comment Management Endpoints
-    @GetMapping("/comments/pending")
-    public ResponseEntity<List<Comment>> getPendingComments() {
-        return commentService.getPendingComments();
-    }
-
-    @PutMapping("/comments/{commentId}/approve")
-    public ResponseEntity<?> approveComment(@PathVariable Long commentId) {
-        return commentService.approveComment(commentId);
-    }
-
-    @PutMapping("/comments/{commentId}/disapprove")
-    public ResponseEntity<?> disapproveComment(@PathVariable Long commentId) {
-        return commentService.disapproveComment(commentId);
-    }
-
-    // Invoice Management Endpoints
-    @GetMapping("/invoices")
-    public ResponseEntity<List<Invoice>> getAllInvoices() {
-        return orderService.getAllInvoices();
-    }
-
-    @GetMapping("/invoices/{orderId}")
-    public ResponseEntity<Invoice> getInvoiceByOrderId(@PathVariable Long orderId) {
-        return orderService.getInvoiceByOrderId(orderId);
+        this.deliveryService = deliveryService;
     }
 
     // Get all the products you manage as a product manager
@@ -1636,5 +1555,23 @@ public class ProductManagerController {
         categoryService.deleteCategory(request.getCategoryId());
 
         return ResponseEntity.ok(new MessageResponse("Category is successfully deleted"));
+    }
+
+    // Delivery Management Endpoints
+    @GetMapping("/deliveries")
+    public ResponseEntity<List<Delivery>> getAllDeliveries() {
+        return orderService.getAllDeliveries();
+    }
+
+    @GetMapping("/deliveries/pending")
+    public ResponseEntity<List<Delivery>> getPendingDeliveries() {
+        return orderService.getPendingDeliveries();
+    }
+
+    @PutMapping("/deliveries/{deliveryId}/status")
+    public ResponseEntity<?> updateDeliveryStatus(
+            @PathVariable Long deliveryId,
+            @RequestBody String newStatus) {
+        return orderService.updateDeliveryStatus(deliveryId, newStatus);
     }
 }

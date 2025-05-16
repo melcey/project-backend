@@ -53,6 +53,10 @@ public class CommentService {
         }
     }
 
+    public List<Comment> getPendingComments() {
+        return commentRepository.findByApproved(false);
+    }
+
     public Optional<Comment> approveComment(Comment commentToApprove) {
         commentToApprove.setApproved(true);
 
@@ -74,41 +78,6 @@ public class CommentService {
         } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();
-        }
-    }
-
-    public ResponseEntity<List<Comment>> getPendingComments() {
-        try {
-            List<Comment> pendingComments = commentRepository.findByApprovedFalse();
-            return ResponseEntity.ok(pendingComments);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
-
-    public ResponseEntity<?> approveComment(Long commentId) {
-        try {
-            Comment comment = commentRepository.findById(commentId)
-                    .orElseThrow(() -> new RuntimeException("Comment not found"));
-
-            comment.setApproved(true);
-            Comment updatedComment = commentRepository.save(comment);
-            return ResponseEntity.ok(updatedComment);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error approving comment: " + e.getMessage());
-        }
-    }
-
-    public ResponseEntity<?> disapproveComment(Long commentId) {
-        try {
-            Comment comment = commentRepository.findById(commentId)
-                    .orElseThrow(() -> new RuntimeException("Comment not found"));
-
-            comment.setApproved(false);
-            Comment updatedComment = commentRepository.save(comment);
-            return ResponseEntity.ok(updatedComment);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error disapproving comment: " + e.getMessage());
         }
     }
 }
