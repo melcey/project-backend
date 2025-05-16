@@ -44,7 +44,7 @@ public class UserService {
     public Optional<User> findByIdAndRole(Long id, Role role) {
         return userRepository.findByIdAndRole(id, role.getValue());
     }
-    
+
     public Optional<User> insertNewUser(User user, String email, String password) {
         return userRepository.insertNewUser(user, email, password);
     }
