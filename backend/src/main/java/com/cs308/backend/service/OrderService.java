@@ -18,7 +18,7 @@ import com.cs308.backend.dao.Delivery;
 import com.cs308.backend.repo.DeliveryRepository;
 import com.cs308.backend.dao.Invoice;
 import com.cs308.backend.repo.InvoiceRepository;
-import com.cs308.backend.dao.UpdateOrderStateRequest;
+import com.cs308.backend.dto.UpdateOrderStateRequest;
 
 @Service
 public class OrderService {
@@ -117,7 +117,7 @@ public class OrderService {
             Order order = orderRepository.findById(orderId)
                     .orElseThrow(() -> new RuntimeException("Order not found"));
 
-            order.setOrderStatus(request.getNewStatus());
+            order.setStatus(OrderStatus.fromString(request.getNewStatus()));
             Order updatedOrder = orderRepository.save(order);
             return ResponseEntity.ok(updatedOrder);
         } catch (Exception e) {
@@ -136,7 +136,9 @@ public class OrderService {
 
     public ResponseEntity<Invoice> getInvoiceByOrderId(Long orderId) {
         try {
-            Invoice invoice = invoiceRepository.findByOrderId(orderId)
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new RuntimeException("Order not found"));
+            Invoice invoice = invoiceRepository.findByOrder(order)
                     .orElseThrow(() -> new RuntimeException("Invoice not found"));
             return ResponseEntity.ok(invoice);
         } catch (Exception e) {

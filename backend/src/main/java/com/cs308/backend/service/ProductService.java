@@ -15,7 +15,7 @@ import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.User;
 import com.cs308.backend.repo.CategoryRepository;
 import com.cs308.backend.repo.ProductRepository;
-import com.cs308.backend.request.ProductRequest;
+import com.cs308.backend.dto.ProductRequest;
 
 @Service
 public class ProductService {
