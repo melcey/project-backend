@@ -1,15 +1,24 @@
 {
 	"info": {
-		"_postman_id": "764401de-0f8f-4230-8f89-9ffacf1153e6",
+		"_postman_id": "5f2cabec-85bf-4ec3-b0ba-d6a4056991b1",
 		"name": "CS 308 - Product Controller (anonymous)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "33959811",
-		"_collection_link": "https://cs-308-group-23.postman.co/workspace/My-Workspace~b5b5991a-6836-4a41-823c-ca9c7ff6a01e/collection/33959811-764401de-0f8f-4230-8f89-9ffacf1153e6?action=share&source=collection_link&creator=33959811"
+		"_exporter_id": "44198589"
 	},
 	"item": [
 		{
 			"name": "Get All Products",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfQ1VTVE9NRVIiLCJpYXQiOjE3NDU1NzkyMTMsImV4cCI6MTc0NTY2NTYxM30.SjdTaq9BZ5JBsaRs4ZFMkT6G9-Wf7Sfva6B66IlgbnYCRn3XACqP_MwSqx569cvf4AsgsuXtlP9CDQ16xbZw6w",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"url": {

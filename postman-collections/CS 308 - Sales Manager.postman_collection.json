@@ -1,0 +1,558 @@
+{
+	"info": {
+		"_postman_id": "f5d20cbf-65a9-4698-8dda-03d9b51e65b7",
+		"name": "CS 308 - Sales Manager",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44198589"
+	},
+	"item": [
+		{
+			"name": "Sign Up Sales Manager",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"user2\",\n  \"email\": \"sales_manager@example.com\",\n  \"password\": \"password1\",\n  \"address\": \"Ankara, Turkey\", \n  \"role\": \"sales_manager\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/auth/signup",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Sales Manager",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"sales_manager@example.com\",\n  \"password\": \"password1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Unpriced Products",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0NjU5ODIyOSwiZXhwIjoxNzQ2Njg0NjI5fQ.r0jtee-m7yw1liIr0WGbw7wzzWFBDp5iqQgezP6TRiAogIhZZj6wOsRiJGn_s1uMlBKshG8ZE93el3mLNq9Cyg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/sales/unpriced-products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sales",
+						"unpriced-products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Approve Product Price",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0Njg5OTIxMiwiZXhwIjoxNzQ2OTg1NjEyfQ.IP_Zlb3SGNC1HYKdbNhKTw1DRI-TtudlLH_QzGg8aNo7k17RUB51wvVlHCS3Zb2hvjMQwlOS5WcgvAhg5xo71g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"productId\": 4,\n  \"price\": 299.99,\n  \"costPrice\": 150.00\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/sales/approve-price",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sales",
+						"approve-price"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Approve Product Price Default",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0Njg5OTIxMiwiZXhwIjoxNzQ2OTg1NjEyfQ.IP_Zlb3SGNC1HYKdbNhKTw1DRI-TtudlLH_QzGg8aNo7k17RUB51wvVlHCS3Zb2hvjMQwlOS5WcgvAhg5xo71g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"productId\": 3,\n  \"price\": 299.99\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/sales/approve-price",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sales",
+						"approve-price"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Apply Discount to Products",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0Njg5OTIxMiwiZXhwIjoxNzQ2OTg1NjEyfQ.IP_Zlb3SGNC1HYKdbNhKTw1DRI-TtudlLH_QzGg8aNo7k17RUB51wvVlHCS3Zb2hvjMQwlOS5WcgvAhg5xo71g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"productIds\": [1, 2, 3],\n  \"discountRate\": 20\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/sales/apply-discount",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sales",
+						"apply-discount"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Discount from Products",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0Njg5OTIxMiwiZXhwIjoxNzQ2OTg1NjEyfQ.IP_Zlb3SGNC1HYKdbNhKTw1DRI-TtudlLH_QzGg8aNo7k17RUB51wvVlHCS3Zb2hvjMQwlOS5WcgvAhg5xo71g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"productIds\": [1, 2, 3]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/sales/remove-discount",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sales",
+						"remove-discount"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Invoices in Date Range",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0NjU5ODIyOSwiZXhwIjoxNzQ2Njg0NjI5fQ.r0jtee-m7yw1liIr0WGbw7wzzWFBDp5iqQgezP6TRiAogIhZZj6wOsRiJGn_s1uMlBKshG8ZE93el3mLNq9Cyg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/sales/invoices?startDate=2025-01-01&endDate=2025-04-30",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sales",
+						"invoices"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2025-01-01"
+						},
+						{
+							"key": "endDate",
+							"value": "2025-04-30"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Download Invoice PDF",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0NjU5NzEwNiwiZXhwIjoxNzQ2NjgzNTA2fQ.aPswTeJT2J2W1ycaeWl00YnPA-0F3UL_KRYRsr8ScXgVTjIC_RZIA-UYs1_FghjLH8fvy-EBQNcAETkUH43Vig",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/sales/invoices/INV-12345/download",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sales",
+						"invoices",
+						"INV-12345",
+						"download"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Calculate Revenue and Profit for Date Range",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0NjkwMjQ5NywiZXhwIjoxNzQ2OTg4ODk3fQ.VwMp8MIC9IbfE-y3G1QwGxuBrveRYi1MugMXZ1IqYzIt1SrLQ8ntiGBo0YXwSQ3YERugJ0JHm8Huw8BOPV2EJg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/sales/revenue-profit?startDate=2025-01-01&endDate=2030-06-30",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sales",
+						"revenue-profit"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2025-01-01"
+						},
+						{
+							"key": "endDate",
+							"value": "2030-06-30"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Monthly Revenue Chart Data",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0Njg5ODg1OSwiZXhwIjoxNzQ2OTg1MjU5fQ.qGtueuWPxLVKONJ9MyqCyuyiVaPpcoFekijuRmzs8B33RLIou8LEVr0CXhlKhWtevY3h18u0_76x_giK2tz7GA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/sales/revenue-chart?year=2025",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sales",
+						"revenue-chart"
+					],
+					"query": [
+						{
+							"key": "year",
+							"value": "2025"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "View Pending Return Requests",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0NjU5ODIyOSwiZXhwIjoxNzQ2Njg0NjI5fQ.r0jtee-m7yw1liIr0WGbw7wzzWFBDp5iqQgezP6TRiAogIhZZj6wOsRiJGn_s1uMlBKshG8ZE93el3mLNq9Cyg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/sales/return-requests",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sales",
+						"return-requests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Process Return Request (Approve)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0NjQyNjk4MiwiZXhwIjoxNzQ2NTEzMzgyfQ.DJJbypPj6Cn4DzpW2HA0E4h7xXR5az-CBt-FzyIIHchf-An-QuVXBd_IhRlL_KqAryJC2Bn-ONzDVVRASB68zw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/sales/return-requests/1/process?approve=true",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sales",
+						"return-requests",
+						"1",
+						"process"
+					],
+					"query": [
+						{
+							"key": "approve",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Process Return Request (Reject)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0NjQ1MDY5OCwiZXhwIjoxNzQ2NTM3MDk4fQ.9HLZLp2TRqBKaDokaooNKrsF_Ojc9rkdxqJTjfbYKQamzABKUentqoO4i4kAvwdGCvgC6AvrZDeUZFcmGZxrjw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/sales/return-requests/2/process?approve=false",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sales",
+						"return-requests",
+						"2",
+						"process"
+					],
+					"query": [
+						{
+							"key": "approve",
+							"value": "false"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Complete a Refund",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0NjQ1MDY5OCwiZXhwIjoxNzQ2NTM3MDk4fQ.9HLZLp2TRqBKaDokaooNKrsF_Ojc9rkdxqJTjfbYKQamzABKUentqoO4i4kAvwdGCvgC6AvrZDeUZFcmGZxrjw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/sales/refunds/1/complete",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sales",
+						"refunds",
+						"1",
+						"complete"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
