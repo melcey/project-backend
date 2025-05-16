@@ -30,6 +30,8 @@ import org.springframework.web.server.ResponseStatusException;
 import com.cs308.backend.config.UploadConfig;
 import com.cs308.backend.dao.Category;
 import com.cs308.backend.dao.Comment;
+import com.cs308.backend.dao.Delivery;
+import com.cs308.backend.dao.Invoice;
 import com.cs308.backend.dao.Order;
 import com.cs308.backend.dao.OrderItem;
 import com.cs308.backend.dao.Product;
@@ -52,6 +54,7 @@ import com.cs308.backend.dto.ProductRequest;
 import com.cs308.backend.dto.ProductResponse;
 import com.cs308.backend.dto.RatingListResponse;
 import com.cs308.backend.dto.RatingResponse;
+import com.cs308.backend.dto.UpdateOrderStateRequest;
 import com.cs308.backend.dto.UpdateProductRequest;
 import com.cs308.backend.security.UserPrincipal;
 import com.cs308.backend.service.CategoryService;
@@ -104,12 +107,15 @@ public class ProductManagerController {
     // Category Management Endpoints
     @PostMapping("/categories")
     public ResponseEntity<?> addCategory(@RequestBody CreateCategoryRequest request) {
-        return categoryService.createCategory(request);
+        Optional<Category> category = categoryService.createNewCategory(request.getName(), request.getDescription());
+        return category.map(c -> ResponseEntity.ok(new CategoryResponse(c.getId(), c.getName(), c.getDescription())))
+                .orElse(ResponseEntity.badRequest().build());
     }
 
     @DeleteMapping("/categories/{categoryId}")
     public ResponseEntity<?> removeCategory(@PathVariable Long categoryId) {
-        return categoryService.deleteCategory(categoryId);
+        categoryService.deleteCategory(categoryId);
+        return ResponseEntity.ok().build();
     }
 
     // Delivery Management Endpoints

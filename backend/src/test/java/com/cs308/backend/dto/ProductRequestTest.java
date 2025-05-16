@@ -39,7 +39,7 @@ class ProductRequestTest {
         request.setDistributorInfo("Distributor Inc.");
         request.setIsActive(true);
         request.setImageUrl("image.jpg");
-        request.setCategory(1L);
+        request.setCategoryId(1L);
 
         assertEquals("Laptop", request.getName());
         assertEquals("Model X", request.getModel());
@@ -82,7 +82,8 @@ class ProductRequestTest {
         assertEquals(false, request1.hashCode() == request3.hashCode());
 
         // Test equality for objects with all null fields
-        ProductRequest requestNull2 = new ProductRequest(null, null, null, null, 0, null, null, null, false, null, null);
+        ProductRequest requestNull2 = new ProductRequest(null, null, null, null, 0, null, null, null, false, null,
+                null);
         assertEquals(requestNull, requestNull2);
         assertEquals(requestNull.hashCode(), requestNull2.hashCode());
 
