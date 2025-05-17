@@ -9,15 +9,15 @@ class UpdateOrderStateRequestTest {
     void testUpdateOrderStateRequestCreation() {
         UpdateOrderStateRequest request = new UpdateOrderStateRequest("shipped");
 
-        assertEquals("shipped", request.getNewStatus());
+        assertEquals("shipped", request.getStatus());
     }
 
     @Test
     void testSettersAndGetters() {
         UpdateOrderStateRequest request = new UpdateOrderStateRequest();
-        request.setNewStatus("shipped");
+        request.setStatus("shipped");
 
-        assertEquals("shipped", request.getNewStatus());
+        assertEquals("shipped", request.getStatus());
     }
 
     @Test

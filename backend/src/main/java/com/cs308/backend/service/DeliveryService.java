@@ -19,6 +19,17 @@ public class DeliveryService {
         this.deliveryRepository = deliveryRepository;
     }
 
+    public Optional<Delivery> createDelivery(Delivery delivery) {
+        try {
+            Delivery createdDelivery = deliveryRepository.save(delivery);
+            return Optional.of(createdDelivery);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
     public List<Delivery> getAllDeliveriesForProductManager(User productManager) {
         List<Delivery> deliveries = deliveryRepository.findAll();
         List<Delivery> deliveriesForProdMan = new ArrayList<>();
