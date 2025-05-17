@@ -88,7 +88,7 @@ public class RatingController {
         Optional<Rating> submittedRating = ratingService.submitRating(rating);
 
         if (!(submittedRating.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rating submission failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Rating submission failed");
         }
 
         Rating newRating = submittedRating.get();

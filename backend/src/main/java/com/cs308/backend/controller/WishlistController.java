@@ -61,7 +61,7 @@ public class WishlistController {
         Optional<Wishlist> createdWishlist = wishlistService.createWishlist(currentUser);
 
         if (!(createdWishlist.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wishlist creation failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Wishlist creation failed");
         }
 
         Wishlist foundWishlist = createdWishlist.get();
@@ -84,7 +84,7 @@ public class WishlistController {
         Optional<Wishlist> updatedWishlist = wishlistService.addToWishlist(currentUser, request.getProductId());
         
         if (!(updatedWishlist.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Item addition to wishlist failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Item addition to wishlist failed");
         }
 
         Wishlist foundWishlist = updatedWishlist.get();
@@ -130,7 +130,7 @@ public class WishlistController {
         Optional<Wishlist> updatedWishlist = wishlistService.removeFromWishlist(currentUser, request.getProductId());
         
         if (!(updatedWishlist.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Item deletion from wishlist failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Item deletion from wishlist failed");
         }
 
         Wishlist foundWishlist = updatedWishlist.get();
