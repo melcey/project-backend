@@ -1,10 +1,9 @@
 {
 	"info": {
-		"_postman_id": "79844006-7c5c-44ef-b4d7-3bf023c6fadc",
+		"_postman_id": "f1428d97-2f1c-46fa-a5f6-41cb8951bb1c",
 		"name": "CS 308 - Product Manager",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "33959811",
-		"_collection_link": "https://cs-308-group-23.postman.co/workspace/My-Workspace~b5b5991a-6836-4a41-823c-ca9c7ff6a01e/collection/33959811-79844006-7c5c-44ef-b4d7-3bf023c6fadc?action=share&source=collection_link&creator=33959811"
+		"_exporter_id": "44198589"
 	},
 	"item": [
 		{
@@ -80,7 +79,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ1NTI0OTYwLCJleHAiOjE3NDU2MTEzNjB9.Wjq53izHYLP3p4Y97Log0ghL2UmiRSwy8twLyMKzG10wiIclnRpEwVeT-gt20sYXetEK9BNFEPlDbJsmqE3Y2w",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ2NTk2OTcwLCJleHAiOjE3NDY2ODMzNzB9.Qtwo0sgzJfvLxN8aJpad94NOEXE7icYRiwVHvmh_w0VsADCGwI-sNg0P1GuOlDzPch3JRCWNSfqMOTqd5PyuQQ",
 							"type": "string"
 						}
 					]
@@ -89,7 +88,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzQ1NTA5NjY1LCJleHAiOjE3NDU1OTYwNjV9.afRSxKQ95uYFg3qMPP2xFDzJxIu8i4xa4ZA46LkaTiVPdquH0GfwCGbpS_bZCdzhPiS63C47_TJj7jd4egJpvQ",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ1NTI0OTYwLCJleHAiOjE3NDU2MTEzNjB9.Wjq53izHYLP3p4Y97Log0ghL2UmiRSwy8twLyMKzG10wiIclnRpEwVeT-gt20sYXetEK9BNFEPlDbJsmqE3Y2w",
 						"name": "authorization",
 						"type": "text"
 					},
@@ -178,7 +177,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ1NTI0OTYwLCJleHAiOjE3NDU2MTEzNjB9.Wjq53izHYLP3p4Y97Log0ghL2UmiRSwy8twLyMKzG10wiIclnRpEwVeT-gt20sYXetEK9BNFEPlDbJsmqE3Y2w",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ2NTk2OTcwLCJleHAiOjE3NDY2ODMzNzB9.Qtwo0sgzJfvLxN8aJpad94NOEXE7icYRiwVHvmh_w0VsADCGwI-sNg0P1GuOlDzPch3JRCWNSfqMOTqd5PyuQQ",
 							"type": "string"
 						}
 					]
@@ -187,7 +186,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1MDkwMjc4LCJleHAiOjE3NDUxNzY2Nzh9.YHW5lvrZ3OPb6sMm9VPftEckKMbHMDLK7QOx41uYlOWbdVQVuEKDFM8sFjos8emXvyLH28Vg5VGbqIAYy_V06g",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ2NDU0NzE5LCJleHAiOjE3NDY1NDExMTl9.bE8hhp2YSe-oo2Lv18OJSoYj0gfNfeFm2Kb1q_tITYtAlVIY9F3msN29L2Xl0ArCRvoNy7AzdgGzgpY96hwt4g",
 						"name": "authorization",
 						"type": "text"
 					},
@@ -269,6 +268,104 @@
 			"response": []
 		},
 		{
+			"name": "Create Product 3",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ2NTk2OTcwLCJleHAiOjE3NDY2ODMzNzB9.Qtwo0sgzJfvLxN8aJpad94NOEXE7icYRiwVHvmh_w0VsADCGwI-sNg0P1GuOlDzPch3JRCWNSfqMOTqd5PyuQQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ1NTI0OTYwLCJleHAiOjE3NDU2MTEzNjB9.Wjq53izHYLP3p4Y97Log0ghL2UmiRSwy8twLyMKzG10wiIclnRpEwVeT-gt20sYXetEK9BNFEPlDbJsmqE3Y2w",
+						"name": "authorization",
+						"type": "text"
+					},
+					{
+						"key": "Cache-Control",
+						"value": "no-cache",
+						"name": "cache-control",
+						"type": "text"
+					},
+					{
+						"key": "Postman-Token",
+						"value": "<calculated when request is sent>",
+						"name": "postman-token",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"name": "content-type",
+						"type": "text"
+					},
+					{
+						"key": "Content-Length",
+						"value": "<calculated when request is sent>",
+						"name": "content-length",
+						"type": "text"
+					},
+					{
+						"key": "Host",
+						"value": "<calculated when request is sent>",
+						"name": "host",
+						"type": "text"
+					},
+					{
+						"key": "User-Agent",
+						"value": "PostmanRuntime/7.39.1",
+						"name": "user-agent",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"name": "accept",
+						"type": "text"
+					},
+					{
+						"key": "Accept-Encoding",
+						"value": "gzip, deflate, br",
+						"name": "accept-encoding",
+						"type": "text"
+					},
+					{
+						"key": "Connection",
+						"value": "keep-alive",
+						"name": "connection",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Wireless Earbuds\",\n    \"model\": \"Model WE-3000\",\n    \"serialNumber\": \"SN456789123\",\n    \"description\": \"Noise-cancelling earbuds that will make your annoying coworkers disappear. Battery life lasts longer than most relationships.\",\n    \"quantityInStock\": 100,\n    \"price\": 149.99,\n    \"warrantyStatus\": \"1 year\",\n    \"distributorInfo\": \"Audio Experts LLC\",\n    \"categoryId\": 1,\n    \"imageUrl\": \"https://images.unsplash.com/photo-1606220945779-df7cc4f7105e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60\",\n    \"isActive\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/prodman",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Update Product",
 			"request": {
 				"auth": {
@@ -314,7 +411,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1NTE0MDk2LCJleHAiOjE3NDU2MDA0OTZ9.Z87YzCwcbekf1RDR4SYvId_Wc5LH29GK6xb2Mn0fZLGfO5QAgih9vlIwOVvJxVdskLcSuwVTwuh0oD9g5Mnscg",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ2ODk5NDAxLCJleHAiOjE3NDY5ODU4MDF9.5NWSTQWsN5Aw8gLyjqtinPfmDaMatROnRiIw51WyOZ1cCtiu5DpKAJoYYsJFP_ZTAQUO7K1YwO7EkdKpg5Bg5A",
 							"type": "string"
 						}
 					]
@@ -343,7 +440,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ1NTI0OTYwLCJleHAiOjE3NDU2MTEzNjB9.Wjq53izHYLP3p4Y97Log0ghL2UmiRSwy8twLyMKzG10wiIclnRpEwVeT-gt20sYXetEK9BNFEPlDbJsmqE3Y2w",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ2ODk5NDAxLCJleHAiOjE3NDY5ODU4MDF9.5NWSTQWsN5Aw8gLyjqtinPfmDaMatROnRiIw51WyOZ1cCtiu5DpKAJoYYsJFP_ZTAQUO7K1YwO7EkdKpg5Bg5A",
 							"type": "string"
 						}
 					]
@@ -351,14 +448,14 @@
 				"method": "PUT",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/prodman/1/activate",
+					"raw": "localhost:8080/prodman/4/activate",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
 						"prodman",
-						"1",
+						"4",
 						"activate"
 					]
 				}
@@ -396,14 +493,14 @@
 			"response": []
 		},
 		{
-			"name": "Delete Product 2",
+			"name": "Delete Product 1",
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ1MDkwMjc4LCJleHAiOjE3NDUxNzY2Nzh9.YHW5lvrZ3OPb6sMm9VPftEckKMbHMDLK7QOx41uYlOWbdVQVuEKDFM8sFjos8emXvyLH28Vg5VGbqIAYy_V06g",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ2NTk3NzcyLCJleHAiOjE3NDY2ODQxNzJ9.9OOxziLoolev-Vixl10AwmDyu47yQ9t00qAFy3rSDZU0snKJwRxaZDtdO8pORKkQrLWI6OmKQmrjh5RPf2aalA",
 							"type": "string"
 						}
 					]
@@ -411,14 +508,14 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/prodman/2",
+					"raw": "localhost:8080/prodman/1",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
 						"prodman",
-						"2"
+						"1"
 					]
 				}
 			},
@@ -461,7 +558,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ1NTI0OTYwLCJleHAiOjE3NDU2MTEzNjB9.Wjq53izHYLP3p4Y97Log0ghL2UmiRSwy8twLyMKzG10wiIclnRpEwVeT-gt20sYXetEK9BNFEPlDbJsmqE3Y2w",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ1NzU2ODk4LCJleHAiOjE3NDU4NDMyOTh9.CXaLPhIgQBYk7bD96oveaxzIMC9rFYinQPWNEEDElVPTMN6klwdYU9GJZHoTbTqrsK5eYI5th2uOHbP9Yh0r_Q",
 							"type": "string"
 						}
 					]
@@ -491,7 +588,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ1NTI0OTYwLCJleHAiOjE3NDU2MTEzNjB9.Wjq53izHYLP3p4Y97Log0ghL2UmiRSwy8twLyMKzG10wiIclnRpEwVeT-gt20sYXetEK9BNFEPlDbJsmqE3Y2w",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ1NjU2MTA2LCJleHAiOjE3NDU3NDI1MDZ9.p5Bk1hwuxod_HsAKOaD-VIv9_UvTGz0Tc7H7wWOA3piZZTsOx0a3MZyx5qM0s3ehZ2JxGm9_YghsXShjmayz0g",
 							"type": "string"
 						}
 					]
@@ -570,13 +667,20 @@
 			"name": "Update Order Status",
 			"request": {
 				"auth": {
-					"type": "bearer"
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ2ODk3NDg4LCJleHAiOjE3NDY5ODM4ODh9.CSE0FH1KCaQJ2fR_6Rl0EQpbPZEiPd-LTCTdnWxiN_YZ_oddPAadI1ToXX6Wj05KpVBJxNwCNM7-1Q8BMEgVBA",
+							"type": "string"
+						}
+					]
 				},
 				"method": "PUT",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"status\": \"in-transit\"\n}",
+					"raw": "{\n    \"status\": \"delivered\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -662,6 +766,141 @@
 					"path": [
 						"comment",
 						"disapprove"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Categories",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ3MTI5NzM2LCJleHAiOjE3NDcyMTYxMzZ9.peD0mraHygXLr3YHP3Augjy_NoQ7xTY4NWIyzaP8LpF3m8yEemy70CXcuuUXHZpL945voKEXdjp2ypufOJ2SjQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/prodman/category",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"category"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create New Category",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ3MTMyNTQ2LCJleHAiOjE3NDcyMTg5NDZ9.jA-o0K5E9gFrk22bUh7qhP6VApZzLWFJTvnJrSlyTnLIW0CP4A-ZZzQj9z5kF_AnneOve9kalgD7NJI8_lK61g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"New category\",\n    \"description\": \"New category, new beginning.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/prodman/category",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"category"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create New Category Copy",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ3MTMyNTQ2LCJleHAiOjE3NDcyMTg5NDZ9.jA-o0K5E9gFrk22bUh7qhP6VApZzLWFJTvnJrSlyTnLIW0CP4A-ZZzQj9z5kF_AnneOve9kalgD7NJI8_lK61g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"categoryId\": 11\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/prodman/category",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"category"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Category",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ3MTMyNTQ2LCJleHAiOjE3NDcyMTg5NDZ9.jA-o0K5E9gFrk22bUh7qhP6VApZzLWFJTvnJrSlyTnLIW0CP4A-ZZzQj9z5kF_AnneOve9kalgD7NJI8_lK61g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/prodman/category/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"category",
+						"1"
 					]
 				}
 			},
