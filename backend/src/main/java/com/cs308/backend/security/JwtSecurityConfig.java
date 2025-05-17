@@ -78,7 +78,6 @@ public class JwtSecurityConfig {
                         .requestMatchers("/comment/submit").hasRole("CUSTOMER")
                         .requestMatchers("/rating/**").hasRole("CUSTOMER")
                         .requestMatchers("/payments/**").hasRole("CUSTOMER")
-                        .requestMatchers("/invoices/**").hasRole("CUSTOMER")
                         .requestMatchers("/wishlist/**").hasRole("CUSTOMER")
                         .requestMatchers("/returns/**").hasRole("CUSTOMER")
 
@@ -86,7 +85,8 @@ public class JwtSecurityConfig {
                         .requestMatchers("/order/manager/**").hasRole("PRODUCT_MANAGER")
                         .requestMatchers("/comment/approve").hasRole("PRODUCT_MANAGER")
                         .requestMatchers("/comment/disapprove").hasRole("PRODUCT_MANAGER")
-                        .requestMatchers("/invoices/**").hasRole("PRODUCT_MANAGER")
+
+                        .requestMatchers("/invoices/**").hasAnyRole("CUSTOMER", "PRODUCT_MANAGER")
 
                         .requestMatchers("/sales/**").hasRole("SALES_MANAGER")
 
