@@ -370,7 +370,7 @@ public class OrderController {
         }
 
         Optional<Order> updatedOrder = orderService.updateOrderStatus(retrievedOrder.get(),
-                newStateRequest.getNewStatus());
+                newStateRequest.getStatus());
 
         if (!(updatedOrder.isPresent())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order status update failed");

@@ -43,6 +43,9 @@ import com.cs308.backend.dto.CommentListResponse;
 import com.cs308.backend.dto.CommentResponse;
 import com.cs308.backend.dto.CreateCategoryRequest;
 import com.cs308.backend.dto.DeleteCategoryRequest;
+import com.cs308.backend.dto.DeliveryListResponse;
+import com.cs308.backend.dto.DeliveryResponse;
+import com.cs308.backend.dto.DeliveryStatusRequest;
 import com.cs308.backend.dto.MessageResponse;
 import com.cs308.backend.dto.OrderItemResponse;
 import com.cs308.backend.dto.OrderListResponse;
@@ -1559,19 +1562,113 @@ public class ProductManagerController {
 
     // Delivery Management Endpoints
     @GetMapping("/deliveries")
-    public ResponseEntity<List<Delivery>> getAllDeliveries() {
-        return orderService.getAllDeliveries();
+    public ResponseEntity<?> getAllDeliveries() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ((auth == null) || (!(auth.isAuthenticated()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
+
+        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
+
+        User user = userDetails.getUser();
+
+        if (user.getRole() != Role.product_manager) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
+        }
+
+        List<Delivery> deliveries = deliveryService.getAllDeliveriesForProductManager(user);
+        List<DeliveryResponse> responseDeliveries = new ArrayList<>();
+
+        for (Delivery delivery: deliveries) {
+            responseDeliveries.add(new DeliveryResponse(delivery.getId(), delivery.getOrder().getId(), ));
+        }
+
+        return ResponseEntity.ok(new DeliveryListResponse(responseDeliveries));
     }
 
     @GetMapping("/deliveries/pending")
-    public ResponseEntity<List<Delivery>> getPendingDeliveries() {
-        return orderService.getPendingDeliveries();
+    public ResponseEntity<?> getPendingDeliveries() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ((auth == null) || (!(auth.isAuthenticated()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
+
+        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
+
+        User user = userDetails.getUser();
+
+        if (user.getRole() != Role.product_manager) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
+        }
+
+        List<Delivery> deliveries = deliveryService.getPendingDeliveriesForProductManager(user);
+        List<DeliveryResponse> responseDeliveries = new ArrayList<>();
+
+        for (Delivery delivery: deliveries) {
+            responseDeliveries.add(new DeliveryResponse(delivery.getId(), delivery.getOrder().getId(), ));
+        }
+
+        return ResponseEntity.ok(new DeliveryListResponse(responseDeliveries));
     }
 
     @PutMapping("/deliveries/{deliveryId}/status")
     public ResponseEntity<?> updateDeliveryStatus(
             @PathVariable Long deliveryId,
-            @RequestBody String newStatus) {
-        return orderService.updateDeliveryStatus(deliveryId, newStatus);
+            @RequestBody DeliveryStatusRequest newStatusRequest) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ((auth == null) || (!(auth.isAuthenticated()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
+
+        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
+
+        User user = userDetails.getUser();
+
+        if (user.getRole() != Role.product_manager) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
+        }
+
+        Optional<Delivery> updatedDelivery = deliveryService.updateDeliveryStatus(deliveryId, newStatusRequest.getStatus(), user);
+
+        if (updatedDelivery.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Delivery status update failed");
+        }
+
+        Delivery newDelivery = updatedDelivery.get();
+
+        List<OrderItemResponse> orderItems = new ArrayList<>();
+
+        for (OrderItem orderItem: newDelivery.getOrder().getOrderItems()) {
+            orderItems.add(new OrderItemResponse(
+                orderItem.getId(), orderItem.getOrder().getId(), new ProductResponse(orderItem.getProduct().getId(),
+                orderItem.getProduct().getName(), orderItem.getProduct().getModel(), orderItem.getProduct().getSerialNumber(),
+                orderItem.getProduct().getDescription(), orderItem.getProduct().getQuantityInStock(), orderItem.getProduct().getPrice(),
+                orderItem.getProduct().getWarrantyStatus(), orderItem.getProduct().getDistributorInfo(),
+                orderItem.getProduct().getIsActive(), orderItem.getProduct().getImageUrl(),
+                new CategoryResponse(
+                    orderItem.getProduct().getCategory().getId(), orderItem.getProduct().getCategory().getName(),
+                    orderItem.getProduct().getCategory().getDescription())), orderItem.getQuantity(), orderItem.getPrice())
+                );
+        }
+
+        return ResponseEntity.ok(
+            new DeliveryResponse(newDelivery.getId(), new OrderResponse(
+                    newDelivery.getOrder().getId(), newDelivery.getOrder().getUser().getId(), newDelivery.getOrder().getOrderDate(),
+                    newDelivery.getOrder().getStatus(), newDelivery.getOrder().getTotalPrice(), newDelivery.getOrder().getDeliveryAddress(),
+                    orderItems
+                    ),
+            new ProductResponse(
+                newDelivery.getProduct().getId(), newDelivery.getProduct().getName(), newDelivery.getProduct().getModel(),
+                newDelivery.getProduct().getSerialNumber(), newDelivery.getProduct().getDescription(),
+                newDelivery.getProduct().getQuantityInStock(), newDelivery.getProduct().getPrice(),
+                newDelivery.getProduct().getWarrantyStatus(), newDelivery.getProduct().getDistributorInfo(),
+                newDelivery.getProduct().getIsActive(), newDelivery.getProduct().getImageUrl(),
+                new CategoryResponse(
+                    newDelivery.getProduct().getCategory().getId(), newDelivery.getProduct().getCategory().getName(),
+                    newDelivery.getProduct().getCategory().getDescription()
+                )
+            ), newDelivery.getQuantity(), newDelivery.getTotalPrice(),
+            newDelivery.getDeliveryAddress(), newDelivery.getDeliveryStatus())
+        );
     }
 }

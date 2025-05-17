@@ -16,8 +16,7 @@ public class ProductRequest {
     private String imageUrl;
     private Long categoryId;
 
-    public ProductRequest() {
-    }
+    public ProductRequest() {}
 
     public ProductRequest(String name, String model, String serialNumber, String description, int quantityInStock,
             BigDecimal price, String warrantyStatus, String distributorInfo, boolean isActive, String imageUrl,
