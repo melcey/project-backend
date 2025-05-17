@@ -5,23 +5,10 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Optional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.cs308.backend.dao.Category;
-import com.cs308.backend.dao.Order;
-import com.cs308.backend.dao.OrderStatus;
-import com.cs308.backend.dao.Product;
-import com.cs308.backend.dao.Rating;
-import com.cs308.backend.dao.Role;
-import com.cs308.backend.dao.User;
-import com.cs308.backend.dto.SubmitRatingRequest;
-import com.cs308.backend.security.UserPrincipal;
-import com.cs308.backend.service.OrderService;
-import com.cs308.backend.service.ProductService;
-import com.cs308.backend.service.RatingService;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +23,18 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import com.cs308.backend.dao.Category;
+import com.cs308.backend.dao.Order;
+import com.cs308.backend.dao.OrderStatus;
+import com.cs308.backend.dao.Product;
+import com.cs308.backend.dao.Rating;
+import com.cs308.backend.dao.Role;
+import com.cs308.backend.dao.User;
+import com.cs308.backend.dto.SubmitRatingRequest;
+import com.cs308.backend.security.UserPrincipal;
+import com.cs308.backend.service.OrderService;
+import com.cs308.backend.service.ProductService;
+import com.cs308.backend.service.RatingService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RatingControllerTest {

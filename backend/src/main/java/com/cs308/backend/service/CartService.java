@@ -110,7 +110,45 @@ public class CartService {
     }
 
     public Optional<Cart> getCartOfUser(User user) {
-        return cartRepository.findByUser(user);
+        Optional<Cart> retrievedCart = cartRepository.findByUser(user);
+
+        if (retrievedCart.isEmpty()) {
+            Cart newCart = new Cart(user);
+
+            newCart = cartRepository.save(newCart);
+            return Optional.of(newCart);
+        }
+        else {
+            Cart currentCart = retrievedCart.get();
+
+            if (currentCart.getItems() == null) {
+                currentCart.setItems(new ArrayList<>());
+            }
+
+            Cart oldCart = currentCart.clone();
+
+            BigDecimal freshTotal = currentCart.getItems().stream()
+                .map(cartItem -> {
+                    // The cart item prices are updated here
+                    cartItem.setPriceAtAddition(cartItem.getProduct().getPrice());
+                    // The new total price for the product is calculated here
+                    return cartItem.getPriceAtAddition().multiply(BigDecimal.valueOf(cartItem.getQuantity()));
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            currentCart.setTotalPrice(freshTotal);
+            currentCart.setUpdatedAt(LocalDateTime.now());
+
+            try {
+                Cart updatedCart = cartRepository.save(currentCart);
+                return Optional.of(updatedCart);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                oldCart = cartRepository.save(oldCart);
+                return Optional.of(oldCart);
+            }
+        }
     }
 
     public Optional<Cart> addItemToCart(User user, Long productId, int quantity) {

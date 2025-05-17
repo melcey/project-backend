@@ -447,7 +447,7 @@ public class ProductManagerController {
         Optional<Product> createdProduct = productService.createProduct(product);
 
         if (!(createdProduct.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product creation failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product creation failed");
         }
 
         actionService.logAction(user, "CREATE_PRODUCT", Long.toString(createdProduct.get().getId()));
@@ -511,7 +511,7 @@ public class ProductManagerController {
                     String.format("/uploads/%s", fileName));
 
             if (!updatedProduct.isPresent()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to update product with new image");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to update product with new image");
             }
 
             actionService.logAction(user, "UPDATE_PRODUCT_IMAGE",
@@ -528,7 +528,7 @@ public class ProductManagerController {
                             updatedProduct.get().getCategory().getDescription())));
         } catch (IOException e) {
             e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File upload failed.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "File upload failed.");
         }
     }
 
@@ -573,7 +573,7 @@ public class ProductManagerController {
             Optional<Product> updatedProduct = productService.updateProductIsActive(id, false);
 
             if (!(updatedProduct.isPresent())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
             }
 
             actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %b -> %b", updatedProduct.get().getId(),
@@ -632,7 +632,7 @@ public class ProductManagerController {
             foundProduct = productService.updateProductName(id, updateProductRequest.getName());
 
             if (!(foundProduct.isPresent())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
             }
 
             actionService.logAction(user, "UPDATE_PRODUCT",
@@ -644,7 +644,7 @@ public class ProductManagerController {
             foundProduct = productService.updateProductModel(id, updateProductRequest.getModel());
 
             if (!(foundProduct.isPresent())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
             }
 
             actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", foundProduct.get().getId(),
@@ -656,7 +656,7 @@ public class ProductManagerController {
             foundProduct = productService.updateProductSerialNumber(id, updateProductRequest.getSerialNumber());
 
             if (!(foundProduct.isPresent())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
             }
 
             actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", foundProduct.get().getId(),
@@ -668,7 +668,7 @@ public class ProductManagerController {
             foundProduct = productService.updateProductDescription(id, updateProductRequest.getDescription());
 
             if (!(foundProduct.isPresent())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
             }
 
             actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", foundProduct.get().getId(),
@@ -680,7 +680,7 @@ public class ProductManagerController {
             foundProduct = productService.updateProductQuantityInStock(id, updateProductRequest.getQuantityInStock());
 
             if (!(foundProduct.isPresent())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
             }
 
             actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %d -> %d", foundProduct.get().getId(),
@@ -692,11 +692,11 @@ public class ProductManagerController {
             foundProduct = productService.updateProductPrice(id, updateProductRequest.getPrice());
 
             if (!(foundProduct.isPresent())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
             }
 
-            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", foundProduct.get().getId(),
-                    oldPrice.toString(), updateProductRequest.getPrice().toString()));
+            actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %.2f -> %.2f", foundProduct.get().getId(),
+                    oldPrice.doubleValue(), updateProductRequest.getPrice().doubleValue()));
         }
 
         if (updateProductRequest.getWarrantyStatus() != null) {
@@ -704,7 +704,7 @@ public class ProductManagerController {
             foundProduct = productService.updateProductWarrantyStatus(id, updateProductRequest.getWarrantyStatus());
 
             if (!(foundProduct.isPresent())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
             }
 
             actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", foundProduct.get().getId(),
@@ -716,7 +716,7 @@ public class ProductManagerController {
             foundProduct = productService.updateProductDistributorInfo(id, updateProductRequest.getDistributorInfo());
 
             if (!(foundProduct.isPresent())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
             }
 
             actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", foundProduct.get().getId(),
@@ -728,7 +728,7 @@ public class ProductManagerController {
             foundProduct = productService.updateProductIsActive(id, updateProductRequest.getIsActive());
 
             if (!(foundProduct.isPresent())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
             }
 
             actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %b -> %b", foundProduct.get().getId(),
@@ -740,7 +740,7 @@ public class ProductManagerController {
             foundProduct = productService.updateProductImageUrl(id, updateProductRequest.getImageUrl());
 
             if (!(foundProduct.isPresent())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
             }
 
             actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", foundProduct.get().getId(),
@@ -752,7 +752,7 @@ public class ProductManagerController {
             foundProduct = productService.updateProductCategory(id, updateProductRequest.getCategoryId());
 
             if (!(foundProduct.isPresent())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
             }
 
             actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", foundProduct.get().getId(),
@@ -805,7 +805,7 @@ public class ProductManagerController {
         Optional<Product> updatedProduct = productService.updateProductName(id, newName);
 
         if (!(updatedProduct.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
         }
 
         actionService.logAction(user, "UPDATE_PRODUCT",
@@ -856,7 +856,7 @@ public class ProductManagerController {
         Optional<Product> updatedProduct = productService.updateProductModel(id, newModel);
 
         if (!(updatedProduct.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
         }
 
         actionService.logAction(user, "UPDATE_PRODUCT",
@@ -907,7 +907,7 @@ public class ProductManagerController {
         Optional<Product> updatedProduct = productService.updateProductSerialNumber(id, newSerialNumber);
 
         if (!(updatedProduct.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
         }
 
         actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.get().getId(),
@@ -958,7 +958,7 @@ public class ProductManagerController {
         Optional<Product> updatedProduct = productService.updateProductDescription(id, newDescription);
 
         if (!(updatedProduct.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
         }
 
         actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.get().getId(),
@@ -1009,7 +1009,7 @@ public class ProductManagerController {
         Optional<Product> updatedProduct = productService.updateProductQuantityInStock(id, newQuantity);
 
         if (!(updatedProduct.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
         }
 
         actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %d -> %d", updatedProduct.get().getId(),
@@ -1060,11 +1060,11 @@ public class ProductManagerController {
         Optional<Product> updatedProduct = productService.updateProductPrice(id, newPrice);
 
         if (!(updatedProduct.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
         }
 
-        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.get().getId(),
-                oldPrice.toString(), updatedProduct.get().getPrice().toString()));
+        actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %.2f -> %.2f", updatedProduct.get().getId(),
+                oldPrice.doubleValue(), updatedProduct.get().getPrice().doubleValue()));
         return ResponseEntity.ok(new ProductResponse(updatedProduct.get().getId(), updatedProduct.get().getName(),
                 updatedProduct.get().getModel(), updatedProduct.get().getSerialNumber(),
                 updatedProduct.get().getDescription(), updatedProduct.get().getQuantityInStock(),
@@ -1111,7 +1111,7 @@ public class ProductManagerController {
         Optional<Product> updatedProduct = productService.updateProductWarrantyStatus(id, newWarrantyStatus);
 
         if (!(updatedProduct.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
         }
 
         actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.get().getId(),
@@ -1163,7 +1163,7 @@ public class ProductManagerController {
         Optional<Product> updatedProduct = productService.updateProductDistributorInfo(id, newDistributorInfo);
 
         if (!(updatedProduct.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
         }
 
         actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.get().getId(),
@@ -1219,7 +1219,7 @@ public class ProductManagerController {
         Optional<Product> updatedProduct = productService.updateProductIsActive(id, true);
 
         if (!(updatedProduct.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
         }
 
         actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %b -> %b", updatedProduct.get().getId(),
@@ -1272,7 +1272,7 @@ public class ProductManagerController {
         Optional<Product> updatedProduct = productService.updateProductIsActive(id, false);
 
         if (!(updatedProduct.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
         }
 
         actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %b -> %b", updatedProduct.get().getId(),
@@ -1323,7 +1323,7 @@ public class ProductManagerController {
         Optional<Product> updatedProduct = productService.updateProductImageUrl(id, newImageUrl);
 
         if (!(updatedProduct.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
         }
 
         actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.get().getId(),
@@ -1374,7 +1374,7 @@ public class ProductManagerController {
         Optional<Product> updatedProduct = productService.updateProductCategory(id, newCategoryId);
 
         if (!(updatedProduct.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
         }
 
         actionService.logAction(user, "UPDATE_PRODUCT", String.format("%d: %s -> %s", updatedProduct.get().getId(),
@@ -1434,7 +1434,7 @@ public class ProductManagerController {
         Optional<Product> updatedProduct = productService.updateProductManager(id, newProductManager);
 
         if (!(updatedProduct.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product update failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product update failed");
         }
 
         actionService.logAction(user, "CHANGE_PRODUCTMANAGER", String.format("%d: %s -> %s",
@@ -1469,7 +1469,7 @@ public class ProductManagerController {
                 request.getDescription());
 
         if (createdCategory.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category creation failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Category creation failed");
         }
 
         Category newCategory = createdCategory.get();
@@ -1580,7 +1580,43 @@ public class ProductManagerController {
         List<DeliveryResponse> responseDeliveries = new ArrayList<>();
 
         for (Delivery delivery: deliveries) {
-            responseDeliveries.add(new DeliveryResponse(delivery.getId(), delivery.getOrder().getId(), ));
+            List<OrderItemResponse> deliveryOrderItems = new ArrayList<>();
+
+            for (OrderItem orderItem: delivery.getOrder().getOrderItems()) {
+                deliveryOrderItems.add(new OrderItemResponse(orderItem.getId(), orderItem.getOrder().getId(),
+                        new ProductResponse(
+                            orderItem.getProduct().getId(), orderItem.getProduct().getName(), orderItem.getProduct().getModel(),
+                            orderItem.getProduct().getSerialNumber(), orderItem.getProduct().getDescription(),
+                            orderItem.getProduct().getQuantityInStock(), orderItem.getProduct().getPrice(),
+                            orderItem.getProduct().getWarrantyStatus(), orderItem.getProduct().getDistributorInfo(),
+                            orderItem.getProduct().getIsActive(), orderItem.getProduct().getImageUrl(),
+                            new CategoryResponse(
+                                orderItem.getProduct().getCategory().getId(), orderItem.getProduct().getCategory().getName(),
+                                orderItem.getProduct().getCategory().getDescription()
+                            )
+                        ),
+                        orderItem.getQuantity(), orderItem.getPrice()
+                    )
+                );
+            }
+
+            responseDeliveries.add(new DeliveryResponse(
+                delivery.getId(), new OrderResponse(
+                    delivery.getOrder().getId(), delivery.getOrder().getUser().getId(), delivery.getOrder().getOrderDate(),
+                    delivery.getOrder().getStatus(), delivery.getOrder().getTotalPrice(), delivery.getOrder().getDeliveryAddress(),
+                    deliveryOrderItems
+                ),
+                new ProductResponse(
+                    delivery.getProduct().getId(), delivery.getProduct().getName(), delivery.getProduct().getModel(),
+                    delivery.getProduct().getSerialNumber(), delivery.getProduct().getDescription(),
+                    delivery.getProduct().getQuantityInStock(), delivery.getProduct().getPrice(), delivery.getProduct().getWarrantyStatus(),
+                    delivery.getProduct().getDistributorInfo(), delivery.getProduct().getIsActive(), delivery.getProduct().getImageUrl(),
+                    new CategoryResponse(
+                        delivery.getProduct().getCategory().getId(), delivery.getProduct().getCategory().getName(),
+                        delivery.getProduct().getCategory().getDescription()
+                    )
+                ),
+                delivery.getQuantity(), delivery.getTotalPrice(), delivery.getDeliveryAddress(), delivery.getDeliveryStatus()));
         }
 
         return ResponseEntity.ok(new DeliveryListResponse(responseDeliveries));
@@ -1605,7 +1641,47 @@ public class ProductManagerController {
         List<DeliveryResponse> responseDeliveries = new ArrayList<>();
 
         for (Delivery delivery: deliveries) {
-            responseDeliveries.add(new DeliveryResponse(delivery.getId(), delivery.getOrder().getId(), ));
+            List<OrderItemResponse> deliveryOrderItems = new ArrayList<>();
+
+            for (OrderItem orderItem: delivery.getOrder().getOrderItems()) {
+                deliveryOrderItems.add(new OrderItemResponse(orderItem.getId(), orderItem.getOrder().getId(),
+                        new ProductResponse(
+                            orderItem.getProduct().getId(), orderItem.getProduct().getName(), orderItem.getProduct().getModel(),
+                            orderItem.getProduct().getSerialNumber(), orderItem.getProduct().getDescription(),
+                            orderItem.getProduct().getQuantityInStock(), orderItem.getProduct().getPrice(),
+                            orderItem.getProduct().getWarrantyStatus(), orderItem.getProduct().getDistributorInfo(),
+                            orderItem.getProduct().getIsActive(), orderItem.getProduct().getImageUrl(),
+                            new CategoryResponse(
+                                orderItem.getProduct().getCategory().getId(), orderItem.getProduct().getCategory().getName(),
+                                orderItem.getProduct().getCategory().getDescription()
+                            )
+                        ),
+                        orderItem.getQuantity(), orderItem.getPrice()
+                    )
+                );
+            }
+
+            responseDeliveries.add(new DeliveryResponse(
+                    delivery.getId(),
+                    new OrderResponse(
+                        delivery.getOrder().getId(), delivery.getOrder().getUser().getId(), delivery.getOrder().getOrderDate(),
+                        delivery.getOrder().getStatus(), delivery.getOrder().getTotalPrice(), delivery.getOrder().getDeliveryAddress(),
+                        deliveryOrderItems
+                    ),
+                    new ProductResponse(
+                        delivery.getProduct().getId(), delivery.getProduct().getName(), delivery.getProduct().getModel(),
+                        delivery.getProduct().getSerialNumber(), delivery.getProduct().getDescription(),
+                        delivery.getProduct().getQuantityInStock(), delivery.getProduct().getPrice(),
+                        delivery.getProduct().getWarrantyStatus(), delivery.getProduct().getDistributorInfo(),
+                        delivery.getProduct().getIsActive(), delivery.getProduct().getImageUrl(),
+                        new CategoryResponse(
+                            delivery.getProduct().getCategory().getId(), delivery.getProduct().getCategory().getName(),
+                            delivery.getProduct().getCategory().getDescription()
+                        )
+                    ),
+                    delivery.getQuantity(), delivery.getTotalPrice(), delivery.getDeliveryAddress(), delivery.getDeliveryStatus()
+                )
+            );
         }
 
         return ResponseEntity.ok(new DeliveryListResponse(responseDeliveries));
@@ -1628,10 +1704,10 @@ public class ProductManagerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
         }
 
-        Optional<Delivery> updatedDelivery = deliveryService.updateDeliveryStatus(deliveryId, newStatusRequest.getStatus(), user);
+        Optional<Delivery> updatedDelivery = deliveryService.updateDeliveryStatusProductManager(deliveryId, newStatusRequest.getStatus(), user);
 
         if (updatedDelivery.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Delivery status update failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Delivery status update failed");
         }
 
         Delivery newDelivery = updatedDelivery.get();

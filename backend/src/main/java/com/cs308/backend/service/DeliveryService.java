@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.cs308.backend.dao.Delivery;
+import com.cs308.backend.dao.Order;
+import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.User;
 import com.cs308.backend.repo.DeliveryRepository;
 
@@ -44,7 +46,7 @@ public class DeliveryService {
     }
 
     public List<Delivery> getPendingDeliveriesForProductManager(User productManager) {
-        List<Delivery> pendingDeliveries = deliveryRepository.findByDeliveryStatus("PENDING");
+        List<Delivery> pendingDeliveries = deliveryRepository.findByDeliveryStatus("processing");
         List<Delivery> pendingDeliveriesForProdMan = new ArrayList<>();
         
         for (Delivery delivery: pendingDeliveries) {
@@ -60,6 +62,20 @@ public class DeliveryService {
         try {
             Delivery delivery = deliveryRepository.findById(deliveryId)
                     .orElseThrow(() -> new RuntimeException("Delivery not found"));
+            
+            delivery.setDeliveryStatus(newStatus);
+            Delivery updatedDelivery = deliveryRepository.save(delivery);
+            return Optional.of(updatedDelivery);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Delivery> updateDeliveryStatusProductManager(Long deliveryId, String newStatus, User productManager) {
+        try {
+            Delivery delivery = deliveryRepository.findById(deliveryId)
+                    .orElseThrow(() -> new RuntimeException("Delivery not found"));
 
             if (!(delivery.getProduct().getProductManager().equals(productManager))) {
                 return Optional.empty();
@@ -72,5 +88,9 @@ public class DeliveryService {
             e.printStackTrace();
             return Optional.empty();
         }
+    }
+
+    public Optional<Delivery> findByOrderAndProduct(Order order, Product product) {
+        return deliveryRepository.findByOrderAndProduct(order, product);
     }
 }

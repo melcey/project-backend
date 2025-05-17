@@ -100,6 +100,8 @@ public class CartServiceTest {
         User user = new User("John Doe", "123 Main St", Role.customer);
         Cart cart = new Cart(user);
         when(cartRepository.findByUser(user)).thenReturn(Optional.of(cart));
+        when(cartRepository.save(any(Cart.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
 
         // Call the service method
         Optional<Cart> fetchedCart = cartService.getCartOfUser(user);

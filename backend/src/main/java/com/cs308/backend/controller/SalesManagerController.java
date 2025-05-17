@@ -45,6 +45,7 @@ import com.cs308.backend.service.InvoiceService;
 import com.cs308.backend.service.ProductPricingService;
 import com.cs308.backend.service.ProductService;
 import com.cs308.backend.service.ReturnRefundService;
+import com.cs308.backend.service.SalesManagerActionService;
 
 @RestController
 @RequestMapping("/sales")
@@ -54,15 +55,18 @@ public class SalesManagerController {
     private final InvoiceService invoiceService;
     private final ReturnRefundService returnRefundService;
     private final ProductService productService;
+    private final SalesManagerActionService actionService;
     
     public SalesManagerController(ProductPricingService pricingService,
                                 InvoiceService invoiceService,
                                 ReturnRefundService returnRefundService,
-                                ProductService productService) {
+                                ProductService productService,
+                                SalesManagerActionService actionService) {
         this.pricingService = pricingService;
         this.invoiceService = invoiceService;
         this.returnRefundService = returnRefundService;
         this.productService = productService;
+        this.actionService = actionService;
     }
     
     private User getCurrentUser() {
@@ -113,7 +117,7 @@ public class SalesManagerController {
     
     @PutMapping("/approve-price")
     public ResponseEntity<?> approveProductPrice(@RequestBody PricingRequest request) {
-        getCurrentUser();
+        User user = getCurrentUser();
         
         Product product = pricingService.approveProductPrice(
             request.getProductId(), 
@@ -122,13 +126,15 @@ public class SalesManagerController {
         );
 
         ProductResponse responseProduct = new ProductResponse(product.getId(), product.getName(), product.getModel(), product.getSerialNumber(), product.getDescription(), product.getQuantityInStock(), product.getPrice(), product.getWarrantyStatus(), product.getDistributorInfo(), product.getIsActive(), product.getImageUrl(), new CategoryResponse(product.getCategory().getId(), product.getCategory().getName(), product.getCategory().getDescription()));
+
+        actionService.logAction(user, "APPROVE_PRICE", String.format("%d: %.2f, %.2f", request.getProductId(), request.getPrice().doubleValue(), request.getCostPrice().doubleValue()));
         
         return ResponseEntity.ok(responseProduct);
     }
     
     @PutMapping("/apply-discount")
     public ResponseEntity<?> applyDiscount(@RequestBody Map<String, Object> request) {
-        getCurrentUser();
+        User user = getCurrentUser();
         
         @SuppressWarnings("unchecked")
         List<Long> productIds = (List<Long>) request.get("productIds");
@@ -140,6 +146,8 @@ public class SalesManagerController {
         List<ProductResponse> responseUpdatedProducts = new ArrayList<>();
 
         for (Product updatedProduct: updatedProducts) {
+            actionService.logAction(user, "APPLY_DISCOUNT", String.format("%d: %.2f", updatedProduct.getId(), discountRate));
+
             responseUpdatedProducts.add(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
         }
 
@@ -148,7 +156,7 @@ public class SalesManagerController {
     
     @PutMapping("/remove-discount")
     public ResponseEntity<?> removeDiscount(@RequestBody Map<String, Object> request) {
-        getCurrentUser();
+        User user = getCurrentUser();
         
         @SuppressWarnings("unchecked")
         List<Long> productIds = (List<Long>) request.get("productIds");
@@ -159,6 +167,8 @@ public class SalesManagerController {
         List<ProductResponse> responseUpdatedProducts = new ArrayList<>();
 
         for (Product updatedProduct: updatedProducts) {
+            actionService.logAction(user, "REMOVE_DISCOUNT", String.format("%d", updatedProduct.getId()));
+
             responseUpdatedProducts.add(new ProductResponse(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getModel(), updatedProduct.getSerialNumber(), updatedProduct.getDescription(), updatedProduct.getQuantityInStock(), updatedProduct.getPrice(), updatedProduct.getWarrantyStatus(), updatedProduct.getDistributorInfo(), updatedProduct.getIsActive(), updatedProduct.getImageUrl(), new CategoryResponse(updatedProduct.getCategory().getId(), updatedProduct.getCategory().getName(), updatedProduct.getCategory().getDescription())));
         }
 
@@ -244,6 +254,8 @@ public class SalesManagerController {
         if (approve && refund != null) {
             RefundResponse responseRefund = new RefundResponse(refund.getId(), id, refund.getAmount(), refund.getRefundDate(), refund.getStatus().toString());
 
+            actionService.logAction(salesManager, "APPROVE_REFUND", String.format("%d -> %d", id, refund.getId()));
+
             return ResponseEntity.ok(responseRefund);
         } else {
             return ResponseEntity.ok(new MessageResponse("Return request has been rejected"));
@@ -252,11 +264,13 @@ public class SalesManagerController {
     
     @PostMapping("/refunds/{id}/complete")
     public ResponseEntity<?> completeRefund(@PathVariable Long id) {
-        getCurrentUser();
+        User user = getCurrentUser();
         
         Refund completedRefund = returnRefundService.completeRefund(id);
 
         RefundResponse responseCompletedRefund = new RefundResponse(completedRefund.getId(), id, completedRefund.getAmount(), completedRefund.getRefundDate(), completedRefund.getStatus().toString());
+
+        actionService.logAction(user, "COMPLETE_REFUND", String.format("%d",completedRefund.getId()));
 
         return ResponseEntity.ok(responseCompletedRefund);
     }

@@ -48,7 +48,8 @@ public class ProductController {
     private final RatingService ratingService;
     private final OrderService orderService;
 
-    public ProductController(ProductService productService, CommentService commentService, RatingService ratingService, OrderService orderService) {
+    public ProductController(ProductService productService, CommentService commentService,
+        RatingService ratingService, OrderService orderService) {
         this.productService = productService;
         this.commentService = commentService;
         this.ratingService = ratingService;
@@ -205,7 +206,7 @@ public class ProductController {
             Optional<Product> retrievedProduct = productService.findProductById(id);
 
             if (!(retrievedProduct.isPresent())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product could not be found");
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product could not be found");
             }
 
             Product foundProduct = retrievedProduct.get();
@@ -229,7 +230,7 @@ public class ProductController {
         }
         catch (Exception e) {
             e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Image retrieval failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Image retrieval failed");
         }
     }
     

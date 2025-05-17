@@ -1,21 +1,21 @@
 package com.cs308.backend.controller;
 
-import com.cs308.backend.dao.Product;
-import com.cs308.backend.dao.Role;
-import com.cs308.backend.dao.User;
-import com.cs308.backend.dao.Wishlist;
-import com.cs308.backend.dto.WishlistItemRequest;
-import com.cs308.backend.dto.WishlistResponse;
-import com.cs308.backend.security.UserPrincipal;
-import com.cs308.backend.service.WishlistService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -24,15 +24,14 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import com.cs308.backend.dao.Role;
+import com.cs308.backend.dao.User;
+import com.cs308.backend.dao.Wishlist;
+import com.cs308.backend.dto.WishlistItemRequest;
+import com.cs308.backend.dto.WishlistResponse;
+import com.cs308.backend.security.UserPrincipal;
+import com.cs308.backend.service.WishlistService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WishlistControllerTest {
 

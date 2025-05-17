@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.cs308.backend.dao.AnonCart;
 import com.cs308.backend.dao.Cart;
 import com.cs308.backend.dao.CartItem;
 import com.cs308.backend.dao.Role;
@@ -91,7 +90,7 @@ public class CartController {
         Optional<Cart> cart = cartService.anonCartToCart(anonCartId, user);
 
         if (!(cart.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart creation failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cart creation failed");
         }
 
         Cart createdCart = cart.get();
@@ -124,7 +123,7 @@ public class CartController {
         Optional<Cart> cart = cartService.addItemToCart(user, request.getProductId(), request.getQuantity());
 
         if (!(cart.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Item addition to cart failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Item addition to cart failed");
         }
 
         Cart updatedCart = cart.get();
@@ -155,7 +154,7 @@ public class CartController {
         Optional<Cart> cart = cartService.deleteItemFromCart(user, request.getProductId(), request.getQuantity());
 
         if (!(cart.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Item addition to cart failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Item addition to cart failed");
         }
 
         Cart updatedCart = cart.get();

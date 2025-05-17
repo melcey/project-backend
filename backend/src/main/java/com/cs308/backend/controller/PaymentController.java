@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cs308.backend.dao.Cart;
-import com.cs308.backend.dao.CreditCard;
 import com.cs308.backend.dao.Order;
 import com.cs308.backend.dao.OrderItem;
 import com.cs308.backend.dao.Payment;
@@ -61,7 +60,7 @@ public class PaymentController {
         Optional<Payment> payment = paymentService.processPayment(paymentRequest, user);
 
         if (!payment.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment processing failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Payment processing failed");
         }
 
         Payment processedPayment = payment.get();
@@ -72,7 +71,7 @@ public class PaymentController {
             int newStock = product.getQuantityInStock() - item.getQuantity();
 
             if (newStock < 0) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product stock cannot be negative");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Product stock cannot be negative");
             }
 
             Optional<Product> updatedProduct = productService.updateProductQuantityInStock(
@@ -81,7 +80,7 @@ public class PaymentController {
 
             if (!updatedProduct.isPresent()) {
                 throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
+                        HttpStatus.INTERNAL_SERVER_ERROR,
                         String.format("Failed to update stock for product: %s", product.getName()));
             }
         }
@@ -89,7 +88,7 @@ public class PaymentController {
         Optional<Cart> updatedCart = cartService.clearCart(user);
 
         if (!(updatedCart.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart could not be cleared");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cart could not be cleared");
         }
 
         PaymentResponse response = new PaymentResponse(

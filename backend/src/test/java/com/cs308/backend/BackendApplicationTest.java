@@ -46,7 +46,6 @@ import com.cs308.backend.security.CustomUserDetailsService;
 import com.cs308.backend.security.JwtAuthenticationFilter;
 import com.cs308.backend.security.JwtSecurityConfig;
 import com.cs308.backend.security.JwtTokenProvider;
-import com.cs308.backend.security.UserPrincipal;
 import com.cs308.backend.service.AnonCartService;
 import com.cs308.backend.service.CartService;
 import com.cs308.backend.service.CommentService;

@@ -1,5 +1,6 @@
 package com.cs308.backend.controller;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cs308.backend.dao.Delivery;
 import com.cs308.backend.dao.Invoice;
 import com.cs308.backend.dao.Order;
 import com.cs308.backend.dao.OrderItem;
@@ -36,9 +38,12 @@ import com.cs308.backend.dto.OrderResponse;
 import com.cs308.backend.dto.ProductResponse;
 import com.cs308.backend.dto.UpdateOrderStateRequest;
 import com.cs308.backend.security.UserPrincipal;
+import com.cs308.backend.service.DeliveryService;
 import com.cs308.backend.service.InvoiceService;
 import com.cs308.backend.service.OrderService;
 import com.cs308.backend.service.ProductService;
+
+
 
 @RestController
 @RequestMapping("/order")
@@ -46,11 +51,14 @@ public class OrderController {
     private final OrderService orderService;
     private final ProductService productService;
     private final InvoiceService invoiceService;
+    private final DeliveryService deliveryService;
 
-    public OrderController(OrderService orderService, ProductService productService, InvoiceService invoiceService) {
+    public OrderController(OrderService orderService, ProductService productService,
+        InvoiceService invoiceService, DeliveryService deliveryService) {
         this.orderService = orderService;
         this.productService = productService;
         this.invoiceService = invoiceService;
+        this.deliveryService = deliveryService;
     }
 
     @GetMapping("/customer")
@@ -221,7 +229,7 @@ public class OrderController {
             Optional<Order> addedOrder = orderService.addNewOrder(newOrder);
 
             if (!(addedOrder.isPresent())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order creation failed");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Order creation failed");
             }
 
             List<OrderItemResponse> responseItems = new ArrayList<>();
@@ -239,6 +247,18 @@ public class OrderController {
                                         addedOrderItem.getProduct().getCategory().getName(),
                                         addedOrderItem.getProduct().getCategory().getDescription())),
                         addedOrderItem.getQuantity(), addedOrderItem.getPrice()));
+
+                Delivery delivery = new Delivery(
+                    addedOrderItem.getOrder(), addedOrderItem.getProduct(), addedOrderItem.getQuantity(),
+                    addedOrderItem.getPrice().multiply(BigDecimal.valueOf(addedOrderItem.getQuantity())),
+                    addedOrderItem.getOrder().getDeliveryAddress(), addedOrderItem.getOrder().getStatus().toString()
+                );
+
+                Optional<Delivery> createdDelivery = deliveryService.createDelivery(delivery);
+
+                if (createdDelivery.isEmpty()) {
+                    throw new RuntimeException("Delivery creation failed for the order item");
+                }
             }
 
             return ResponseEntity.ok(new OrderResponse(addedOrder.get().getId(), user.getId(),
@@ -246,7 +266,7 @@ public class OrderController {
                     addedOrder.get().getDeliveryAddress(), responseItems));
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order creation failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Order creation failed");
         }
     }
 
@@ -341,9 +361,9 @@ public class OrderController {
 
         Invoice invoice = retrievedInvoice.get();
 
-        return ResponseEntity
-                .ok(new InvoiceResponse(invoice.getId(), invoice.getInvoiceNumber(), invoice.getOrder().getId(),
-                        invoice.getPayment().getId(), invoice.getInvoiceDate(), invoice.getTotalAmount()));
+        return ResponseEntity.ok(new InvoiceResponse(invoice.getId(), invoice.getInvoiceNumber(),
+            invoice.getOrder().getId(),invoice.getPayment().getId(),
+            invoice.getInvoiceDate(), invoice.getTotalAmount()));
     }
 
     // One of "pending", in-transit", "delivered"
@@ -373,7 +393,7 @@ public class OrderController {
                 newStateRequest.getStatus());
 
         if (!(updatedOrder.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order status update failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Order status update failed");
         }
 
         List<OrderItemResponse> responseItems = new ArrayList<>();
@@ -391,11 +411,26 @@ public class OrderController {
                                     updatedOrderItem.getProduct().getCategory().getName(),
                                     updatedOrderItem.getProduct().getCategory().getDescription())),
                     updatedOrderItem.getQuantity(), updatedOrderItem.getPrice()));
+
+            Optional<Delivery> retrievedDelivery = deliveryService.findByOrderAndProduct(updatedOrder.get(), updatedOrderItem.getProduct());
+
+            if (retrievedDelivery.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No delivery could be found for the order item");
+            }
+
+            Optional<Delivery> updatedDelivery = deliveryService.updateDeliveryStatus(retrievedDelivery.get().getId(), newStateRequest.getStatus(), user);
+
+            if (updatedDelivery.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Delivery update for the order item failed");
+            }
         }
 
         return ResponseEntity.ok(new OrderResponse(updatedOrder.get().getId(), user.getId(),
-                updatedOrder.get().getOrderDate(), updatedOrder.get().getStatus(), updatedOrder.get().getTotalPrice(),
-                updatedOrder.get().getDeliveryAddress(), responseItems));
+                    updatedOrder.get().getOrderDate(), updatedOrder.get().getStatus(),
+                    updatedOrder.get().getTotalPrice(), updatedOrder.get().getDeliveryAddress(),
+                    responseItems
+                )
+            );
     }
 
     @DeleteMapping("/customer/{id}")
@@ -432,7 +467,7 @@ public class OrderController {
         Optional<Order> deletedOrder = orderService.updateOrderStatus(orderToDelete, "cancelled");
 
         if (!(deletedOrder.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order deletion failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Order cancellation failed");
         }
 
         List<OrderItemResponse> responseItems = new ArrayList<>();
@@ -450,10 +485,24 @@ public class OrderController {
                                     deletedOrderItem.getProduct().getCategory().getName(),
                                     deletedOrderItem.getProduct().getCategory().getDescription())),
                     deletedOrderItem.getQuantity(), deletedOrderItem.getPrice()));
+
+            Optional<Delivery> retrievedDelivery = deliveryService.findByOrderAndProduct(deletedOrder.get(), deletedOrderItem.getProduct());
+
+            if (retrievedDelivery.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No delivery could be found for the order item");
+            }
+
+            Optional<Delivery> deletedDelivery = deliveryService.updateDeliveryStatus(retrievedDelivery.get().getId(), "cancelled", user);
+
+            if (deletedDelivery.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Delivery cancellation for the order item failed");
+            }
         }
 
         return ResponseEntity.ok(new OrderResponse(deletedOrder.get().getId(), user.getId(),
                 deletedOrder.get().getOrderDate(), deletedOrder.get().getStatus(), deletedOrder.get().getTotalPrice(),
-                deletedOrder.get().getDeliveryAddress(), responseItems));
+                deletedOrder.get().getDeliveryAddress(), responseItems
+            )
+        );
     }
 }

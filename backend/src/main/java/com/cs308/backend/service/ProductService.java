@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.cs308.backend.dao.Category;
@@ -15,7 +14,6 @@ import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.User;
 import com.cs308.backend.repo.CategoryRepository;
 import com.cs308.backend.repo.ProductRepository;
-import com.cs308.backend.dto.ProductRequest;
 
 @Service
 public class ProductService {

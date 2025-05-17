@@ -56,7 +56,7 @@ public class AnonCartController {
         Optional<AnonCart> createdAnonCart = anonCartService.createAnonCart();
 
         if (!(createdAnonCart.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The anonymous cart could not be created");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "The anonymous cart could not be created");
         }
 
         AnonCart newAnonCart = createdAnonCart.get();

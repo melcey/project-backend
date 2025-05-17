@@ -1,7 +1,5 @@
 package com.cs308.backend.dto;
 
-import java.time.LocalDateTime;
-
 public class CommentRequest {
     private Long productId;
     private String comment;

@@ -5,4 +5,4 @@ DROP CONSTRAINT delivery_delivery_status_check;
 
 ALTER TABLE delivery
 ADD CONSTRAINT delivery_delivery_status_check
-    CHECK (status IN ('processing', 'in-transit', 'delivered', 'cancelled'));
+    CHECK (delivery_status IN ('processing', 'in-transit', 'delivered', 'cancelled'));

@@ -62,8 +62,8 @@ public class CustomerReturnController {
             );
             
             return ResponseEntity.ok(new ReturnRequestResponse(returnRequest));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
     

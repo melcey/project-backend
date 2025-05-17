@@ -98,7 +98,7 @@ public class AuthController {
                 signUpRequest.getPassword());
 
             if (!(createdUser.isPresent())) {
-                return ResponseEntity.badRequest().body(new MessageResponse("User registration failed"));
+                return ResponseEntity.internalServerError().body(new MessageResponse("User registration failed"));
             }
 
             // No authentication will be performed while registering a user; they will need to explicitly log in
@@ -108,7 +108,7 @@ public class AuthController {
         }
         catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().body(new MessageResponse("User registration failed"));
+            return ResponseEntity.internalServerError().body(new MessageResponse("User registration failed"));
         }
     }
 }

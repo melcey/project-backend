@@ -152,7 +152,7 @@ public class AuthControllerTest {
         mockMvc.perform(post("/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(signUpRequest)))
-            .andExpect(status().isBadRequest())
+            .andExpect(status().isInternalServerError())
             .andExpect(jsonPath("$.message").value("User registration failed"));
 
         // Verify method calls

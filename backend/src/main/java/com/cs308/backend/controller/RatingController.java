@@ -1,6 +1,5 @@
 package com.cs308.backend.controller;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.cs308.backend.dao.Order;
 import com.cs308.backend.dao.OrderStatus;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Rating;

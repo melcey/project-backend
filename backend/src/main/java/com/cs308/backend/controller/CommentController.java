@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cs308.backend.dao.Comment;
-import com.cs308.backend.dao.Order;
 import com.cs308.backend.dao.OrderStatus;
 import com.cs308.backend.dao.Product;
 import com.cs308.backend.dao.Role;
@@ -91,7 +90,7 @@ public class CommentController {
         Optional<Product> productToComment = productService.findProductById(commentRequest.getProductId());
 
         if (!(productToComment.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The product does not exist");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The product does not exist");
         }
 
         Product retrievedProduct = productToComment.get();
@@ -106,7 +105,7 @@ public class CommentController {
         Optional<Comment> submittedComment = commentService.submitComment(new Comment(productToComment.get(), user, commentRequest.getComment()));
 
         if (!(submittedComment.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Comment submission failed.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Comment submission failed.");
         }
 
         return ResponseEntity.ok(new MessageResponse("The comment is submitted"));
@@ -139,7 +138,7 @@ public class CommentController {
         Optional<Comment> comment = commentService.approveComment(commentToApprove.get());
 
         if (!(comment.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Comment approval failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Comment approval failed");
         }
 
         Comment approvedComment = comment.get();
@@ -174,7 +173,7 @@ public class CommentController {
         Optional<Comment> comment = commentService.disapproveComment(commentToDisapprove.get());
 
         if (!(comment.isPresent())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Comment disapproval failed");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Comment disapproval failed");
         }
 
         Comment disapprovedComment = comment.get();
