@@ -3,8 +3,10 @@ package com.cs308.backend.controller;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,7 @@ import com.cs308.backend.dto.CreateOrderRequest;
 import com.cs308.backend.dto.InvoiceResponse;
 import com.cs308.backend.dto.OrderItemRequest;
 import com.cs308.backend.dto.OrderItemResponse;
+import com.cs308.backend.dto.OrderListResponse;
 import com.cs308.backend.dto.OrderResponse;
 import com.cs308.backend.dto.ProductResponse;
 import com.cs308.backend.dto.UpdateOrderStateRequest;
@@ -208,6 +211,44 @@ public class OrderController {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order creation failed");
         }
+    }
+
+    @GetMapping("/manager")
+    public ResponseEntity<?> getAllOrdersForProductManager() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ((auth == null) || (!(auth.isAuthenticated()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
+
+        UserPrincipal userDetails = (UserPrincipal) auth.getPrincipal();
+            
+        User user = userDetails.getUser();
+
+        if (user.getRole() != Role.product_manager) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
+        }
+
+        List<Product> managedProducts = productService.findProductsByProductManager(user);
+        Set<Order> responsibleOrders = new LinkedHashSet<>();
+
+        for (Product managedProduct: managedProducts) {
+            responsibleOrders.addAll(orderService.findAllOrdersIncludingProduct(managedProduct));
+        }
+        
+        List<Order> responsibleOrderList = new ArrayList<>(responsibleOrders);
+        List<OrderResponse> responseOrders = new ArrayList<>();
+
+        for (Order responsibleOrder: responsibleOrderList) {
+            List<OrderItemResponse> responseOrderItems = new ArrayList<>();
+
+            for (OrderItem responsibleOrderItem: responsibleOrder.getOrderItems()) {
+                responseOrderItems.add(new OrderItemResponse(responsibleOrderItem.getId(), responsibleOrderItem.getOrder().getId(), new ProductResponse(responsibleOrderItem.getProduct().getId(), responsibleOrderItem.getProduct().getName(), responsibleOrderItem.getProduct().getModel(), responsibleOrderItem.getProduct().getSerialNumber(), responsibleOrderItem.getProduct().getDescription(), responsibleOrderItem.getProduct().getQuantityInStock(), responsibleOrderItem.getProduct().getPrice(), responsibleOrderItem.getProduct().getWarrantyStatus(), responsibleOrderItem.getProduct().getDistributorInfo(), responsibleOrderItem.getProduct().getIsActive(), responsibleOrderItem.getProduct().getImageUrl(), new CategoryResponse(responsibleOrderItem.getProduct().getCategory().getId(), responsibleOrderItem.getProduct().getCategory().getName(), responsibleOrderItem.getProduct().getCategory().getDescription())), responsibleOrderItem.getQuantity(), responsibleOrderItem.getPrice()));
+            }
+
+            responseOrders.add(new OrderResponse(responsibleOrder.getId(), responsibleOrder.getUser().getId(), responsibleOrder.getOrderDate(), responsibleOrder.getStatus(), responsibleOrder.getTotalPrice(), responsibleOrder.getDeliveryAddress(), responseOrderItems));
+        }
+
+        return ResponseEntity.ok(new OrderListResponse(responseOrders));
     }
 
     @GetMapping("/manager/{id}")
