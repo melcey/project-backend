@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -33,6 +34,7 @@ import com.cs308.backend.security.UserPrincipal;
 import com.cs308.backend.service.WishlistService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@AutoConfigureMockMvc
 public class WishlistControllerTest {
 
     private MockMvc mockMvc;
@@ -70,7 +72,6 @@ public class WishlistControllerTest {
     @WithMockUser(roles = "CUSTOMER")
     public void testAddToWishlist() throws Exception {
         WishlistItemRequest request = new WishlistItemRequest(1L);
-        WishlistResponse response = new WishlistResponse(1L, mockUser.getId(), List.of());
 
         when(wishlistService.addToWishlist(any(), eq(1L))).thenReturn(Optional.of(new Wishlist()));
 
