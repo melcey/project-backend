@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -33,6 +33,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@AutoConfigureMockMvc
 public class CustomerReturnControllerTest {
 
     private MockMvc mockMvc;
@@ -130,8 +131,19 @@ public class CustomerReturnControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "sales_manager")
+    @WithMockUser(roles = "SALES_MANAGER")
     public void testGetUserReturnRequests_Forbidden() throws Exception {
+        User manager = new User();
+        manager.setId(2L);
+        manager.setName("Manager");
+        manager.setRole(Role.sales_manager);
+        UserPrincipal principal = UserPrincipal.create(manager);
+        UsernamePasswordAuthenticationToken auth =
+            new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+        SecurityContext ctx = SecurityContextHolder.createEmptyContext();
+        ctx.setAuthentication(auth);
+        SecurityContextHolder.setContext(ctx);
+
         mockMvc.perform(get("/returns"))
                 .andExpect(status().isForbidden());
     }
