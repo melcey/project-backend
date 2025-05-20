@@ -1,35 +1,36 @@
 package com.cs308.backend.controller;
 
-import com.cs308.backend.dao.AnonCart;
-import com.cs308.backend.dao.AnonCartItem;
-import com.cs308.backend.dao.Category;
-import com.cs308.backend.dao.Product;
-import com.cs308.backend.dto.AnonCartItemRequest;
-import com.cs308.backend.service.AnonCartService;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
+import com.cs308.backend.dao.AnonCart;
+import com.cs308.backend.dao.AnonCartItem;
+import com.cs308.backend.dao.Category;
+import com.cs308.backend.dao.Product;
+import com.cs308.backend.dto.AnonCartItemRequest;
+import com.cs308.backend.service.AnonCartService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+@AutoConfigureMockMvc
 public class AnonCartControllerTest {
 
     private MockMvc mockMvc;
