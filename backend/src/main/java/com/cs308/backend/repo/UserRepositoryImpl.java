@@ -43,7 +43,7 @@ public class UserRepositoryImpl implements UserRepositoryObj {
     public Optional<User> insertNewUser(User user, String email, String password) {
         // Creates the query command in SQL to insert the new record to the table and return the inserted data
         // Casts the result from crypt() into BYTEA
-        String sqlQuery = "INSERT INTO users (name, email, home_address, password_hash, role) VALUES (:name, pgp_sym_encrypt(:email, :encryption_key), :address, crypt(:password, gen_salt('bf'))::bytea, :role) RETURNING *";
+        String sqlQuery = "INSERT INTO users (name, email, home_address, password_hash, role, tax_id) VALUES (:name, pgp_sym_encrypt(:email, :encryption_key), :address, crypt(:password, gen_salt('bf'))::bytea, :role, :tax_id) RETURNING *";
 
         try {
             // Creates the native query, injects the parameters, executes the query, and retrieves the result casted into a User object
@@ -54,6 +54,7 @@ public class UserRepositoryImpl implements UserRepositoryObj {
                 .setParameter("address", user.getAddress())
                 .setParameter("password", password)
                 .setParameter("role", user.getRole().getValue())
+                .setParameter("tax_id", user.getTaxId())
                 .getSingleResult();
 
             // Pending changes are written to the database
