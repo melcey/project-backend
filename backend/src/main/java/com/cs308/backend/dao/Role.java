@@ -11,11 +11,12 @@ public enum Role {
 
     private final String value;
 
-    // An enum constructor in Java should always be private (it is implicitly private if you do not specify)
+    // An enum constructor in Java should always be private (it is implicitly
+    // private if you do not specify)
     private Role(String value) {
         this.value = value;
     }
-    
+
     // Fixes for the serialization/deserialization process
     @JsonValue
     public String getValue() {
@@ -24,7 +25,7 @@ public enum Role {
 
     @JsonCreator
     public static Role fromString(String role) {
-        for (Role r: Role.values()) {
+        for (Role r : Role.values()) {
             if (r.value.equalsIgnoreCase(role)) {
                 return r;
             }

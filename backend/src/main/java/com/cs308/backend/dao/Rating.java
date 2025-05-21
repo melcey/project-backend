@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="ratings", schema = "public")
+@Table(name = "ratings", schema = "public")
 public class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +23,7 @@ public class Rating {
     @JoinColumn(name = "product_id", referencedColumnName = "product_id", nullable = false)
     private Product ratedProduct;
 
-    // Many ratings-one user
+    // Many ratings-one user!
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     private User ratingUser;
@@ -88,11 +88,11 @@ public class Rating {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("Rating [id=").append(id)
-            .append(", ratedProduct=").append(ratedProduct)
-            .append(", ratedUser=").append(ratingUser)
-            .append(", rating=").append(rating)
-            .append(", ratingDate=").append(ratingDate)
-            .append("]");
+                .append(", ratedProduct=").append(ratedProduct)
+                .append(", ratedUser=").append(ratingUser)
+                .append(", rating=").append(rating)
+                .append(", ratingDate=").append(ratingDate)
+                .append("]");
 
         return builder.toString();
     }
