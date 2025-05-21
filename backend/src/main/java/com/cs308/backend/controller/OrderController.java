@@ -82,10 +82,11 @@ public class OrderController {
         List<Order> ordersByUser = orderService.findAllOrdersByUser(user);
         ordersByUser.sort(Comparator.comparing(Order::getOrderDate).reversed());
 
-        List<OrderItemResponse> orderItems = new ArrayList<>();
         List<OrderResponse> response = new ArrayList<>();
 
         for (Order orderByUser : ordersByUser) {
+            List<OrderItemResponse> orderItems = new ArrayList<>();
+            
             for (OrderItem orderItemByUser : orderByUser.getOrderItems()) {
                 orderItems.add(new OrderItemResponse(orderItemByUser.getId(), orderByUser.getId(), new ProductResponse(
                         orderItemByUser.getProduct().getId(), orderItemByUser.getProduct().getName(),
