@@ -102,8 +102,8 @@ public class AuthControllerTest {
     @Test
     void testRegisterUser_Success() throws Exception {
         // Arrange
-        SignUpRequest signUpRequest = new SignUpRequest("John Doe", "test@example.com", "password", "123 Street", "customer");
-        User expectedUser = new User("John Doe", "123 Street", Role.customer);
+        SignUpRequest signUpRequest = new SignUpRequest("John Doe", "test@example.com", "password", "123 Street", "customer", "taxId");
+        User expectedUser = new User("John Doe", "123 Street", Role.customer, "taxId");
 
         when(userService.findByEmail(signUpRequest.getEmail())).thenReturn(Optional.empty());
         when(userService.insertNewUser(any(User.class), eq(signUpRequest.getEmail()), eq(signUpRequest.getPassword())))
@@ -124,7 +124,7 @@ public class AuthControllerTest {
     @Test
     void testRegisterUser_EmailAlreadyExists() throws Exception {
         // Arrange
-        SignUpRequest signUpRequest = new SignUpRequest("John Doe", "test@example.com", "password", "123 Street", "customer");
+        SignUpRequest signUpRequest = new SignUpRequest("John Doe", "test@example.com", "password", "123 Street", "customer", "taxId");
 
         when(userService.findByEmail(signUpRequest.getEmail())).thenReturn(Optional.of(new User()));
 
@@ -142,7 +142,7 @@ public class AuthControllerTest {
     @Test
     void testRegisterUser_Failure() throws Exception {
         // Arrange
-        SignUpRequest signUpRequest = new SignUpRequest("John Doe", "test@example.com", "password", "123 Street", "customer");
+        SignUpRequest signUpRequest = new SignUpRequest("John Doe", "test@example.com", "password", "123 Street", "customer", "taxId");
 
         when(userService.findByEmail(signUpRequest.getEmail())).thenReturn(Optional.empty());
         when(userService.insertNewUser(any(User.class), eq(signUpRequest.getEmail()), eq(signUpRequest.getPassword())))

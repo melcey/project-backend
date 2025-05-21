@@ -53,7 +53,7 @@ class OrderTest {
         Order order = new Order(user, OrderStatus.processing, BigDecimal.valueOf(500.00), "456 Avenue", new ArrayList<>());
         order.setOrderDate(orderDate);
 
-        String expected = "Order [id=null, user=User [id=null, name=John Doe, address=null, role=customer], orderDate=2025-04-19T12:00, status=processing, totalPrice=500.0, deliveryAddress=456 Avenue, orderItems=[]]";
+        String expected = "Order [id=null, user=User [id=null, name=John Doe, address=null, role=customer, taxId=null], orderDate=2025-04-19T12:00, status=processing, totalPrice=500.0, deliveryAddress=456 Avenue, orderItems=[]]";
         assertEquals(expected, order.toString());
     }
 

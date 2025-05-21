@@ -52,7 +52,7 @@ public class CartServiceTest {
     @Test
     public void testAnonCartToCart() {
         // Mock data
-        User user = new User("John Doe", "123 Main St", Role.customer);
+        User user = new User("John Doe", "123 Main St", Role.customer, "taxId");
         AnonCart anonCart = new AnonCart();
         anonCart.setId(1L);
         anonCart.setTotalPrice(new BigDecimal("100.00"));
@@ -81,7 +81,7 @@ public class CartServiceTest {
     @Test
     public void testCreateEmptyCart() {
         // Mock data
-        User user = new User("Jane Doe", "456 Elm St", Role.customer);
+        User user = new User("Jane Doe", "456 Elm St", Role.customer, "taxId");
         when(cartRepository.save(any(Cart.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Call the service method
@@ -97,7 +97,7 @@ public class CartServiceTest {
     @Test
     public void testGetCartOfUser() {
         // Mock data
-        User user = new User("John Doe", "123 Main St", Role.customer);
+        User user = new User("John Doe", "123 Main St", Role.customer, "taxId");
         Cart cart = new Cart(user);
         when(cartRepository.findByUser(user)).thenReturn(Optional.of(cart));
 
@@ -114,7 +114,7 @@ public class CartServiceTest {
     @Test
     public void testAddItemToCart() {
         // Mock data
-        User user = new User("John Doe", "123 Main St", Role.customer);
+        User user = new User("John Doe", "123 Main St", Role.customer, "taxId");
         Cart cart = new Cart(user);
         cart.setId(1L);
 
@@ -146,7 +146,7 @@ public class CartServiceTest {
     @Test
     public void testAddItemToCart_ProductNotFound() {
         // Mock data
-        User user = new User("John Doe", "123 Main St", Role.customer);
+        User user = new User("John Doe", "123 Main St", Role.customer, "taxId");
         Cart cart = new Cart(user);
         cart.setId(1L);
         cart.setItems(new ArrayList<>());
@@ -170,7 +170,7 @@ public class CartServiceTest {
     @Test
     public void testAddItemToCart_CartNotFound() {
         // Mock data
-        User user = new User("John Doe", "123 Main St", Role.customer);
+        User user = new User("John Doe", "123 Main St", Role.customer, "taxId");
         Cart newCart = new Cart(user);
         newCart.setItems(new ArrayList<>()); // Ensure items list is initialized
 

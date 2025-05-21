@@ -39,7 +39,7 @@ class RatingTest {
         Rating rating = new Rating(product, user, 5);
         rating.setRatingDate(ratingDate);
 
-        String expected = "Rating [id=null, ratedProduct=Product [id=null, name=Laptop, model=null, serialNumber=null, description=null, quantityInStock=0, price=null, warrantyStatus=null, distributorInfo=null, isActive=true, imageUrl=null, isPriced=false, originalPrice=null, discountRate=0, costPrice=null, category=null, productManager=null], ratedUser=User [id=null, name=John Doe, address=null, role=customer], rating=5, ratingDate=2025-04-19T12:00]";
+        String expected = "Rating [id=null, ratedProduct=Product [id=null, name=Laptop, model=null, serialNumber=null, description=null, quantityInStock=0, price=null, warrantyStatus=null, distributorInfo=null, isActive=true, imageUrl=null, isPriced=false, originalPrice=null, discountRate=0, costPrice=null, category=null, productManager=null], ratedUser=User [id=null, name=John Doe, address=null, role=customer, taxId=null], rating=5, ratingDate=2025-04-19T12:00]";
         assertEquals(expected, rating.toString());
     }
 

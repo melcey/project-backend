@@ -14,7 +14,7 @@ class UserTest {
     void testUserCreationWithAllFields() {
         byte[] email = "encryptedEmail".getBytes();
         byte[] password = "hashedPassword".getBytes();
-        User user = new User(1L, "John Doe", email, "123 Street", password, Role.customer);
+        User user = new User(1L, "John Doe", email, "123 Street", password, Role.customer, "taxId");
 
         assertEquals(1L, user.getId());
         assertEquals("John Doe", user.getName());
@@ -22,12 +22,13 @@ class UserTest {
         assertEquals("123 Street", user.getAddress());
         assertArrayEquals(password, user.getPasswordHashed());
         assertEquals(Role.customer, user.getRole());
+        assertEquals("taxId", user.getTaxId());
         assertNotNull(user.getManagedProducts());
     }
 
     @Test
     void testUserCreationWithMinimalFields() {
-        User user = new User("Jane Doe", "456 Avenue", Role.product_manager);
+        User user = new User("Jane Doe", "456 Avenue", Role.product_manager, "taxId");
 
         assertNull(user.getId());
         assertEquals("Jane Doe", user.getName());
@@ -35,6 +36,7 @@ class UserTest {
         assertEquals("456 Avenue", user.getAddress());
         assertNull(user.getPasswordHashed());
         assertEquals(Role.product_manager, user.getRole());
+        assertEquals("taxId", user.getTaxId());
         assertNotNull(user.getManagedProducts());
     }
 
@@ -60,9 +62,9 @@ class UserTest {
 
     @Test
     void testToString() {
-        User user = new User("John Doe", "123 Street", Role.customer);
+        User user = new User("John Doe", "123 Street", Role.customer, "taxId");
 
-        String expected = "User [id=null, name=John Doe, address=123 Street, role=customer]";
+        String expected = "User [id=null, name=John Doe, address=123 Street, role=customer, taxId=taxId]";
         assertEquals(expected, user.toString());
     }
 
@@ -74,9 +76,9 @@ class UserTest {
         byte[] password1 = "hashedPassword1".getBytes();
         byte[] password2 = "hashedPassword2".getBytes();
 
-        User user1 = new User(1L, "John Doe", email1, "123 Street", password1, Role.customer);
-        User user2 = new User(1L, "John Doe", email1, "123 Street", password1, Role.customer);
-        User user3 = new User(2L, "Jane Doe", email2, "456 Avenue", password2, Role.product_manager);
+        User user1 = new User(1L, "John Doe", email1, "123 Street", password1, Role.customer, "taxId");
+        User user2 = new User(1L, "John Doe", email1, "123 Street", password1, Role.customer, "taxId");
+        User user3 = new User(2L, "Jane Doe", email2, "456 Avenue", password2, Role.product_manager, "taxId");
         User userNull = new User();
 
         // Test equality for objects with the same fields

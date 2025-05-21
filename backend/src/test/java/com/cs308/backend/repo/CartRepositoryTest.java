@@ -48,7 +48,7 @@ public class CartRepositoryTest {
     @Test
     public void testFindByUser() {
         // Create a new User
-        User user = new User("John Doe", "123 Main St", Role.customer);
+        User user = new User("John Doe", "123 Main St", Role.customer, "taxId");
         User savedUser = userRepository.save(user);
 
         // Create a new Cart
@@ -73,7 +73,7 @@ public class CartRepositoryTest {
     @Test
     public void testSaveAndRetrieveCart() {
         // Create a new User
-        User user = new User("Jane Doe", "456 Elm St", Role.customer);
+        User user = new User("Jane Doe", "456 Elm St", Role.customer, "taxId");
         User savedUser = userRepository.save(user);
 
         // Create a new Cart

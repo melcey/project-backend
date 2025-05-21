@@ -61,7 +61,7 @@ public class SignUpRequest {
     }
 
     public String getTaxId() {
-        return role;
+        return taxId;
     }
 
     public void setTaxId(String taxId) {

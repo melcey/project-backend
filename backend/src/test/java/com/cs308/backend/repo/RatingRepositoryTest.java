@@ -53,7 +53,7 @@ public class RatingRepositoryTest {
     @Test
     public void testFindById() {
         // Create a User
-        User user = new User("John Doe", "123 Main St", Role.customer);
+        User user = new User("John Doe", "123 Main St", Role.customer, "taxId");
         User savedUser = userRepository.save(user);
 
         // Create a Product
@@ -81,7 +81,7 @@ public class RatingRepositoryTest {
     @Test
     public void testFindByRatedProduct() {
         // Create a User
-        User user = new User("John Doe", "123 Main St", Role.customer);
+        User user = new User("John Doe", "123 Main St", Role.customer, "taxId");
         User savedUser = userRepository.save(user);
 
         // Create a Product
@@ -109,7 +109,7 @@ public class RatingRepositoryTest {
     @Test
     public void testFindByRatingUser() {
         // Create a User
-        User user = new User("John Doe", "123 Main St", Role.customer);
+        User user = new User("John Doe", "123 Main St", Role.customer, "taxId");
         User savedUser = userRepository.save(user);
 
         // Create a Product
@@ -137,7 +137,7 @@ public class RatingRepositoryTest {
     @Test
     public void testFindByRatingRange() {
         // Create a User
-        User user = new User("John Doe", "123 Main St", Role.customer);
+        User user = new User("John Doe", "123 Main St", Role.customer, "taxId");
         User savedUser = userRepository.save(user);
 
         // Create a Product
@@ -172,7 +172,7 @@ public class RatingRepositoryTest {
     @Test
     public void testFindByRatingDateBetween() {
         // Create a User
-        User user = new User("John Doe", "123 Main St", Role.customer);
+        User user = new User("John Doe", "123 Main St", Role.customer, "taxId");
         User savedUser = userRepository.save(user);
 
         // Create a Product
@@ -207,7 +207,7 @@ public class RatingRepositoryTest {
     @Test
     public void testFindByProductAndRating() {
         // Create a User
-        User user = new User("John Doe", "123 Main St", Role.customer);
+        User user = new User("John Doe", "123 Main St", Role.customer, "taxId");
         User savedUser = userRepository.save(user);
 
         // Create a Product
