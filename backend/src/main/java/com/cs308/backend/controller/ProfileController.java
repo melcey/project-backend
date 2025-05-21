@@ -26,7 +26,7 @@ public class ProfileController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getProfileDetails(@PathVariable Long id) {
+    public ResponseEntity<?> getProfileDetails() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if ((auth == null) || (!(auth.isAuthenticated()))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
@@ -38,10 +38,6 @@ public class ProfileController {
 
         if (user.getRole() != Role.customer) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized");
-        }
-
-        if (!(user.getId().equals(id))) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Users do not match");
         }
 
         return ResponseEntity.ok(new ProfileResponse(user.getId(), user.getName(), userService.getEmail(user).get(), user.getAddress(), user.getTaxId()));
