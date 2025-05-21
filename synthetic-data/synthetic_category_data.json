@@ -1,0 +1,42 @@
+[
+    {
+        "name": "Electronics",
+        "description": "Devices and gadgets for everyday use."
+    },
+    {
+        "name": "Home Appliances",
+        "description": "Appliances for home and kitchen use."
+    },
+    {
+        "name": "Clothing",
+        "description": "Fashionable apparel for all occasions."
+    },
+    {
+        "name": "Books",
+        "description": "Books for reading and learning."
+    },
+    {
+        "name": "Toys",
+        "description": "Fun and educational toys for kids."
+    },
+    {
+        "name": "Sports",
+        "description": "Equipment and gear for sports and fitness."
+    },
+    {
+        "name": "Furniture",
+        "description": "Stylish and functional furniture for your home."
+    },
+    {
+        "name": "Health & Beauty",
+        "description": "Products for health, wellness, and beauty."
+    },
+    {
+        "name": "Automotive",
+        "description": "Parts and accessories for vehicles."
+    },
+    {
+        "name": "Garden",
+        "description": "Tools and plants for gardening enthusiasts."
+    }
+]
