@@ -93,4 +93,8 @@ public class DeliveryService {
     public Optional<Delivery> findByOrderAndProduct(Order order, Product product) {
         return deliveryRepository.findByOrderAndProduct(order, product);
     }
+
+    public Optional<Delivery> findById(Long id) {
+        return deliveryRepository.findById(id);
+    }
 }

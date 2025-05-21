@@ -16,7 +16,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"name\": \"user2\",\n  \"email\": \"sales_manager@example.com\",\n  \"password\": \"password1\",\n  \"address\": \"Ankara, Turkey\", \n  \"role\": \"sales_manager\"\n}",
+					"raw": "{\n  \"name\": \"user2\",\n  \"email\": \"sales_manager@example.com\",\n  \"password\": \"password1\",\n  \"address\": \"Ankara, Turkey\", \n  \"role\": \"sales_manager\",\n  \"taxId\": \"taxId2\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -84,7 +84,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0NjU5ODIyOSwiZXhwIjoxNzQ2Njg0NjI5fQ.r0jtee-m7yw1liIr0WGbw7wzzWFBDp5iqQgezP6TRiAogIhZZj6wOsRiJGn_s1uMlBKshG8ZE93el3mLNq9Cyg",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0NzgxOTY1OCwiZXhwIjoxNzQ3OTA2MDU4fQ.4u0dmaL2gryWLRgYoTKvW_Vcl2H9l8jwEO8IRib0ZnbOlfck9sNes_FEMibxpuVV0ZEP8u21X3ALrHzfl2_Oag",
 							"type": "string"
 						}
 					]
@@ -117,7 +117,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0Njg5OTIxMiwiZXhwIjoxNzQ2OTg1NjEyfQ.IP_Zlb3SGNC1HYKdbNhKTw1DRI-TtudlLH_QzGg8aNo7k17RUB51wvVlHCS3Zb2hvjMQwlOS5WcgvAhg5xo71g",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0NzgxOTY1OCwiZXhwIjoxNzQ3OTA2MDU4fQ.4u0dmaL2gryWLRgYoTKvW_Vcl2H9l8jwEO8IRib0ZnbOlfck9sNes_FEMibxpuVV0ZEP8u21X3ALrHzfl2_Oag",
 							"type": "string"
 						}
 					]
@@ -126,7 +126,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"productId\": 4,\n  \"price\": 299.99,\n  \"costPrice\": 150.00\n}",
+					"raw": "{\n  \"productId\": 1,\n  \"price\": 799.99,\n  \"costPrice\": 550.00\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -168,7 +168,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"productId\": 3,\n  \"price\": 299.99\n}",
+					"raw": "{\n  \"productId\": 1,\n  \"price\": 299.99\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -316,7 +316,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0NjU5NzEwNiwiZXhwIjoxNzQ2NjgzNTA2fQ.aPswTeJT2J2W1ycaeWl00YnPA-0F3UL_KRYRsr8ScXgVTjIC_RZIA-UYs1_FghjLH8fvy-EBQNcAETkUH43Vig",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfU0FMRVNfTUFOQUdFUiIsImlhdCI6MTc0NzUwNzk4NiwiZXhwIjoxNzQ3NTk0Mzg2fQ.40rRt7STTiCkPA6eXVjE829W1HaPeu2ZZ9pSJp71gBZHKxX7nM9RQ2aboVjImzZBNdGQTD09cU4nLCjPP5qSag",
 							"type": "string"
 						}
 					]
@@ -324,7 +324,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/sales/invoices/INV-12345/download",
+					"raw": "http://localhost:8080/sales/invoices/INV-9B0493F2/download",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -333,7 +333,7 @@
 					"path": [
 						"sales",
 						"invoices",
-						"INV-12345",
+						"INV-9B0493F2",
 						"download"
 					]
 				}

@@ -19,7 +19,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"user1\",\n    \"email\": \"user1@seller1.com\",\n    \"password\": \"password1\",\n    \"address\": \"Istanbul, Turkey\",\n    \"role\": \"product_manager\"\n}",
+					"raw": "{\n    \"name\": \"user1\",\n    \"email\": \"user1@seller1.com\",\n    \"password\": \"password1\",\n    \"address\": \"Istanbul, Turkey\",\n    \"role\": \"product_manager\",\n    \"taxId\": \"taxId1\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -79,7 +79,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ2NTk2OTcwLCJleHAiOjE3NDY2ODMzNzB9.Qtwo0sgzJfvLxN8aJpad94NOEXE7icYRiwVHvmh_w0VsADCGwI-sNg0P1GuOlDzPch3JRCWNSfqMOTqd5PyuQQ",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ3ODE5NjI4LCJleHAiOjE3NDc5MDYwMjh9.IP5NIGxdLcAwxXluK-b65ceQFkr3DYqpF6ppJpz2leLeDzd2OQ8MhtcpQB-ORDBQW_hEiygO7xCa-C2N8gQm9A",
 							"type": "string"
 						}
 					]
@@ -411,7 +411,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ2ODk5NDAxLCJleHAiOjE3NDY5ODU4MDF9.5NWSTQWsN5Aw8gLyjqtinPfmDaMatROnRiIw51WyOZ1cCtiu5DpKAJoYYsJFP_ZTAQUO7K1YwO7EkdKpg5Bg5A",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ3ODE2NjE0LCJleHAiOjE3NDc5MDMwMTR9.K1h_s8hKBDMEnxmdYPu66z9rse6KuBkhzX_P-codIxRtHB7Gsfpeb6T_jAU_odNgsq3AqEoT_o-LpZJdC98l-g",
 							"type": "string"
 						}
 					]
@@ -839,7 +839,7 @@
 			"response": []
 		},
 		{
-			"name": "Create New Category Copy",
+			"name": "Delete Category",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -901,6 +901,250 @@
 						"prodman",
 						"category",
 						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve Invoice PDF",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ3NTA4NzA1LCJleHAiOjE3NDc1OTUxMDV9.1HvIv7uYm1qZHwiDNHQ4cKIOyy5Q56rK4Mwp7L55w_kH-I19P6q2BRVwQ5nBigZ2JMeG9jfQTXtUf9o5tNSfRA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/invoices/INV-9B0493F2/download",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"invoices",
+						"INV-9B0493F2",
+						"download"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Deliveries",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ3ODE5NjI4LCJleHAiOjE3NDc5MDYwMjh9.IP5NIGxdLcAwxXluK-b65ceQFkr3DYqpF6ppJpz2leLeDzd2OQ8MhtcpQB-ORDBQW_hEiygO7xCa-C2N8gQm9A",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/prodman/deliveries",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"deliveries"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Pending Deliveries",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ3ODE5NjI4LCJleHAiOjE3NDc5MDYwMjh9.IP5NIGxdLcAwxXluK-b65ceQFkr3DYqpF6ppJpz2leLeDzd2OQ8MhtcpQB-ORDBQW_hEiygO7xCa-C2N8gQm9A",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/prodman/deliveries/pending",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"deliveries",
+						"pending"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Delivery Status",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ3ODE5NjI4LCJleHAiOjE3NDc5MDYwMjh9.IP5NIGxdLcAwxXluK-b65ceQFkr3DYqpF6ppJpz2leLeDzd2OQ8MhtcpQB-ORDBQW_hEiygO7xCa-C2N8gQm9A",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"status\": \"delivered\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/prodman/deliveries/1/status",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"prodman",
+						"deliveries",
+						"1",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find Delivery by Order and Product",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ2NDU0NzE5LCJleHAiOjE3NDY1NDExMTl9.bE8hhp2YSe-oo2Lv18OJSoYj0gfNfeFm2Kb1q_tITYtAlVIY9F3msN29L2Xl0ArCRvoNy7AzdgGzgpY96hwt4g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/delivery/find?orderId={{orderId}}&productId={{productId}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"delivery",
+						"find"
+					],
+					"query": [
+						{
+							"key": "orderId",
+							"value": "{{orderId}}"
+						},
+						{
+							"key": "productId",
+							"value": "{{productId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Delivery",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ2NDU0NzE5LCJleHAiOjE3NDY1NDExMTl9.bE8hhp2YSe-oo2Lv18OJSoYj0gfNfeFm2Kb1q_tITYtAlVIY9F3msN29L2Xl0ArCRvoNy7AzdgGzgpY96hwt4g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"orderId\": 123,\n    \"productId\": 456,\n    \"quantity\": 2,\n    \"totalPrice\": 399.98,\n    \"deliveryAddress\": \"123 Main Street, City, Country\",\n    \"deliveryStatus\": \"processing\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/delivery",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"delivery"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update General Delivery Status",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfUFJPRFVDVF9NQU5BR0VSIiwiaWF0IjoxNzQ2NDU0NzE5LCJleHAiOjE3NDY1NDExMTl9.bE8hhp2YSe-oo2Lv18OJSoYj0gfNfeFm2Kb1q_tITYtAlVIY9F3msN29L2Xl0ArCRvoNy7AzdgGzgpY96hwt4g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"status\": \"delivered\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/delivery/{{deliveryId}}/status",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"delivery",
+						"{{deliveryId}}",
+						"status"
 					]
 				}
 			},

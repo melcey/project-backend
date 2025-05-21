@@ -19,7 +19,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"user2\",\n    \"email\": \"user2@customer2.com\",\n    \"password\": \"password2\",\n    \"address\": \"Istanbul, Turkey\",\n    \"role\": \"customer\"\n}",
+					"raw": "{\n    \"name\": \"user2\",\n    \"email\": \"user2@customer2.com\",\n    \"password\": \"password2\",\n    \"address\": \"Istanbul, Turkey\",\n    \"role\": \"customer\",\n    \"taxId\": \"taxId3\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -79,7 +79,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfQ1VTVE9NRVIiLCJpYXQiOjE3NDY5MDI1NzksImV4cCI6MTc0Njk4ODk3OX0.OcTe_M7jsUtznviMWFEHQY0pmTPprMYPP4bjzeF_oZ-F_qwTP-dBgKtYPFXzcddOCBLcaeZkTed3Sbqf72jmGA",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfQ1VTVE9NRVIiLCJpYXQiOjE3NDc4MTYyODAsImV4cCI6MTc0NzkwMjY4MH0.4bZ2B_3Hiepax2XI-Kmn09idHNzpiYK82L47ddnLf9WVWFiuZjoxRphG7Ppd1b7jbc8CQxwyKxTlD-EGMSbr9A",
 							"type": "string"
 						}
 					]
@@ -252,7 +252,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfQ1VTVE9NRVIiLCJpYXQiOjE3NDY5MDQ5NTIsImV4cCI6MTc0Njk5MTM1Mn0.pqMlXM15AcsF9HXB9OJhgJ726Dzj8qayBVXKKvHYpCxgZd6TjGtx63VTLyAX6XBh3JEy6lfOficMEaEDnhwycQ",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfQ1VTVE9NRVIiLCJpYXQiOjE3NDc1MDc2MzMsImV4cCI6MTc0NzU5NDAzM30.ZHIfWjPZpuK-URUCVIX23YIvvauVEShTVIwtVTZUKYKVNYUWdw7XUNTIO62mmYctpEzoQDQEfc_emcDzePWOHA",
 							"type": "string"
 						}
 					]
@@ -260,7 +260,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/order/customer/3/invoice",
+					"raw": "localhost:8080/order/customer/1/invoice",
 					"host": [
 						"localhost"
 					],
@@ -268,7 +268,7 @@
 					"path": [
 						"order",
 						"customer",
-						"3",
+						"1",
 						"invoice"
 					]
 				}
@@ -283,7 +283,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfQ1VTVE9NRVIiLCJpYXQiOjE3NDU1MjQ5NTUsImV4cCI6MTc0NTYxMTM1NX0.ZHUU8L8fhfAg2H2Llg9bj5WY749i30EZ_gWS6INNT89Ni6ZhBMww1fy78Q3oJ1qRxIxMAHSaIx662FAR_cD4HA",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfQ1VTVE9NRVIiLCJpYXQiOjE3NDc4MTk3MTYsImV4cCI6MTc0NzkwNjExNn0.RVkgDEr9NZ9PcotPflCFgLjgit8wAiDLeilObEuSLnqOJSkmKMo4vHHi7uo_Rrt4DtvSzei8EsBLIuR4cWm3DA",
 							"type": "string"
 						}
 					]
@@ -292,7 +292,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"status\": \"processing\",\n    \"totalPrice\": 2099.98,\n    \"deliveryAddress\": \"Istanbul, Turkey\",\n    \"orderItems\": [\n        {\n            \"quantity\": 1,\n            \"productId\": 1,\n            \"price\": 799.99\n        },\n        {\n            \"quantity\": 1,\n            \"productId\": 2,\n            \"price\": 1299.99\n        }\n    ]\n}",
+					"raw": "{\n    \"status\": \"processing\",\n    \"totalPrice\": 799.99,\n    \"deliveryAddress\": \"Istanbul, Turkey\",\n    \"orderItems\": [\n        {\n            \"quantity\": 1,\n            \"productId\": 1,\n            \"price\": 799.99\n        }\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -359,7 +359,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfQ1VTVE9NRVIiLCJpYXQiOjE3NDY5MDQ5NTIsImV4cCI6MTc0Njk5MTM1Mn0.pqMlXM15AcsF9HXB9OJhgJ726Dzj8qayBVXKKvHYpCxgZd6TjGtx63VTLyAX6XBh3JEy6lfOficMEaEDnhwycQ",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfQ1VTVE9NRVIiLCJpYXQiOjE3NDc1MDgwOTksImV4cCI6MTc0NzU5NDQ5OX0.iqezCdbsROeRggNeyI-rkhd_1OV0r7SXQDm9tn1EKmsaO2HVshDzsrUkzVBE0wvYcQTmoATF3ykRryDaoQpI8w",
 							"type": "string"
 						}
 					]
@@ -367,14 +367,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/invoices/INV-3AFB6697/download",
+					"raw": "localhost:8080/invoices/INV-9B0493F2/download",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
 						"invoices",
-						"INV-3AFB6697",
+						"INV-9B0493F2",
 						"download"
 					]
 				}
@@ -603,6 +603,35 @@
 						"order",
 						"customer",
 						"6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Customer Profile",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwicm9sZSI6IlJPTEVfQ1VTVE9NRVIiLCJpYXQiOjE3NDc4MjA0NDAsImV4cCI6MTc0NzkwNjg0MH0.m8i2n5VMbsXvlDQEVMehm5Pw8Ns9WrXXlDIhDhPxi4QbHSVTZ-PeF2jwz9YysCLYoi-Wf485zkQ2ttl_Dx158Q",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/profile/3",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"profile",
+						"3"
 					]
 				}
 			},
