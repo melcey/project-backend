@@ -70,7 +70,7 @@ class CartTest {
         cart.setCreatedAt(createdAt);
         cart.setUpdatedAt(updatedAt);
 
-        String expected = "Cart [id=null, user=User [id=null, name=John Doe, address=null, role=customer], totalPrice=100.5, items=[], createdAt=2025-04-19T12:00, updatedAt=2025-04-20T12:00]";
+        String expected = "Cart [id=null, user=User [id=null, name=John Doe, address=null, role=customer, taxId=null], totalPrice=100.5, items=[], createdAt=2025-04-19T12:00, updatedAt=2025-04-20T12:00]";
         assertEquals(expected, cart.toString());
     }
 

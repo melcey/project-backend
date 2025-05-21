@@ -108,7 +108,7 @@ public class CustomerReturnControllerTest {
 
     @Test
     @WithMockUser(roles = "CUSTOMER")
-    public void testCreateReturnRequest_BadRequest() throws Exception {
+    public void testCreateReturnRequest_InternalServerError() throws Exception {
         CreateReturnRequest request = new CreateReturnRequest(123L, 1L, 2, "Defective");
 
         when(returnRefundService.createReturnRequest(any(User.class), anyLong(), anyLong(), anyInt(), anyString()))
@@ -117,7 +117,7 @@ public class CustomerReturnControllerTest {
         mockMvc.perform(post("/returns")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @Test

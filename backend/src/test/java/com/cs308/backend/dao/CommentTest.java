@@ -53,7 +53,7 @@ class CommentTest {
         Comment comment = new Comment(product, user, "Great product!");
         comment.setCommentDate(commentDate);
 
-        String expected = "Comment [id=null, commentedProduct=Product [id=null, name=Laptop, model=null, serialNumber=null, description=null, quantityInStock=0, price=null, warrantyStatus=null, distributorInfo=null, isActive=true, imageUrl=null, isPriced=false, originalPrice=null, discountRate=0, costPrice=null, category=null, productManager=null], commentingUser=User [id=null, name=John Doe, address=null, role=customer], approved=false, comment=Great product!, commentDate=2025-04-19T12:00]";
+        String expected = "Comment [id=null, commentedProduct=Product [id=null, name=Laptop, model=null, serialNumber=null, description=null, quantityInStock=0, price=null, warrantyStatus=null, distributorInfo=null, isActive=true, imageUrl=null, isPriced=false, originalPrice=null, discountRate=0, costPrice=null, category=null, productManager=null], commentingUser=User [id=null, name=John Doe, address=null, role=customer, taxId=null], approved=false, comment=Great product!, commentDate=2025-04-19T12:00]";
         assertEquals(expected, comment.toString());
     }
 

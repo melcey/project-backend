@@ -9,13 +9,14 @@ import org.junit.jupiter.api.Test;
 class SignUpRequestTest {
     @Test
     void testSignUpRequestCreation() {
-        SignUpRequest request = new SignUpRequest("John Doe", "john@example.com", "password123", "123 Street", "customer");
+        SignUpRequest request = new SignUpRequest("John Doe", "john@example.com", "password123", "123 Street", "customer", "taxId");
 
         assertEquals("John Doe", request.getName());
         assertEquals("john@example.com", request.getEmail());
         assertEquals("password123", request.getPassword());
         assertEquals("123 Street", request.getAddress());
         assertEquals("customer", request.getRole());
+        assertEquals("taxId", request.getTaxId());
     }
 
     @Test
@@ -26,18 +27,20 @@ class SignUpRequestTest {
         request.setPassword("password123");
         request.setAddress("123 Street");
         request.setRole("customer");
+        request.setTaxId("taxId");
 
         assertEquals("John Doe", request.getName());
         assertEquals("john@example.com", request.getEmail());
         assertEquals("password123", request.getPassword());
         assertEquals("123 Street", request.getAddress());
         assertEquals("customer", request.getRole());
+        assertEquals("taxId", request.getTaxId());
     }
 
     @Test
     void testToString() {
-        SignUpRequest request = new SignUpRequest("John Doe", "john@example.com", "password123", "123 Street", "customer");
-        String expected = "SignUpRequest [name=John Doe, email=john@example.com, password=password123, address=123 Street, role=customer]";
+        SignUpRequest request = new SignUpRequest("John Doe", "john@example.com", "password123", "123 Street", "customer", "taxId");
+        String expected = "SignUpRequest [name=John Doe, email=john@example.com, password=password123, address=123 Street, role=customer, taxId=taxId]";
         assertEquals(expected, request.toString());
     }
 

@@ -53,7 +53,7 @@ public class CommentRepositoryTest {
     @Test
     public void testFindByCommentingUser() {
         // Create a User
-        User user = new User("John Doe", "123 Main St", Role.customer);
+        User user = new User("John Doe", "123 Main St", Role.customer, "taxId");
         User savedUser = userRepository.save(user);
 
         // Create a Product
@@ -83,7 +83,7 @@ public class CommentRepositoryTest {
     @Test
     public void testFindByCommentingUserAndApproved() {
         // Create a User
-        User user = new User("Jane Doe", "456 Elm St", Role.customer);
+        User user = new User("Jane Doe", "456 Elm St", Role.customer, "taxId");
         User savedUser = userRepository.save(user);
 
         // Create a Product
@@ -122,7 +122,7 @@ public class CommentRepositoryTest {
     @Test
     public void testFindByCommentedProduct() {
         // Create a User
-        User user = new User("John Doe", "123 Main St", Role.customer);
+        User user = new User("John Doe", "123 Main St", Role.customer, "taxId");
         User savedUser = userRepository.save(user);
 
         // Create a Product
@@ -152,7 +152,7 @@ public class CommentRepositoryTest {
     @Test
     public void testFindByCommentDateBetween() {
         // Create a User
-        User user = new User("John Doe", "123 Main St", Role.customer);
+        User user = new User("John Doe", "123 Main St", Role.customer, "taxId");
         User savedUser = userRepository.save(user);
 
         // Create a Product
@@ -189,7 +189,7 @@ public class CommentRepositoryTest {
     @Test
     public void testFindByIdAndApproved() {
         // Create a User
-        User user = new User("John Doe", "123 Main St", Role.customer);
+        User user = new User("John Doe", "123 Main St", Role.customer, "taxId");
         User savedUser = userRepository.save(user);
 
         // Create a Product
