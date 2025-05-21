@@ -80,6 +80,7 @@ public class JwtSecurityConfig {
                         .requestMatchers("/payments/**").hasRole("CUSTOMER")
                         .requestMatchers("/wishlist/**").hasRole("CUSTOMER")
                         .requestMatchers("/returns/**").hasRole("CUSTOMER")
+                        .requestMatchers("/profile/**").hasRole("CUSTOMER")
 
                         .requestMatchers("/prodman/**").hasRole("PRODUCT_MANAGER")
                         .requestMatchers("/order/manager/**").hasRole("PRODUCT_MANAGER")

@@ -46,6 +46,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(name = "tax_id", length = 50)
+    private String taxId;
+
     // The products (to be used when the role is product manager)
     // One-to-many association mapped by the "productManager" field in the Product class
     @OneToMany(mappedBy = "productManager", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -57,7 +60,7 @@ public class User {
     }
 
     // The constructor with all fields other than the managed products filled
-    public User(Long id, String name, byte[] encrpytedEmail, String address, byte[] passwordHashed, Role role) {
+    public User(Long id, String name, byte[] encrpytedEmail, String address, byte[] passwordHashed, Role role, String taxId) {
         this.id = id;
         this.name = name;
         this.encryptedEmail = encrpytedEmail;
@@ -65,11 +68,12 @@ public class User {
         this.passwordHashed = passwordHashed;
         this.role = role;
         this.managedProducts = new HashSet<>();
+        this.taxId = taxId;
     }
 
     // The constructor to be used
     // Email and password will be given separately while constructing a User object in later stages of the project
-    public User(String name, String address, Role role) {
+    public User(String name, String address, Role role, String taxId) {
         this.id = null;
         this.name = name;
         this.encryptedEmail = null;
@@ -77,6 +81,7 @@ public class User {
         this.passwordHashed = null;
         this.role = role;
         this.managedProducts = new HashSet<>();
+        this.taxId = taxId;
     }
 
     // Getters and setters
@@ -136,6 +141,14 @@ public class User {
         this.managedProducts = managedProducts;
     }
 
+    public String getTaxId() {
+        return taxId;
+    }
+
+    public void setTaxId(String taxId) {
+        this.taxId = taxId;
+    }
+
     // toString() method overridden for User
     @Override
     public String toString() {
@@ -149,7 +162,8 @@ public class User {
             builder.append(", managedProducts=").append(managedProducts);
         }
 
-        builder.append("]");
+        builder.append(", taxId=").append(taxId)
+            .append("]");
             
         return builder.toString();
     }

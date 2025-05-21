@@ -89,7 +89,8 @@ public class AuthController {
             User user = new User(
                 signUpRequest.getName(),
                 signUpRequest.getAddress(),
-                Role.fromString(signUpRequest.getRole()));
+                Role.fromString(signUpRequest.getRole()),
+                signUpRequest.getTaxId());
 
             // Save user with encrypted email and password
             Optional<User> createdUser = userService.insertNewUser(
