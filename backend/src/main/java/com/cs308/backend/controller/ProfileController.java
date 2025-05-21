@@ -25,7 +25,7 @@ public class ProfileController {
         this.userService = userService;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping
     public ResponseEntity<?> getProfileDetails() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if ((auth == null) || (!(auth.isAuthenticated()))) {
